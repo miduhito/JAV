@@ -49,6 +49,9 @@ public class TrangChuGUI extends JPanel {
         addButtonToPanel(buttonPanel, "Quản lí nhân viên", Color.WHITE, "Image\\EmployeeIcon.png");
         addButtonToPanel(buttonPanel, "Quản lí khách hàng", Color.WHITE, "Image\\CustomerIcon.png");
         addButtonToPanel(buttonPanel, "Quản lí tài khoản", Color.WHITE, "Image\\AccountIcon.png");
+        addButtonToPanel(buttonPanel, "Quản lí ca - chấm công", Color.WHITE, "Image\\Shift.png");
+        addButtonToPanel(buttonPanel, "Quản lí nhập hàng", Color.WHITE, "Image\\EntryProduct.png");
+        addButtonToPanel(buttonPanel, "Quản lí Khuyến mãi", Color.WHITE, "Image\\Promotion.png");
         
         // Thêm các nút khác nếu cần:
         // addButtonToPanel(buttonPanel, "Quản lí thức ăn", Color.WHITE);
@@ -159,6 +162,16 @@ public class TrangChuGUI extends JPanel {
                 if (buttonText.equals("Quản lí tài khoản")){
                     showQuanLiTaiKhoan();
                 }
+                if (buttonText.equals("Quản lí ca - chấm công")){
+                    showQuanLiCaLamChamCong();
+                }
+                if (buttonText.equals("Quản lí nhập hàng")){
+                    showQuanLiNhapHang();
+                }
+                if (buttonText.equals("Quản lí khuyến mãi")){
+                    showQuanLiKhuyenMai();
+                }
+
             }
         });
     
@@ -173,12 +186,35 @@ public class TrangChuGUI extends JPanel {
         dynamicContentPanel.revalidate();
         dynamicContentPanel.repaint();
     }
+
     private void showQuanLiTaiKhoan(){
         dynamicContentPanel.removeAll();
         dynamicContentPanel.add(new QuanLiTaiKhoan(), BorderLayout.CENTER);
         dynamicContentPanel.revalidate();
         dynamicContentPanel.repaint();
     }
+
+    private void showQuanLiCaLamChamCong(){
+        dynamicContentPanel.removeAll();
+        dynamicContentPanel.add(new QuanLiCaLamChamCongGUI(), BorderLayout.CENTER);
+        dynamicContentPanel.revalidate();
+        dynamicContentPanel.repaint();
+    }
+
+    private void showQuanLiNhapHang() {
+        dynamicContentPanel.removeAll();
+        dynamicContentPanel.add(new QuanLyNhapHangGUI(), BorderLayout.CENTER);
+        dynamicContentPanel.revalidate();
+        dynamicContentPanel.repaint();
+    }
+
+    private void showQuanLiKhuyenMai(){
+        dynamicContentPanel.removeAll();
+        dynamicContentPanel.add(new QuanLiKhuyenMaiGUI(), BorderLayout.CENTER);
+        dynamicContentPanel.revalidate();
+        dynamicContentPanel.repaint();
+    }
+
     public static void main(String[] args) {
         JFrame frame = new JFrame("Trang Chủ");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

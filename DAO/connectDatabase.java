@@ -2,44 +2,39 @@ package DAO;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 public class connectDatabase {
-    private Connection con;
+    protected Connection conn = null;
 
-    public Connection getCon() {
-        return this.con;
-    }
+    static final String url = "jdbc:mysql://localhost:3306/fastfood";
+    static final String nameUser = "root";
+    static final String pass = "Tuan171204@";
 
-    public void connect() {
+    public boolean openConnectDB() {
         try {
-            String url = "jdbc:mysql://localhost:3306/";
-            String nameDatabase = "fastfood";
-            String user = "root";
-            String password = "Tuan171204@";  // pass user 'root' của ai thì tự sửa lại nha
-            this.con = DriverManager.getConnection(url + nameDatabase, user, password);
-            System.out.println("Kết nối thành công!");
-            Statement s = con.createStatement();
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(url, nameUser, pass);
+            return true;
         } catch (Exception e) {
-            System.err.println("Lỗi kết nối: " + e.getMessage());
             e.printStackTrace();
+            return false;
         }
     }
 
-    public void close() {
+    public void closeConnectDB() {
         try {
-            if (con != null) {
-                con.close();
-                System.out.println("Đóng kết nối thành công!");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            if (conn != null)
+                conn.close();
+        } catch (SQLException ex) {
+            System.out.println(ex);
         }
     }
 
     public static void main(String[] args) {
         connectDatabase newCon = new connectDatabase();
-        newCon.connect();
-        newCon.close();
+        newCon.openConnectDB();
+        newCon.closeConnectDB();
     }
 }

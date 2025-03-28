@@ -51,14 +51,14 @@ public class DangNhap {
         frame.setVisible(true);
     }
     public static void showTrangChu(){
-                    frame.dispose();
-                    JFrame f = new JFrame("Trang Chủ");
-                    f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    f.setSize(1200, 650);
-                    TrangChuGUI dashboard = new TrangChuGUI();
-                    f.add(dashboard);
-                    f.setLocationRelativeTo(null);
-                    f.setVisible(true);
+        frame.dispose();
+        JFrame f = new JFrame("Trang Chủ");
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        f.setSize(1200, 650);
+        TrangChuGUI dashboard = new TrangChuGUI();
+        f.add(dashboard);
+        f.setLocationRelativeTo(null);
+        f.setVisible(true);
     }
     private static void addButtonToPanel(JPanel buttonPanel, String buttonText, Color backgroundColor) {
         JButton button = new JButton(buttonText);

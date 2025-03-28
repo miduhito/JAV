@@ -5,11 +5,11 @@ public class PhieuNhapDTO {
     private String ngayNhap;
     private String maNhanVien;
     private String maNhaCungCap;
-    private int tongTien;
+    private double tongTien;
 
     public PhieuNhapDTO(){}
 
-    public PhieuNhapDTO(String maPhieuNhap, String maNhanVien, String ngayNhap, String maNhaCungCap, int tongTien) {
+    public PhieuNhapDTO(String maPhieuNhap, String maNhanVien, String ngayNhap, String maNhaCungCap, double tongTien) {
         this.maPhieuNhap = maPhieuNhap;
         this.maNhanVien = maNhanVien;
         this.ngayNhap = ngayNhap;
@@ -49,11 +49,11 @@ public class PhieuNhapDTO {
         this.maNhaCungCap = maNhaCungCap;
     }
 
-    public int getTongTien() {
+    public double getTongTien() {
         return tongTien;
     }
 
-    public void setTongTien(int tongTien) {
+    public void setTongTien(double tongTien) {
         this.tongTien = tongTien;
     }
 }

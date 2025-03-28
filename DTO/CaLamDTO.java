@@ -55,4 +55,15 @@ public class CaLamDTO {
     public void setTrangThai(Boolean trangThai) {
         this.trangThai = trangThai;
     }
+
+    @Override
+    public String toString() {
+        return "CaLamDTO{" +
+                "maCa='" + maCa + '\'' +
+                ", moTa='" + moTa + '\'' +
+                ", gioBD='" + gioBD + '\'' +
+                ", gioKT='" + gioKT + '\'' +
+                ", trangThai=" + trangThai +
+                '}';
+    }
 }

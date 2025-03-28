@@ -3,12 +3,12 @@ package DTO;
 public class PhanPhoiDTO {
     private String maNhaCungCap;
     private String maNguyenLieu;
-    private int giaNhap;
+    private Double giaNhap;
 
 
     public PhanPhoiDTO(){}
 
-    public PhanPhoiDTO(String maNhaCungCap, String maNguyenLieu, int donGia) {
+    public PhanPhoiDTO(String maNhaCungCap, String maNguyenLieu, Double donGia) {
         this.maNhaCungCap = maNhaCungCap;
         this.maNguyenLieu = maNguyenLieu;
         this.giaNhap = donGia;
@@ -30,11 +30,11 @@ public class PhanPhoiDTO {
         this.maNguyenLieu = maNguyenLieu;
     }
 
-    public int getGiaNhap() {
+    public Double getGiaNhap() {
         return giaNhap;
     }
 
-    public void setGiaNhap(int giaNhap) {
+    public void setGiaNhap(Double giaNhap) {
         this.giaNhap = giaNhap;
     }
 }
