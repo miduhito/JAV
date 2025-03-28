@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "TrangChuGUI",
+            "request": "launch",
+            "mainClass": "GUI.TrangChuGUI",
+            "projectName": "java_1c30f0f"
+        },
+        {
+            "type": "java",
+            "name": "TrangChuGUI",
+            "request": "launch",
+            "mainClass": "GUI.TrangChuGUI",
+            "projectName": "BanDoAnNhanh_26464adb"
+        },
+        {
+            "type": "java",
+            "name": "Launch Main",
+            "request": "launch",
+            "mainClass": "TrangChuGUI",
+            "classPaths": [
+                "lib/mysql-connector-java-8.x.x.jar"
+            ]
+        }
+    ]
+}

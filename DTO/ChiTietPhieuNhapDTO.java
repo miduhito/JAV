@@ -2,9 +2,9 @@ package DTO;
 
 public class ChiTietPhieuNhapDTO {
     private String maPhieuNhap;
-    private int soLuongNhap;
     private String maNguyenLieu;
     private Double giaNhap;
+    private int soLuongNhap;
     private Double thanhTien;
 
     public ChiTietPhieuNhapDTO() {}

@@ -2,12 +2,15 @@ package DTO;
 
 public class ChiTietKhuyenMaiDTO {
     private String maKhuyenMai;
-    private String maHoaDon;
+    private String maSanPham;
+    private Double giaTriKhuyenMai;
+
 
     public ChiTietKhuyenMaiDTO() {}
-    public ChiTietKhuyenMaiDTO(String maKhuyenMai, String maHoaDon) {
+    public ChiTietKhuyenMaiDTO(String maKhuyenMai, String maHoaDon, Double  giaTriKhuyenMai) {
         this.maKhuyenMai = maKhuyenMai;
-        this.maHoaDon = maHoaDon;
+        this.maSanPham = maHoaDon;
+        this.giaTriKhuyenMai = giaTriKhuyenMai;
     }
 
     public String getMaKhuyenMai() {
@@ -18,11 +21,19 @@ public class ChiTietKhuyenMaiDTO {
         this.maKhuyenMai = maKhuyenMai;
     }
     
-    public String getMaHoaDon() {
-        return this.maHoaDon;
+    public String getMaSanPham() {
+        return this.maSanPham;
     }
     
-    public void setMaHoaDon(String maHoaDon) {
-        this.maHoaDon = maHoaDon;
-    }    
+    public void setMaSanPham(String maSanPham) {
+        this.maSanPham = maSanPham;
+    }
+
+    public Double getGiaTriKhuyenMai() {
+        return giaTriKhuyenMai;
+    }
+
+    public void setGiaTriKhuyenMai(Double giaTriKhuyenMai) {
+        this.giaTriKhuyenMai = giaTriKhuyenMai;
+    }
 }
