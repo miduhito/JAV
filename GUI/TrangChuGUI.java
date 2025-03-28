@@ -38,7 +38,6 @@ public class TrangChuGUI extends JPanel {
         headerLabel.setFont(new Font("Arial", Font.BOLD, 20));
         headerLabel.setForeground(Color.BLACK);
         headerPanel.add(headerLabel);
-
         // Thêm headerPanel vào vùng NORTH của menuPanel
         menuPanel.add(headerPanel, BorderLayout.NORTH);
 
@@ -46,10 +45,11 @@ public class TrangChuGUI extends JPanel {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         buttonPanel.setBackground(Color.WHITE);
-
         // Thêm các nút chức năng vào buttonPanel
         addButtonToPanel(buttonPanel, "Quản lí nhân viên", Color.WHITE, "Image\\EmployeeIcon.png");
         addButtonToPanel(buttonPanel, "Quản lí khách hàng", Color.WHITE, "Image\\CustomerIcon.png");
+        addButtonToPanel(buttonPanel, "Quản lí tài khoản", Color.WHITE, "Image\\AccountIcon.png");
+        
         // Thêm các nút khác nếu cần:
         // addButtonToPanel(buttonPanel, "Quản lí thức ăn", Color.WHITE);
         // addButtonToPanel(buttonPanel, "Thanh toán", Color.WHITE);
@@ -156,6 +156,9 @@ public class TrangChuGUI extends JPanel {
                     showQuanLiNhanVien();
                 }
                 // Bạn có thể xử lý ActionListener cho các nút khác ở đây
+                if (buttonText.equals("Quản lí tài khoản")){
+                    showQuanLiTaiKhoan();
+                }
             }
         });
     
@@ -170,7 +173,12 @@ public class TrangChuGUI extends JPanel {
         dynamicContentPanel.revalidate();
         dynamicContentPanel.repaint();
     }
-
+    private void showQuanLiTaiKhoan(){
+        dynamicContentPanel.removeAll();
+        dynamicContentPanel.add(new QuanLiTaiKhoan(), BorderLayout.CENTER);
+        dynamicContentPanel.revalidate();
+        dynamicContentPanel.repaint();
+    }
     public static void main(String[] args) {
         JFrame frame = new JFrame("Trang Chủ");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
