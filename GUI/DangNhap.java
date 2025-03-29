@@ -22,7 +22,6 @@ public class DangNhap {
         passwordText.setText("123");
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.anchor= GridBagConstraints.WEST;
-        gbc.gridx=0;gbc.gridy=0;gbc.gridheight=2;
         ImageIcon img = new ImageIcon("Image\\meme.jpg");
         Image scaledImage = img.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
         JLabel iconLabel = new JLabel();
