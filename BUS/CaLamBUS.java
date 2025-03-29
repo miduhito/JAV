@@ -1,6 +1,6 @@
 package BUS;
 
-import DAO.CaLamChamCongDAO;
+import DAO.CaLamDAO;
 import DTO.CaLamDTO;
 
 import javax.swing.*;
@@ -8,13 +8,13 @@ import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 import java.util.Vector;
 
-public class CaLamChamCongBUS {
+public class CaLamBUS implements CRUD<CaLamDTO> {
     ArrayList<CaLamDTO> danhSachCaLam;
-    CaLamChamCongDAO clccDAO = new CaLamChamCongDAO();
+    CaLamDAO clccDAO = new CaLamDAO();
 
-    public ArrayList<CaLamDTO> getDuLieu (){
+    public ArrayList<CaLamDTO> getData (){
         danhSachCaLam  = new ArrayList<>();
-        danhSachCaLam = clccDAO.getDuLieu();
+        danhSachCaLam = clccDAO.getData();
         return danhSachCaLam;
     }
 
@@ -33,8 +33,12 @@ public class CaLamChamCongBUS {
         return false;
     }
 
-    public String generateMaCaLam(){
-        return clccDAO.generateMaCaLam();
+    public boolean delete(String maCaLam){
+        return clccDAO.delete(maCaLam);
+    }
+
+    public String generateID(){
+        return clccDAO.generateID();
     }
 
     public boolean regexInput(CaLamDTO caLam){
@@ -70,10 +74,10 @@ public class CaLamChamCongBUS {
         return true;
     }
 
-    public void loadDanhSachCaLamTable(DefaultTableModel tableModelCL){
+    public void loadDataTable(DefaultTableModel tableModelCL){
         tableModelCL.setRowCount(0); // xóa dữ liêu cũ
 
-        ArrayList<CaLamDTO> danhSachCaLam = getDuLieu();
+        ArrayList<CaLamDTO> danhSachCaLam = getData();
         for(CaLamDTO calam : danhSachCaLam){
             Vector<Object> vec = new Vector<>();
             vec.add(calam.getMaCa());

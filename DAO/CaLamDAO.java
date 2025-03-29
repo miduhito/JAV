@@ -5,17 +5,18 @@ import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class CaLamChamCongDAO{
+public class CaLamDAO implements CRUD<CaLamDTO>{
     CaLamDTO caLamDTO;
-    public CaLamChamCongDAO(){}
+    public CaLamDAO(){}
     public connectDatabase connDB = new connectDatabase();
 
-    public ArrayList<CaLamDTO> getDuLieu(){
+    @Override
+    public ArrayList<CaLamDTO> getData(){
         ArrayList<CaLamDTO> danhSachCaLam = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             if(connDB.openConnectDB()){
-                String query = "SELECT * FROM calam";
+                String query = "SELECT * FROM calam ORDER BY gioBD";
                 Statement stmt = connDB.conn.createStatement();
                 ResultSet rs = stmt.executeQuery(query);
                 danhSachCaLam = new ArrayList<CaLamDTO>();
@@ -48,6 +49,7 @@ public class CaLamChamCongDAO{
         return danhSachCaLam;
     }
 
+    @Override
     public boolean add(CaLamDTO caLam) {
         boolean success;
         try {
@@ -84,6 +86,7 @@ public class CaLamChamCongDAO{
         return success;
     }
 
+    @Override
     public boolean update(CaLamDTO caLam) {
         boolean success = false;
         try {
@@ -124,7 +127,45 @@ public class CaLamChamCongDAO{
         return success;
     }
 
-    public String generateMaCaLam() {
+    @Override
+    public boolean delete(String maCaLam) {
+        boolean success = false;
+        try {
+            if (connDB.openConnectDB()){
+                String query = "DELETE FROM calam WHERE maCa = ?";
+                PreparedStatement pstmt = connDB.conn.prepareStatement(query);
+                pstmt.setString(1, maCaLam);
+
+                int rowsAffected = pstmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(null, "Xóa ca làm thành công!" , "Success", JOptionPane.INFORMATION_MESSAGE);
+                    success = true;
+                }
+                else {
+                    JOptionPane.showMessageDialog(null,
+                            "Xóa ca làm thất bại! Không tìm thấy ca làm với mã: " + maCaLam,
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                pstmt.close();
+                connDB.closeConnectDB();
+            }
+            else {
+                JOptionPane.showMessageDialog(null,
+                        "Không thể kết nối đến cơ sở dữ liệu!",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        catch (SQLException ex){
+            JOptionPane.showMessageDialog(null, "Lỗi khi xóa ca làm: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+        return success;
+    }
+
+    @Override
+    public String generateID() {
         String newMaCa = "C1"; // default value
         try {
             if (connDB.openConnectDB()) {
@@ -153,6 +194,7 @@ public class CaLamChamCongDAO{
         return newMaCa;
     }
 
+    @Override
     public boolean checkDuplicate(CaLamDTO caLam, String Function){
         boolean isDuplicate = false;
             try {
