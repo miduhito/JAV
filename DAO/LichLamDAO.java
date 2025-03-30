@@ -6,9 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import javax.swing.JOptionPane;
 
 public class LichLamDAO implements CRUD<LichLamDTO> {
-    private LichLamDTO LichLamDTO;
     public connectDatabase connDB = new connectDatabase();
 
     public LichLamDAO() {}
@@ -16,7 +16,7 @@ public class LichLamDAO implements CRUD<LichLamDTO> {
     @Override
     public ArrayList<LichLamDTO> getData() {
         ArrayList<LichLamDTO> list = new ArrayList<>();
-        String sql = "SELECT * FROM lichLamViec";
+        String sql = "SELECT * FROM lichLamViec WHERE trangThai = 1";
 
         try {
             if (connDB.openConnectDB()) {
@@ -36,7 +36,7 @@ public class LichLamDAO implements CRUD<LichLamDTO> {
                 pstmt.close();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage());
         } finally {
             connDB.closeConnectDB();
         }
@@ -47,6 +47,9 @@ public class LichLamDAO implements CRUD<LichLamDTO> {
     public boolean add(LichLamDTO entity) {
         String sql = "INSERT INTO lichLamViec (maLichLam, ngayLamViec, maNhanVien, maCaLam, trangThai) VALUES (?, ?, ?, ?, ?)";
 
+        if (checkDuplicate(entity, "Add")){
+            return false;
+        }
         try {
             if (connDB.openConnectDB()) {
                 PreparedStatement pstmt = connDB.conn.prepareStatement(sql);
@@ -58,10 +61,16 @@ public class LichLamDAO implements CRUD<LichLamDTO> {
 
                 int rowsAffected = pstmt.executeUpdate();
                 pstmt.close();
+
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(null, "Thêm lịch thành công!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Thêm lịch thất bại!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
                 return rowsAffected > 0;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage());
         } finally {
             connDB.closeConnectDB();
         }
@@ -71,6 +80,10 @@ public class LichLamDAO implements CRUD<LichLamDTO> {
     @Override
     public boolean update(LichLamDTO entity) {
         String sql = "UPDATE lichLamViec SET ngayLamViec = ?, maNhanVien = ?, maCaLam = ?, trangThai = ? WHERE maLichLam = ?";
+
+        if (checkDuplicate(entity, "update")){
+            return false;
+        }
 
         try {
             if (connDB.openConnectDB()) {
@@ -86,7 +99,7 @@ public class LichLamDAO implements CRUD<LichLamDTO> {
                 return rowsAffected > 0;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage());
         } finally {
             connDB.closeConnectDB();
         }
@@ -95,18 +108,87 @@ public class LichLamDAO implements CRUD<LichLamDTO> {
 
     @Override
     public boolean delete(String id) {
-        String sql = "DELETE FROM lichLamViec WHERE maLichLam = ?";
-
         try {
             if (connDB.openConnectDB()) {
-                PreparedStatement pstmt = connDB.conn.prepareStatement(sql);
+                String checkQuery = "SELECT ngayLamViec FROM lichLamViec WHERE maLichLam = ?";
+                PreparedStatement checkStmt = connDB.conn.prepareStatement(checkQuery);
+                checkStmt.setString(1, id);
+                ResultSet rs = checkStmt.executeQuery();
+
+                if (rs.next()) {
+                    Date ngayLamViec = rs.getDate("ngayLamViec");
+                    java.util.Calendar calNgayLam = java.util.Calendar.getInstance();
+                    calNgayLam.setTime(ngayLamViec);
+                    calNgayLam.set(java.util.Calendar.HOUR_OF_DAY, 0);
+                    calNgayLam.set(java.util.Calendar.MINUTE, 0);
+                    calNgayLam.set(java.util.Calendar.SECOND, 0);
+                    calNgayLam.set(java.util.Calendar.MILLISECOND, 0);
+
+                    java.util.Calendar calHienTai = java.util.Calendar.getInstance();
+                    calHienTai.setTime(new Date());
+                    calHienTai.set(java.util.Calendar.HOUR_OF_DAY, 0);
+                    calHienTai.set(java.util.Calendar.MINUTE, 0);
+                    calHienTai.set(java.util.Calendar.SECOND, 0);
+                    calHienTai.set(java.util.Calendar.MILLISECOND, 0);
+
+                    // So sánh ngày
+                    if (calNgayLam.getTime().before(calHienTai.getTime())) {
+                        // Nếu ngày làm đã qua, không cho phép xóa
+                        JOptionPane.showMessageDialog(null,
+                                "Không thể xóa lịch làm vì ngày làm đã qua!",
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                        rs.close();
+                        checkStmt.close();
+                        connDB.closeConnectDB();
+                        return false;
+                    }
+                } else {
+                    // Nếu không tìm thấy lịch làm với mã id
+                    JOptionPane.showMessageDialog(null,
+                            "Không tìm thấy lịch làm với mã: " + id,
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    rs.close();
+                    checkStmt.close();
+                    connDB.closeConnectDB();
+                    return false;
+                }
+                rs.close();
+                checkStmt.close();
+
+                // Bước 2: Nếu ngày làm chưa qua, tiến hành xóa
+                String deleteQuery = "DELETE FROM lichLamViec WHERE maLichLam = ?";
+                PreparedStatement pstmt = connDB.conn.prepareStatement(deleteQuery);
                 pstmt.setString(1, id);
                 int rowsAffected = pstmt.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(null,
+                            "Xóa lịch làm thành công!",
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Xóa lịch làm thất bại! Không tìm thấy lịch làm với mã: " + id,
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
                 pstmt.close();
+                connDB.closeConnectDB();
                 return rowsAffected > 0;
+            } else {
+                JOptionPane.showMessageDialog(null,
+                        "Không thể kết nối đến cơ sở dữ liệu!",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Lỗi khi xóa lịch làm: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, e.getMessage());
         } finally {
             connDB.closeConnectDB();
         }
@@ -114,9 +196,48 @@ public class LichLamDAO implements CRUD<LichLamDTO> {
     }
 
     @Override
-    public boolean checkDuplicate(LichLamDTO entity, String Function) {
-        String sql = "SELECT COUNT(*) FROM lichLamViec WHERE ngayLamViec = ? AND maNhanVien = ?";
+    public boolean hide(String id){
+        boolean success = false;
+        try {
+            if (connDB.openConnectDB()) {
+                String deleteQuery = "UPDATE lichlamviec SET trangThai = 0 WHERE maLichLam = ?";
+                PreparedStatement pstmt = connDB.conn.prepareStatement(deleteQuery);
+                pstmt.setString(2, id);
 
+                int rowsAffected = pstmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(null,
+                            "Vô hiệu lịch làm thành công!",
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    success = true;
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Vô hiệu lịch làm thất bại! Không tìm thấy ca làm với mã: " + id,
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                pstmt.close();
+                connDB.closeConnectDB();
+            } else {
+                JOptionPane.showMessageDialog(null,
+                        "Không thể kết nối đến cơ sở dữ liệu!",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null,
+                    "Lỗi khi vô hiệu lịch làm: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+        return success;
+    }
+
+    @Override
+    public boolean checkDuplicate(LichLamDTO entity, String Function) {
+        String sql = "SELECT COUNT(*) FROM lichLamViec WHERE ngayLamViec = ? AND maNhanVien = ? AND trangThai = true";
+        System.out.println(entity);
         if (Function.equals("update")) {
             sql += " AND maLichLam != ?";
         }
@@ -133,13 +254,18 @@ public class LichLamDAO implements CRUD<LichLamDTO> {
                 ResultSet rs = pstmt.executeQuery();
                 if (rs.next()) {
                     int count = rs.getInt(1);
-                    rs.close();
-                    pstmt.close();
-                    return count > 0;
+                    if (count > 0){
+                        JOptionPane.showMessageDialog(null,
+                            "Nhân viên đã có ca làm trong ngày, không thể thêm ca làm cùng ngày",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                        return true;
+                    }
                 }
+                rs.close();
+                pstmt.close();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage());
         } finally {
             connDB.closeConnectDB();
         }
@@ -166,11 +292,69 @@ public class LichLamDAO implements CRUD<LichLamDTO> {
                 pstmt.close();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage());
         } finally {
             connDB.closeConnectDB();
         }
-
         return String.format("%s%03d", prefix, newNumber);
     }
+
+    public ArrayList<LichLamDTO> getDataByDate(Date date){
+        ArrayList<LichLamDTO> list = new ArrayList<>();
+        String sql = "SELECT * FROM lichLamViec WHERE ngayLamViec = ?";
+
+        try {
+            if (connDB.openConnectDB()) {
+                PreparedStatement pstmt = connDB.conn.prepareStatement(sql);
+                pstmt.setDate(1, new java.sql.Date(date.getTime()));
+                ResultSet rs = pstmt.executeQuery();
+
+                while (rs.next()) {
+                    LichLamDTO lichLam = new LichLamDTO();
+                    lichLam.setMaLichLam(rs.getString("maLichLam"));
+                    lichLam.setNgayLam(rs.getDate("ngayLamViec"));
+                    lichLam.setMaNhanVien(rs.getString("maNhanVien"));
+                    lichLam.setMaCaLam(rs.getString("maCaLam"));
+                    lichLam.setTrangThai(rs.getBoolean("trangThai"));
+                    list.add(lichLam);
+                }
+                rs.close();
+                pstmt.close();
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        } finally {
+            connDB.closeConnectDB();
+        }
+        return list;
+    }
+
+    public LichLamDTO getDataById(String Id){
+        LichLamDTO lichLam = new LichLamDTO();
+        String sql = "SELECT * FROM lichLamViec WHERE maLichLam = ?";
+
+        try {
+            if (connDB.openConnectDB()) {
+                PreparedStatement pstmt = connDB.conn.prepareStatement(sql);
+                pstmt.setString(1, Id);
+                ResultSet rs = pstmt.executeQuery();
+
+                while (rs.next()) {
+                    lichLam.setMaLichLam(rs.getString("maLichLam"));
+                    lichLam.setNgayLam(rs.getDate("ngayLamViec"));
+                    lichLam.setMaNhanVien(rs.getString("maNhanVien"));
+                    lichLam.setMaCaLam(rs.getString("maCaLam"));
+                    lichLam.setTrangThai(rs.getBoolean("trangThai"));
+                }
+                rs.close();
+                pstmt.close();
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        } finally {
+            connDB.closeConnectDB();
+        }
+        return lichLam;
+    }
+
 }

@@ -1,13 +1,20 @@
 package BUS;
 
+import Custom.DateComparison;
 import DAO.LichLamDAO;
 import DTO.LichLamDTO;
 
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Vector;
 
 public class LichLamBUS implements CRUD<LichLamDTO> {
     ArrayList<LichLamDTO> danhSachLichLam;
     LichLamDAO llDAO = new LichLamDAO();
+    CaLamBUS clccBUS = new CaLamBUS();
+    NhanVienBUS nvBUS = new NhanVienBUS();
     
     @Override
     public ArrayList<LichLamDTO> getData() {
@@ -16,9 +23,18 @@ public class LichLamBUS implements CRUD<LichLamDTO> {
         return danhSachLichLam;
     }
 
+    public LichLamDTO getDataById(String id){
+        return llDAO.getDataById(id);
+    }
+
+    public ArrayList<LichLamDTO> getDataByDate(Date date) {
+        danhSachLichLam  = new ArrayList<>();
+        danhSachLichLam = llDAO.getDataByDate(date);
+        return danhSachLichLam;
+    }
+
     @Override
     public boolean add(LichLamDTO newLichLam) {
-        // SAVE TO DB
         if (regexInput(newLichLam)){
             return llDAO.add(newLichLam);
         }
@@ -40,11 +56,47 @@ public class LichLamBUS implements CRUD<LichLamDTO> {
 
     @Override
     public boolean regexInput(LichLamDTO entity) {
-        return false;
+        if (DateComparison.compareDateWithToday(entity.getNgayLam()) < 0 ){
+            JOptionPane.showMessageDialog(null,
+                    "Không thể thao tác lịch làm vì ngày làm đã qua! ",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String generateID() {
         return llDAO.generateID();
     }
+
+//    public void loadDataTable(DefaultTableModel tableModelLL){
+//        tableModelLL.setRowCount(0);
+//
+//        ArrayList<LichLamDTO> danhSachLichLam = getData();
+//        for(LichLamDTO LichLam : danhSachLichLam){
+//            Vector<Object> vec = new Vector<>();
+//            vec.add(LichLam.getMaLichLam());
+//            vec.add(LichLam.getNgayLam());
+//            vec.add(LichLam.getMaNhanVien());
+//            vec.add(LichLam.getMaCaLam());
+//            vec.add(LichLam.getTrangThai() ? "Hiệu lực" : "Không hiệu lực");
+//            tableModelLL.addRow(vec);
+//        }
+//    }
+
+        // load theo date
+        public void loadDataTable(DefaultTableModel tableModelLL, ArrayList<LichLamDTO> danhSachLichLam){
+            tableModelLL.setRowCount(0);
+
+            for(LichLamDTO LichLam : danhSachLichLam){
+                Vector<Object> vec = new Vector<>();
+                vec.add(LichLam.getMaLichLam());
+                vec.add(LichLam.getNgayLam());
+                vec.add(nvBUS.getTenNhanVienById(LichLam.getMaNhanVien()));
+                vec.add(clccBUS.getThoiGianCa(LichLam.getMaCaLam()));
+                vec.add(LichLam.getTrangThai() ? "Hiệu lực" : "Không hiệu lực");
+                tableModelLL.addRow(vec);
+            }
+        }
 }

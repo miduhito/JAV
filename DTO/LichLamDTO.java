@@ -59,4 +59,15 @@ public class LichLamDTO {
     public void setTrangThai(Boolean trangThai) {
         this.trangThai = trangThai;
     }
+
+    @Override
+    public String toString() {
+        return "LichLamDTO{" +
+                "maLichLam='" + maLichLam + '\'' +
+                ", maNhanVien='" + maNhanVien + '\'' +
+                ", ngayLam=" + ngayLam +
+                ", maCaLam='" + maCaLam + '\'' +
+                ", trangThai=" + trangThai +
+                '}';
+    }
 }

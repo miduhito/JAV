@@ -88,4 +88,8 @@ public class CaLamBUS implements CRUD<CaLamDTO> {
             tableModelCL.addRow(vec); // thêm thông tin thành 1 hàng vào bảng
         }
     }
+
+    public String getThoiGianCa(String maCa){
+        return clccDAO.getThoiGianCaById(maCa);
+    }
 }

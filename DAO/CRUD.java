@@ -13,6 +13,8 @@ public interface CRUD<T> {
 
     boolean delete(String id);
 
+    boolean hide(String id);
+
     boolean checkDuplicate(T entity, String Function);
 
     String generateID();

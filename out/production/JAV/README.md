@@ -5,3 +5,4 @@ Background từng panel là WHite
 Menu bên trái hệ thống nếu thêm nút thì gọi hàm addButtonToPanel và truyền tham số như nút quản lí nhân viên và quản lí khách hàng
 Fonts chữ của các nút là Fonts("Segoe UI", Fonts.BOLD, 14)
 Fonts chữ của các title chwucs năng như Quản Lý Nhân Viên là Fonts("Segoe UI", Fonts.BOLD, 24)
+Font chữ của title chức năng là Roboto Font ( sử dụng trong package Custom )

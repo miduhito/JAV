@@ -1,10 +1,14 @@
 package GUI;
 
 import BUS.CaLamBUS;
+import BUS.LichLamBUS;
+import BUS.NhanVienBUS;
 import Custom.MyButton;
 import Custom.MyLabel;
 import Custom.RobotoFont;
 import DTO.CaLamDTO;
+import DTO.LichLamDTO;
+import DTO.NhanVienDTO;
 import com.toedter.calendar.JDateChooser;
 
 import javax.swing.*;
@@ -12,12 +16,18 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
 
 
 public class QuanLiCaLamGUI extends RoundedPanel {
     private final DefaultTableModel tableModelCL = new DefaultTableModel();
-    private CaLamBUS clccBUS;
+    private CaLamBUS clBUS;
+    private final LichLamBUS llBUS;
+    private NhanVienBUS nvBUS;
     private JPanel shiftPanel;        // panel "Quản lý ca làm"
     private JPanel schedulingPanel;   // panel "Xếp lịch làm"
     private CardLayout cardLayout;    // quản lý chuyển đổi giao diện
@@ -27,9 +37,15 @@ public class QuanLiCaLamGUI extends RoundedPanel {
     private MyButton editButton;
     private MyButton deleteButton;
     private MyButton schedulingButton;
+    private JTable tableLichLam;
+    private DefaultTableModel tableModelLL;
+    RoundedPanel centerPanel;
+    SimpleDateFormat sdf;
 
     public QuanLiCaLamGUI() {
         super(50, 50, Color.decode("#F5ECE0"));
+        llBUS = new LichLamBUS();
+        clBUS = new CaLamBUS();
         initComponent();
     }
 
@@ -119,8 +135,8 @@ public class QuanLiCaLamGUI extends RoundedPanel {
             createSchedulingPanel();
             contentPanel.add(schedulingPanel, "SchedulingPanel");
 
-            clccBUS = new CaLamBUS();
-            clccBUS.loadDataTable(tableModelCL);
+            clBUS = new CaLamBUS();
+            clBUS.loadDataTable(tableModelCL);
 
             setupButtonListeners(title);
         } catch (Exception e) {
@@ -129,132 +145,193 @@ public class QuanLiCaLamGUI extends RoundedPanel {
     }
 
 
-// ========================== FORM THÊM CA LÀM ================================
-    private void ShowFormThemCaLam(JButton addButton) {
+// ========================== FORM THÊM ================================
+    private void ShowFormThem(JButton addButton, String mode) {
         try {
-            JFrame formThemCaLam = new JFrame("Thêm Ca Làm");
-            formThemCaLam.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            formThemCaLam.setSize(800, 600);
-            formThemCaLam.setLayout(new BorderLayout());
+            JFrame formThem = new JFrame(mode.equals("CaLam") ? "Thêm Ca Làm" : "Thêm Lịch Làm");
+            formThem.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            formThem.setSize(800, 600);
+            formThem.setLayout(new BorderLayout());
 
-            // Header panel
-            RoundedPanel themCaLamHeader = new RoundedPanel(30, 30, Color.WHITE);
-            themCaLamHeader.setLayout(new BorderLayout());
-            JLabel themCaLamTitle = new JLabel("Thêm Ca Làm", SwingConstants.CENTER);
-            themCaLamTitle.setFont(RobotoFont.getRobotoBold(24f));
-            themCaLamTitle.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
-            themCaLamHeader.add(themCaLamTitle, BorderLayout.CENTER);
-            formThemCaLam.add(themCaLamHeader, BorderLayout.NORTH);
+            RoundedPanel headerPanel = new RoundedPanel(30, 30, Color.WHITE);
+            headerPanel.setLayout(new BorderLayout());
+            JLabel titleLabel = new JLabel(mode.equals("CaLam") ? "Thêm Ca Làm" : "Thêm Lịch Làm", SwingConstants.CENTER);
+            titleLabel.setFont(RobotoFont.getRobotoBold(24f));
+            titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+            headerPanel.add(titleLabel, BorderLayout.CENTER);
+            formThem.add(headerPanel, BorderLayout.NORTH);
 
-            // Center panel for form inputs
-            RoundedPanel themCaLamCenter = new RoundedPanel(30, 30, Color.WHITE);
-            themCaLamCenter.setLayout(new GridLayout(8, 2, 10, 10));
-            themCaLamCenter.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+            centerPanel = new RoundedPanel(30, 30, Color.WHITE);
+            centerPanel.setLayout(new GridLayout(8, 2, 10, 10));
+            centerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-            // Input Fields
-            String newMaCa = clccBUS.generateID(); // Generate automatically
-            JLabel maCaLamLabel = new JLabel("Mã Ca Làm:");
-            JTextField maCaLamField = new JTextField(newMaCa);
-            maCaLamField.setEditable(false);
-            maCaLamField.setBackground(Color.LIGHT_GRAY);
+            JLabel maLabel = new JLabel(mode.equals("CaLam") ? "Mã Ca Làm:" : "Mã Lịch Làm:");
+            JTextField maField = new JTextField();
+            maField.setEditable(false);
+            maField.setBackground(Color.LIGHT_GRAY);
 
-            JLabel moTaCaLamLabel = new JLabel("Mô tả:");
-            JComboBox<String> moTaCaLamBox = new JComboBox<>(new String[]{"Sáng", "Trưa", "Tối"});
+            JLabel field1Label = new JLabel();
+            JComboBox<String> field1Box = new JComboBox<>();
 
-            JLabel gioBatDauLabel = new JLabel("Giờ bắt đầu:");
-            JComboBox<String> gioBatDauBox = new JComboBox<>(new String[]{"08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"});
+            JLabel field2Label = new JLabel();
+            JComponent field2Component = null;
 
-            JLabel gioKetThucLabel = new JLabel("Giờ kết thúc:");
-            JComboBox<String> gioKetThucBox = new JComboBox<>(new String[]{"12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"});
+            JLabel field3Label = new JLabel();
+            JComboBox<String> field3Box = new JComboBox<>();
 
             JLabel trangThaiLabel = new JLabel("Trạng thái:");
-            JComboBox<String> trangThaiCaLamBox = new JComboBox<>(new String[]{"Hiệu lực", "Không hiệu lực"});
+            JComboBox<String> trangThaiBox = new JComboBox<>(new String[]{"Hiệu lực", "Không hiệu lực"});
+            trangThaiBox.setSelectedItem("Hiệu lực");
+            trangThaiBox.setEnabled(false);
 
-            // Add components to Center Panel
-            themCaLamCenter.add(maCaLamLabel);
-            themCaLamCenter.add(maCaLamField);
-            themCaLamCenter.add(moTaCaLamLabel);
-            themCaLamCenter.add(moTaCaLamBox);
-            themCaLamCenter.add(gioBatDauLabel);
-            themCaLamCenter.add(gioBatDauBox);
-            themCaLamCenter.add(gioKetThucLabel);
-            themCaLamCenter.add(gioKetThucBox);
-            themCaLamCenter.add(trangThaiLabel);
-            themCaLamCenter.add(trangThaiCaLamBox);
-            formThemCaLam.add(themCaLamCenter, BorderLayout.CENTER);
+            if (mode.equals("CaLam")) {
+                maField.setText(clBUS.generateID());
+                field1Label.setText("Mô tả:");
+                field1Box.setModel(new DefaultComboBoxModel<>(new String[]{"Sáng", "Trưa", "Tối"}));
 
-            RoundedPanel themCaLamFooter = new RoundedPanel(30, 30, Color.WHITE);
-            themCaLamFooter.setLayout(new FlowLayout(FlowLayout.CENTER));
+                field2Label.setText("Giờ bắt đầu:");
+                field2Component = new JComboBox<>(new String[]{"08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"});
+
+                field3Label.setText("Giờ kết thúc:");
+                field3Box.setModel(new DefaultComboBoxModel<>(new String[]{"12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"}));
+            }
+            else {
+                maField.setText(llBUS.generateID());
+                field1Label.setText("Nhân viên:");
+
+                field2Label.setText("Ngày làm việc:");
+                field2Component = new JDateChooser();
+                ((JDateChooser) field2Component).setDate(new Date());
+
+                ArrayList<String> danhSachNhanVien = new ArrayList<>();
+                NhanVienBUS nvBUS = new NhanVienBUS();
+
+                for (NhanVienDTO nv : nvBUS.getData()) {
+                    danhSachNhanVien.add(nv.getMaNV() + " - " + nv.getTenNV());
+                }
+                field1Box.setModel(new DefaultComboBoxModel<>(danhSachNhanVien.toArray(new String[0])));
+                field3Label.setText("Ca làm:");
+
+                ArrayList<String> danhSachCaLam = new ArrayList<>();
+                for (CaLamDTO ca : clBUS.getData()) {
+                    danhSachCaLam.add(ca.getMaCa() + ". " + ca.getGioBD() + " - " + ca.getGioKT());
+                }
+                field3Box.setModel(new DefaultComboBoxModel<>(danhSachCaLam.toArray(new String[0])));
+            }
+
+            centerPanel.add(maLabel);
+            centerPanel.add(maField);
+            centerPanel.add(field1Label);
+            centerPanel.add(field1Box);
+            centerPanel.add(field2Label);
+            centerPanel.add(field2Component);
+            centerPanel.add(field3Label);
+            centerPanel.add(field3Box);
+            centerPanel.add(trangThaiLabel);
+            centerPanel.add(trangThaiBox);
+            formThem.add(centerPanel, BorderLayout.CENTER);
+
+            RoundedPanel footerPanel = new RoundedPanel(30, 30, Color.WHITE);
+            footerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
             JButton saveButton = new JButton("Lưu");
             saveButton.setPreferredSize(new Dimension(100, 40));
             saveButton.setBackground(Color.decode("#EC5228"));
             saveButton.setForeground(Color.WHITE);
             saveButton.setFont(RobotoFont.getRobotoBold(14f));
-            themCaLamFooter.add(saveButton);
-            formThemCaLam.add(themCaLamFooter, BorderLayout.SOUTH);
+            footerPanel.add(saveButton);
+            formThem.add(footerPanel, BorderLayout.SOUTH);
 
+            if (mode.equals("CaLam")) {
+                JComboBox<String> gioBatDauBox = (JComboBox<String>) field2Component;
 
-// ====================================== XỬ LÝ SỰ KIỆN FORM ======================================
-            // ---------------- COMBO BOX GIỜ BẮT ĐẦU & GIỜ KẾT THÚC ======================================
-            gioBatDauBox.addActionListener(_ -> {
-                String selectedGioBD = (String) gioBatDauBox.getSelectedItem();
-                String selectedGioKT = (String) gioKetThucBox.getSelectedItem();
-                if (selectedGioBD != null && selectedGioKT != null) {
-                    int gioBD = Integer.parseInt(selectedGioBD.split(":")[0]); // lấy giờ theo format
-                    int gioKT = Integer.parseInt(selectedGioKT.split(":")[0]);
-                    if (gioBD >= 8 && gioBD <= 10 && gioKT >= 12 && gioKT <= 14) {
-                        moTaCaLamBox.setSelectedItem("Sáng");
-                    } else if (gioBD >= 11 && gioBD <= 14 && gioKT >= 15 && gioKT <= 18) {
-                        moTaCaLamBox.setSelectedItem("Trưa");
-                    } else if (gioBD >= 15 && gioBD <= 19 && gioKT >= 19 && gioKT <= 23) {
-                        moTaCaLamBox.setSelectedItem("Tối");
+                gioBatDauBox.addActionListener(_ -> {
+                    String selectedGioBD = (String) gioBatDauBox.getSelectedItem();
+                    String selectedGioKT = (String) field3Box.getSelectedItem();
+                    if (selectedGioBD != null && selectedGioKT != null) {
+                        int gioBD = Integer.parseInt(selectedGioBD.split(":")[0]);
+                        int gioKT = Integer.parseInt(selectedGioKT.split(":")[0]);
+                        if (gioBD >= 8 && gioBD <= 10 && gioKT >= 12 && gioKT <= 14) {
+                            field1Box.setSelectedItem("Sáng");
+                        } else if (gioBD >= 11 && gioBD <= 14 && gioKT >= 15 && gioKT <= 18) {
+                            field1Box.setSelectedItem("Trưa");
+                        } else if (gioBD >= 15 && gioBD <= 19 && gioKT >= 19 && gioKT <= 23) {
+                            field1Box.setSelectedItem("Tối");
+                        }
                     }
-                }
-            });
+                });
 
-            gioKetThucBox.addActionListener(_ -> {
-                String selectedGioBD = (String) gioBatDauBox.getSelectedItem();
-                String selectedGioKT = (String) gioKetThucBox.getSelectedItem();
-                if (selectedGioBD != null && selectedGioKT != null) {
-                    int gioBD = Integer.parseInt(selectedGioBD.split(":")[0]); // Lấy giờ từ "HH:MM"
-                    int gioKT = Integer.parseInt(selectedGioKT.split(":")[0]);
-                    if (gioBD >= 8 && gioBD <= 10 && gioKT >= 12 && gioKT <= 14) {
-                        moTaCaLamBox.setSelectedItem("Sáng");
-                    } else if (gioBD >= 11 && gioBD <= 14 && gioKT >= 15 && gioKT <= 18) {
-                        moTaCaLamBox.setSelectedItem("Trưa");
-                    } else if (gioBD >= 15 && gioBD <= 19 && gioKT >= 19 && gioKT <= 23) {
-                        moTaCaLamBox.setSelectedItem("Tối");
+                field3Box.addActionListener(_ -> {
+                    String selectedGioBD = (String) gioBatDauBox.getSelectedItem();
+                    String selectedGioKT = (String) field3Box.getSelectedItem();
+                    if (selectedGioBD != null && selectedGioKT != null) {
+                        int gioBD = Integer.parseInt(selectedGioBD.split(":")[0]);
+                        int gioKT = Integer.parseInt(selectedGioKT.split(":")[0]);
+                        if (gioBD >= 8 && gioBD <= 10 && gioKT >= 12 && gioKT <= 14) {
+                            field1Box.setSelectedItem("Sáng");
+                        } else if (gioBD >= 11 && gioBD <= 14 && gioKT >= 15 && gioKT <= 18) {
+                            field1Box.setSelectedItem("Trưa");
+                        } else if (gioBD >= 15 && gioBD <= 19 && gioKT >= 19 && gioKT <= 23) {
+                            field1Box.setSelectedItem("Tối");
+                        }
                     }
-                }
-            });
-            //=========================== NÚT LƯU =================================
-            saveButton.addActionListener(_ -> {
-                CaLamDTO newCaLam = new CaLamDTO();
-                newCaLam.setMaCa(newMaCa);
-                newCaLam.setMoTa(moTaCaLamBox.getSelectedItem() + "");
-                newCaLam.setGioBD(gioBatDauBox.getSelectedItem() + ""); // convert to string
-                newCaLam.setGioKT(gioKetThucBox.getSelectedItem() + "");
-                newCaLam.setTrangThai(true);
+                });
 
-                // đóng form và reset dữ liệu bảng nếu add thành công
-                if (clccBUS.add(newCaLam)) {
-                    clccBUS = new CaLamBUS();
-                    clccBUS.loadDataTable(tableModelCL);
-                    formThemCaLam.dispose();
-                }
+                // Sự kiện nút Lưu cho Thêm Ca Làm
+                saveButton.addActionListener(_ -> {
+                    CaLamDTO newCaLam = new CaLamDTO();
+                    newCaLam.setMaCa(maField.getText());
+                    newCaLam.setMoTa(field1Box.getSelectedItem() + "");
+                    newCaLam.setGioBD(gioBatDauBox.getSelectedItem() + "");
+                    newCaLam.setGioKT(field3Box.getSelectedItem() + "");
+                    newCaLam.setTrangThai(Objects.equals(trangThaiBox.getSelectedItem(), "Hiệu lực"));
 
-                addButton.setEnabled(true);
-            });
+                    if (clBUS.add(newCaLam)) {
+                        clBUS.loadDataTable(tableModelCL);
+                        formThem.dispose();
+                    }
+                    addButton.setEnabled(true);
+                });
+            } else {
+                JComponent finalField2Component = field2Component;
+                saveButton.addActionListener(_ -> {
+                    try {
+                        LichLamDTO newLichLam = new LichLamDTO();
 
-            formThemCaLam.addWindowListener(new java.awt.event.WindowAdapter() {
+                        newLichLam.setMaLichLam(maField.getText());
+
+                        newLichLam.setNgayLam(((JDateChooser) finalField2Component).getDate());
+
+                        String selectedNhanVien = (String) field1Box.getSelectedItem();
+                        newLichLam.setMaNhanVien(selectedNhanVien.split(" - ")[0]);
+
+                        String selectedCaLam = (String) field3Box.getSelectedItem();
+                        newLichLam.setMaCaLam(selectedCaLam.split(" ")[0].replace(".",""));
+
+                        newLichLam.setTrangThai(Objects.equals(trangThaiBox.getSelectedItem(), "Hiệu lực"));
+
+                        if (llBUS.add(newLichLam)) {
+                            Date selectedDate = ((JDateChooser) ((JPanel) schedulingPanel.getComponent(0)).getComponent(1)).getDate();
+                            ArrayList<LichLamDTO> lichLamList = llBUS.getDataByDate(selectedDate);
+                            llBUS.loadDataTable(tableModelLL, lichLamList);
+                            formThem.dispose();
+                        }
+                        addButton.setEnabled(true);
+                    } catch (Exception e) {
+                        System.out.print("Lỗi: " + e.getMessage());
+                        JOptionPane.showMessageDialog(null, "Lỗi: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                });
+            }
+
+            formThem.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosed(java.awt.event.WindowEvent e) {
                     addButton.setEnabled(true);
                 }
             });
-            formThemCaLam.setVisible(true);
-        } catch (Exception e){
+            formThem.setVisible(true);
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null,
                     "Lỗi " + e.getMessage(),
@@ -263,149 +340,231 @@ public class QuanLiCaLamGUI extends RoundedPanel {
         }
     }
 
-    
 // ======================= FORM SỬA CA LÀM ========================
-    private void ShowFormSuaCaLam(JButton editButton, JTable tableCL) {
+    private void ShowFormSua(JButton editButton, JTable table, String mode) {
 
-        int selectedRow = tableCL.getSelectedRow();
+        int selectedRow = table.getSelectedRow();
         if(selectedRow == -1){
             JOptionPane.showMessageDialog(null,
-                    "Vui lòng chọn ca làm muốn sửa!",
+                    "Vui lòng chọn lịch làm muốn sửa!",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
             editButton.setEnabled(true);
             return; //
         }
 
-        JFrame formSuaCaLam = new JFrame("Sửa Thông Tin Ca Làm");
-        formSuaCaLam.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        formSuaCaLam.setSize(800, 600);
-        formSuaCaLam.setLayout(new BorderLayout());
+        JFrame formSua = new JFrame(mode.equals("CaLam") ? "Sửa Ca Làm" : "Sửa Lịch Làm");
+        formSua.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        formSua.setSize(800, 600);
+        formSua.setLayout(new BorderLayout());
 
-        RoundedPanel suaCaLamHeader = new RoundedPanel(30, 30, Color.WHITE);
-        suaCaLamHeader.setLayout(new BorderLayout());
-        JLabel suaCaLamTitle = new JLabel("Sửa thông tin ca làm", SwingConstants.CENTER);
-        suaCaLamTitle.setFont(RobotoFont.getRobotoBold(24f));
-        suaCaLamTitle.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
-        suaCaLamHeader.add(suaCaLamTitle, BorderLayout.CENTER);
-        formSuaCaLam.add(suaCaLamHeader, BorderLayout.NORTH);
+        RoundedPanel headerPanel = new RoundedPanel(30, 30, Color.WHITE);
+        headerPanel.setLayout(new BorderLayout());
+        JLabel titleLabel = new JLabel(mode.equals("CaLam") ? "Sửa Ca Làm" : "Sửa Lịch Làm", SwingConstants.CENTER);
+        titleLabel.setFont(RobotoFont.getRobotoBold(24f));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        headerPanel.add(titleLabel, BorderLayout.CENTER);
+        formSua.add(headerPanel, BorderLayout.NORTH);
 
-        RoundedPanel suaCaLamCenter = new RoundedPanel(30, 30, Color.WHITE);
-        suaCaLamCenter.setLayout(new GridLayout(8, 2, 10, 10));
-        suaCaLamCenter.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        centerPanel = new RoundedPanel(30, 30, Color.WHITE);
+        centerPanel.setLayout(new GridLayout(8, 2, 10, 10));
+        centerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        String maCa = (String) tableCL.getValueAt(selectedRow, 0);
-        String moTa = (String) tableCL.getValueAt(selectedRow, 1); // cột "Mô tả"
-        String gioBD = (String) tableCL.getValueAt(selectedRow, 2); // cột "Giờ bắt đầu"
-        String gioKT = (String) tableCL.getValueAt(selectedRow, 3); // cột "Giờ kết thúc"
-        String trangThai = (String) tableCL.getValueAt(selectedRow, 4); // cột "Trạng thái"
+        JLabel maLabel = new JLabel(mode.equals("CaLam") ? "Mã Ca Làm:" : "Mã Lịch Làm:");
+        JTextField maField = new JTextField();
+        maField.setEditable(false);
+        maField.setBackground(Color.GRAY);
 
-        JTextField maCaLamField = new JTextField(maCa);
-        JComboBox<String> moTaCaLamBox = new JComboBox<>(new String[]{"Sáng", "Trưa", "Tối"});
-        JComboBox<String> gioBatDauBox = new JComboBox<>(new String[]{"07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"});
-        JComboBox<String> gioKetThucBox = new JComboBox<>(new String[]{"12:00", "13:00", "14:00 ", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"});
-        JTextField trangThaiCaLamField = new JTextField(trangThai);
-        maCaLamField.setEditable(false);
-        trangThaiCaLamField.setEditable(false);
+        JLabel field1Label = new JLabel();
+        JComboBox<String> field1Box = new JComboBox<>();
 
-        moTaCaLamBox.setSelectedItem(moTa);
-        gioBatDauBox.setSelectedItem(gioBD);
-        gioKetThucBox.setSelectedItem(gioKT);
+        JLabel field2Label = new JLabel();
+        JComponent field2Component = null;
 
-        JLabel maCaLamLabel = new JLabel("Mã ca:");
-        JLabel moTaCaLamLabel = new JLabel("Mô tả:");
-        JLabel gioBatDauLabel = new JLabel("Giờ bắt đầu:");
-        JLabel gioKetThucLabel = new JLabel("Giờ kết thúc:");
+        JLabel field3Label = new JLabel();
+        JComboBox<String> field3Box = new JComboBox<>();
+
         JLabel trangThaiLabel = new JLabel("Trạng thái:");
+        JComboBox<String> trangThaiBox = new JComboBox<>(new String[]{"Hiệu lực", "Không hiệu lực"});
+        trangThaiBox.setSelectedItem("Hiệu lực");
+        trangThaiBox.setEnabled(false);
 
-        suaCaLamCenter.add(maCaLamLabel);
-        suaCaLamCenter.add(maCaLamField);
-        suaCaLamCenter.add(moTaCaLamLabel);
-        suaCaLamCenter.add(moTaCaLamBox);
-        suaCaLamCenter.add(gioBatDauLabel);
-        suaCaLamCenter.add(gioBatDauBox);
-        suaCaLamCenter.add(gioKetThucLabel);
-        suaCaLamCenter.add(gioKetThucBox);
-        suaCaLamCenter.add(trangThaiLabel);
-        suaCaLamCenter.add(trangThaiCaLamField);
-        formSuaCaLam.add(suaCaLamCenter, BorderLayout.CENTER);
+        if (mode.equals("CaLam")) {
+            String maCa = (String) table.getValueAt(selectedRow, 0);
+            String moTa = (String) table.getValueAt(selectedRow, 1); // cột "Mô tả"
+            String gioBD = (String) table.getValueAt(selectedRow, 2); // cột "Giờ bắt đầu"
+            String gioKT = (String) table.getValueAt(selectedRow, 3); // cột "Giờ kết thúc"
+            String trangThai = (String) table.getValueAt(selectedRow, 4);
 
-        RoundedPanel SuaCaLamFooter = new RoundedPanel(30, 30, Color.WHITE);
-        SuaCaLamFooter.setLayout(new FlowLayout(FlowLayout.CENTER));
+            maField.setText(maCa);
+            field1Label.setText("Mô tả:");
+            field1Box.setModel(new DefaultComboBoxModel<>(new String[]{"Sáng", "Trưa", "Tối"}));
+            field1Box.setSelectedItem(moTa);
+
+            field2Label.setText("Giờ bắt đầu:");
+            field2Component = new JComboBox<>(new String[]{"08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"});
+            ((JComboBox<?>) field2Component).setSelectedItem(gioBD);
+
+            field3Label.setText("Giờ kết thúc:");
+            field3Box.setModel(new DefaultComboBoxModel<>(new String[]{"12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"}));
+            field3Box.setSelectedItem(gioKT);
+        }
+        else {
+            String maLichLam = (String) table.getValueAt(selectedRow, 0);
+            Date ngayLam = (Date) table.getValueAt(selectedRow, 1);
+            String tenNhanVien = (String) table.getValueAt(selectedRow, 2);
+            String gioLam = (String) table.getValueAt(selectedRow, 3);
+            maField.setText(maLichLam);
+
+            LichLamDTO updateLichLam = llBUS.getDataById(maLichLam);
+
+            ArrayList<String> danhSachNhanVien = new ArrayList<>();
+            nvBUS = new NhanVienBUS();
+
+            field1Label.setText("Nhân viên:");
+            for (NhanVienDTO nv : nvBUS.getData()) {
+                danhSachNhanVien.add(nv.getMaNV() + " - " + nv.getTenNV());
+            }
+            field1Box.setModel(new DefaultComboBoxModel<>(danhSachNhanVien.toArray(new String[0])));
+            field1Box.setSelectedItem(updateLichLam.getMaNhanVien() + " - " + tenNhanVien);
+
+            sdf  = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                Date date = sdf.parse(String.valueOf(ngayLam));
+                field2Label.setText("Ngày làm việc:");
+                field2Component = new JDateChooser();
+                ((JDateChooser) field2Component).setDate(date);
+            } catch (ParseException e) {
+                JOptionPane.showMessageDialog(null, "Lỗi: " + e.getMessage());
+            }
+
+            field3Label.setText("Ca làm:");
+            ArrayList<String> danhSachCaLam = new ArrayList<>();
+            for (CaLamDTO ca : clBUS.getData()) {
+                danhSachCaLam.add(ca.getMaCa() + ". " + ca.getGioBD() + " - " + ca.getGioKT());
+            }
+            field3Box.setModel(new DefaultComboBoxModel<>(danhSachCaLam.toArray(new String[0])));
+            field3Box.setSelectedItem(updateLichLam.getMaCaLam() + ". " + gioLam);
+        }
+
+        centerPanel.add(maLabel);
+        centerPanel.add(maField);
+        centerPanel.add(field1Label);
+        centerPanel.add(field1Box);
+        centerPanel.add(field2Label);
+        centerPanel.add(field2Component);
+        centerPanel.add(field3Label);
+        centerPanel.add(field3Box);
+        centerPanel.add(trangThaiLabel);
+        centerPanel.add(trangThaiBox);
+        formSua.add(centerPanel, BorderLayout.CENTER);
+
+        RoundedPanel footerPanel = new RoundedPanel(30, 30, Color.WHITE);
+        footerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         JButton saveButton = new JButton("Lưu");
         saveButton.setPreferredSize(new Dimension(100, 40));
         saveButton.setBackground(Color.decode("#EC5228"));
         saveButton.setForeground(Color.WHITE);
         saveButton.setFont(RobotoFont.getRobotoBold(14f));
-        SuaCaLamFooter.add(saveButton);
-        formSuaCaLam.add(SuaCaLamFooter, BorderLayout.SOUTH);
+        footerPanel.add(saveButton);
+        formSua.add(footerPanel, BorderLayout.SOUTH);
 
+        if (mode.equals("CaLam")) {
+            JComboBox<String> gioBatDauBox = (JComboBox<String>) field2Component;
+
+            gioBatDauBox.addActionListener(_ -> {
+                String selectedGioBD = (String) gioBatDauBox.getSelectedItem();
+                String selectedGioKT = (String) field3Box.getSelectedItem();
+                if (selectedGioBD != null && selectedGioKT != null) {
+                    int gioBD = Integer.parseInt(selectedGioBD.split(":")[0]);
+                    int gioKT = Integer.parseInt(selectedGioKT.split(":")[0]);
+                    if (gioBD >= 8 && gioBD <= 10 && gioKT >= 12 && gioKT <= 14) {
+                        field1Box.setSelectedItem("Sáng");
+                    } else if (gioBD >= 11 && gioBD <= 14 && gioKT >= 15 && gioKT <= 18) {
+                        field1Box.setSelectedItem("Trưa");
+                    } else if (gioBD >= 15 && gioBD <= 19 && gioKT >= 19 && gioKT <= 23) {
+                        field1Box.setSelectedItem("Tối");
+                    }
+                }
+            });
+
+            field3Box.addActionListener(_ -> {
+                String selectedGioBD = (String) gioBatDauBox.getSelectedItem();
+                String selectedGioKT = (String) field3Box.getSelectedItem();
+                if (selectedGioBD != null && selectedGioKT != null) {
+                    int gioBD = Integer.parseInt(selectedGioBD.split(":")[0]);
+                    int gioKT = Integer.parseInt(selectedGioKT.split(":")[0]);
+                    if (gioBD >= 8 && gioBD <= 10 && gioKT >= 12 && gioKT <= 14) {
+                        field1Box.setSelectedItem("Sáng");
+                    } else if (gioBD >= 11 && gioBD <= 14 && gioKT >= 15 && gioKT <= 18) {
+                        field1Box.setSelectedItem("Trưa");
+                    } else if (gioBD >= 15 && gioBD <= 19 && gioKT >= 19 && gioKT <= 23) {
+                        field1Box.setSelectedItem("Tối");
+                    }
+                }
+            });
+
+            // Sự kiện nút Lưu cho Sửa Ca Làm
+            saveButton.addActionListener(_ -> {
+                CaLamDTO newCaLam = new CaLamDTO();
+                newCaLam.setMaCa(maField.getText());
+                newCaLam.setMoTa(field1Box.getSelectedItem() + "");
+                newCaLam.setGioBD(gioBatDauBox.getSelectedItem() + "");
+                newCaLam.setGioKT(field3Box.getSelectedItem() + "");
+                newCaLam.setTrangThai(Objects.equals(trangThaiBox.getSelectedItem(), "Hiệu lực"));
+
+                if (clBUS.add(newCaLam)) {
+                    clBUS.loadDataTable(tableModelCL);
+                    formSua.dispose();
+                }
+                editButton.setEnabled(true);
+            });
+        } else {
+            JComponent finalField2Component = field2Component;
+            saveButton.addActionListener(_ -> {
+                try {
+                    LichLamDTO newLichLam = new LichLamDTO();
+
+                    newLichLam.setMaLichLam(maField.getText());
+
+                    newLichLam.setNgayLam(((JDateChooser) finalField2Component).getDate());
+
+                    String selectedNhanVien = (String) field1Box.getSelectedItem();
+                    newLichLam.setMaNhanVien(selectedNhanVien.split(" - ")[0]);
+
+                    String selectedCaLam = (String) field3Box.getSelectedItem();
+                    newLichLam.setMaCaLam(selectedCaLam.split(" ")[0].replace(".",""));
+
+                    newLichLam.setTrangThai(Objects.equals(trangThaiBox.getSelectedItem(), "Hiệu lực"));
+
+                    if (llBUS.update(newLichLam)) {
+                        Date selectedDate = ((JDateChooser) ((JPanel) schedulingPanel.getComponent(0)).getComponent(1)).getDate();
+                        ArrayList<LichLamDTO> lichLamList = llBUS.getDataByDate(selectedDate);
+                        llBUS.loadDataTable(tableModelLL, lichLamList);
+                        formSua.dispose();
+                    }
+                    editButton.setEnabled(true);
+                } catch (Exception e) {
+                    System.out.print("Lỗi: " + e.getMessage());
+                    JOptionPane.showMessageDialog(null, "Lỗi: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            });
+        }
 
 // ========================== XỬ LÝ SỰ KIỆN FORM =====================
-    // -------------- COMBO BOX GIỜ BẮT ĐẦU & GIỜ KẾT THÚC ----------------------
-        gioBatDauBox.addActionListener(_ -> {
-            String selectedGioBD = (String) gioBatDauBox.getSelectedItem();
-            String selectedGioKT = (String) gioKetThucBox.getSelectedItem();
-            if (selectedGioBD != null && selectedGioKT != null) {
-                int gioBDUpdate = Integer.parseInt(selectedGioBD.split(":")[0]);
-                int gioKTUpdate = Integer.parseInt(selectedGioKT.split(":")[0]);
-                if (gioBDUpdate >= 8 && gioBDUpdate <= 10 && gioKTUpdate >= 12 && gioKTUpdate <= 14) {
-                    moTaCaLamBox.setSelectedItem("Sáng");
-                } else if (gioBDUpdate >= 11 && gioBDUpdate <= 14 && gioKTUpdate >= 15 && gioKTUpdate <= 18) {
-                    moTaCaLamBox.setSelectedItem("Trưa");
-                } else if (gioBDUpdate >= 15 && gioBDUpdate <= 19 && gioKTUpdate >= 19 && gioKTUpdate <= 23) {
-                    moTaCaLamBox.setSelectedItem("Tối");
-                }
-            }
-        });
-
-        gioKetThucBox.addActionListener(_ -> {
-            String selectedGioBD = (String) gioBatDauBox.getSelectedItem();
-            String selectedGioKT = (String) gioKetThucBox.getSelectedItem();
-            if (selectedGioBD != null && selectedGioKT != null) {
-                int gioBDUpdate = Integer.parseInt(selectedGioBD.split(":")[0]); // Lấy giờ từ "HH:MM"
-                int gioKTUpdate = Integer.parseInt(selectedGioKT.split(":")[0]);
-                if (gioBDUpdate >= 8 && gioBDUpdate <= 10 && gioKTUpdate >= 12 && gioKTUpdate <= 14) {
-                    moTaCaLamBox.setSelectedItem("Sáng");
-                } else if (gioBDUpdate >= 11 && gioBDUpdate <= 14 && gioKTUpdate >= 15 && gioKTUpdate <= 18) {
-                    moTaCaLamBox.setSelectedItem("Trưa");
-                } else if (gioBDUpdate >= 15 && gioBDUpdate <= 19 && gioKTUpdate >= 19 && gioKTUpdate <= 23) {
-                    moTaCaLamBox.setSelectedItem("Tối");
-                }
-            }
-        });
-
-    // -------------------- NÚT LƯU ------------------------
-        saveButton.addActionListener(_ -> {
-            CaLamDTO newCaLam = new CaLamDTO();
-            newCaLam.setMaCa(maCaLamField.getText());
-            newCaLam.setMoTa(moTaCaLamBox.getSelectedItem() + "");
-            newCaLam.setGioBD(gioBatDauBox.getSelectedItem() + ""); // convert to string
-            newCaLam.setGioKT(gioKetThucBox.getSelectedItem() + "");
-            // đóng form và reset dữ liệu bảng nếu add thành công
-            if(clccBUS.update(newCaLam)){
-                clccBUS = new CaLamBUS();
-                clccBUS.loadDataTable(tableModelCL);
-                formSuaCaLam.dispose();
-            } else {
-                System.out.println("Update failed for maCa: " + newCaLam.getMaCa());
-            }
-            editButton.setEnabled(true);
-        });
-
-
-        formSuaCaLam.addWindowListener(new java.awt.event.WindowAdapter() {
+        
+        formSua.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {
                 editButton.setEnabled(true);
             }
         });
-        formSuaCaLam.setVisible(true);
+        formSua.setVisible(true);
     }
 
 
-    // ============================ GIAO DIỆN CHỨC NĂNG CA LÀM ===================
+// ============================ GIAO DIỆN CHỨC NĂNG CA LÀM ===================
     private void createShiftPanel() {
         shiftPanel = new JPanel(new BorderLayout());
         shiftPanel.setBackground(Color.WHITE);
@@ -441,6 +600,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
         shiftPanel.add(shiftScrollPane, BorderLayout.CENTER);
     }
 
+// ============================ GIAO DIỆN CHỨC NĂNG XẾP LỊCH LÀM ===================
     private void createSchedulingPanel() {
         schedulingPanel = new JPanel(new BorderLayout());
         schedulingPanel.setBackground(Color.WHITE);
@@ -455,14 +615,14 @@ public class QuanLiCaLamGUI extends RoundedPanel {
         datePanel.add(dateNgayLam);
         schedulingPanel.add(datePanel, BorderLayout.NORTH);
 
-        String[] columnNames = {"Ngày", "Tên Nhân Viên", "Ca làm", "Trạng Thái"};
-        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
-        JTable tableLichLam = new JTable(tableModel);
-        tableLichLam.setRowHeight(35); // Chiều cao hàng giống tableCL
-        tableLichLam.setFont(RobotoFont.getRobotoRegular(14f)); // Font chữ giống tableCL
-        tableLichLam.setShowGrid(true); // Hiển thị lưới nhưng sẽ loại bỏ khoảng cách
-        tableLichLam.setIntercellSpacing(new Dimension(0, 0)); // Loại bỏ khoảng cách giữa các ô
-        tableLichLam.setFocusable(false); // Không cho phép focus
+        String[] columnNames = {"Mã lịch", "Ngày", "Tên Nhân Viên", "Ca làm", "Trạng Thái"};
+        tableModelLL = new DefaultTableModel(columnNames, 0);
+        tableLichLam = new JTable(tableModelLL);
+        tableLichLam.setRowHeight(35);
+        tableLichLam.setFont(RobotoFont.getRobotoRegular(14f));
+        tableLichLam.setShowGrid(true);
+        tableLichLam.setIntercellSpacing(new Dimension(0, 0));
+        tableLichLam.setFocusable(false);
 
         JTableHeader header = tableLichLam.getTableHeader();
         header.setFont(RobotoFont.getRobotoBold(14f)); // Font đậm cho tiêu đề
@@ -484,6 +644,17 @@ public class QuanLiCaLamGUI extends RoundedPanel {
         scrollPane.setBackground(Color.WHITE);
         scrollPane.getViewport().setBackground(Color.WHITE);
         schedulingPanel.add(scrollPane, BorderLayout.CENTER);
+
+        dateNgayLam.getDateEditor().addPropertyChangeListener("date", _ -> {
+            Date selectedDate = dateNgayLam.getDate();
+            if (selectedDate != null) {
+                ArrayList<LichLamDTO> lichLamList = llBUS.getDataByDate(selectedDate);
+                llBUS.loadDataTable(tableModelLL, lichLamList);
+            }
+        });
+
+        ArrayList<LichLamDTO> lichLamList = llBUS.getDataByDate(new Date());
+        llBUS.loadDataTable(tableModelLL, lichLamList);
     }
 
 // ============================ PHẦN XỬ LÝ SỰ KIỆN CHỨC NĂNG =================
@@ -499,22 +670,22 @@ public class QuanLiCaLamGUI extends RoundedPanel {
 
         addButton.addActionListener(_ -> {
             if (addButton.getText().equals("Thêm ca làm")) {
-                addButton.setEnabled(false);
-                ShowFormThemCaLam(addButton);
-            } else if (addButton.getText().equals("Thêm lịch làm nhân viên")) {
-                // TODO: Thêm logic để mở form thêm lịch làm nhân viên
-                JOptionPane.showMessageDialog(null, "Chức năng thêm lịch làm nhân viên chưa được triển khai!");
+                ShowFormThem(addButton, "CaLam");
+            } else if (addButton.getText().equals("Thêm lịch làm")) {
+                ShowFormThem(addButton, "LichLam");
             }
+            addButton.setEnabled(false);
         });
 
         editButton.addActionListener(_ -> {
             if (editButton.getText().equals("Sửa thông tin ca làm")) {
                 editButton.setEnabled(false);
                 JTable tableCL = (JTable) ((JScrollPane) shiftPanel.getComponent(0)).getViewport().getView();
-                ShowFormSuaCaLam(editButton, tableCL);
+                ShowFormSua(editButton, tableCL, "CaLam");
             } else if (editButton.getText().equals("Sửa lịch làm")) {
                 // TODO: Thêm logic để mở form sửa lịch làm
-                JOptionPane.showMessageDialog(null, "Chức năng sửa lịch làm chưa được triển khai!");
+                editButton.setEnabled(false);
+                ShowFormSua(editButton, tableLichLam, "LichLam");
             }
         });
 
@@ -529,8 +700,8 @@ public class QuanLiCaLamGUI extends RoundedPanel {
                             "Xác nhận xóa",
                             JOptionPane.YES_NO_OPTION);
                     if (confirm == JOptionPane.YES_OPTION) {
-                        if (clccBUS.delete(maCa)) {
-                            clccBUS.loadDataTable(tableModelCL);
+                        if (clBUS.delete(maCa)) {
+                            clBUS.loadDataTable(tableModelCL);
                         }
                     }
                 } else {
@@ -541,7 +712,25 @@ public class QuanLiCaLamGUI extends RoundedPanel {
                 }
             } else if (deleteButton.getText().equals("Xóa lịch làm")) {
                 // TODO: Thêm logic để xóa lịch làm
-                JOptionPane.showMessageDialog(null, "Chức năng xóa lịch làm chưa được triển khai!");
+                int selectedRow = tableLichLam.getSelectedRow();
+                if (selectedRow != -1) {
+                    String maLichLam = (String) tableLichLam.getValueAt(selectedRow, 0);
+                    int confirm = JOptionPane.showConfirmDialog(null,
+                            "Bạn có chắc muốn xóa lịch làm này ? ",
+                            "Xác nhận xóa",
+                            JOptionPane.YES_NO_OPTION);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        if (llBUS.delete(maLichLam)) {
+                            ArrayList<LichLamDTO> lichLamList = llBUS.getDataByDate(new Date());
+                            llBUS.loadDataTable(tableModelLL, lichLamList);
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Vui lòng chọn một lịch làm để xóa!",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
@@ -550,7 +739,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
         schedulingButton.addActionListener(_ -> {
             if (schedulingButton.getText().equals("Xếp lịch làm")) {
                 title.setText("Lịch làm việc");
-                addButton.setText("Thêm lịch làm nhân viên");
+                addButton.setText("Thêm lịch làm");
                 editButton.setText("Sửa lịch làm");
                 deleteButton.setText("Xóa lịch làm");
                 schedulingButton.setText("Quản lý ca làm");

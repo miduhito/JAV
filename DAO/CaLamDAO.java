@@ -16,10 +16,10 @@ public class CaLamDAO implements CRUD<CaLamDTO>{
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             if(connDB.openConnectDB()){
-                String query = "SELECT * FROM calam ORDER BY gioBD";
+                String query = "SELECT * FROM calam WHERE trangThai = 1 ORDER BY gioBD ASC, gioKT ASC ";
                 Statement stmt = connDB.conn.createStatement();
                 ResultSet rs = stmt.executeQuery(query);
-                danhSachCaLam = new ArrayList<CaLamDTO>();
+                danhSachCaLam = new ArrayList<>();
                 while (rs.next()) {
                     caLamDTO = new CaLamDTO();
                     caLamDTO.setMaCa(rs.getString("maCa"));
@@ -35,16 +35,13 @@ public class CaLamDAO implements CRUD<CaLamDTO>{
             }
         }
         catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Lỗi kết nối cơ sở dữ liệu!", "Error", JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Lỗi kết nối cơ sở dữ liệu!" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
         catch (ClassNotFoundException e) {
-            JOptionPane.showMessageDialog(null, "Không tìm thấy class driver", "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Không tìm thấy class driver " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
         catch (Exception e){
             JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
         }
         return danhSachCaLam;
     }
@@ -81,7 +78,6 @@ public class CaLamDAO implements CRUD<CaLamDTO>{
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Lỗi khi thêm ca làm: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             success = false;
-            ex.printStackTrace();
         }
         return success;
     }
@@ -122,7 +118,6 @@ public class CaLamDAO implements CRUD<CaLamDTO>{
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Lỗi khi cập nhật ca làm: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace();
         }
         return success;
     }
@@ -131,17 +126,40 @@ public class CaLamDAO implements CRUD<CaLamDTO>{
     public boolean delete(String maCaLam) {
         boolean success = false;
         try {
-            if (connDB.openConnectDB()){
-                String query = "DELETE FROM calam WHERE maCa = ?";
-                PreparedStatement pstmt = connDB.conn.prepareStatement(query);
+            if (connDB.openConnectDB()) {
+                String checkQuery = "SELECT COUNT(*) FROM lichLamViec WHERE maCaLam = ?";
+                PreparedStatement checkStmt = connDB.conn.prepareStatement(checkQuery);
+                checkStmt.setString(1, maCaLam);
+                ResultSet rs = checkStmt.executeQuery();
+
+                if (rs.next()) {
+                    int count = rs.getInt(1);
+                    if (count > 0) {
+                        JOptionPane.showMessageDialog(null,
+                                "Không thể xóa ca làm vì ca này đang được sử dụng trong lịch làm!",
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                        rs.close();
+                        checkStmt.close();
+                        connDB.closeConnectDB();
+                        return false;
+                    }
+                }
+                rs.close();
+                checkStmt.close();
+
+                String deleteQuery = "DELETE FROM caLam WHERE maCa = ?";
+                PreparedStatement pstmt = connDB.conn.prepareStatement(deleteQuery);
                 pstmt.setString(1, maCaLam);
 
                 int rowsAffected = pstmt.executeUpdate();
                 if (rowsAffected > 0) {
-                    JOptionPane.showMessageDialog(null, "Xóa ca làm thành công!" , "Success", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null,
+                            "Xóa ca làm thành công!",
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
                     success = true;
-                }
-                else {
+                } else {
                     JOptionPane.showMessageDialog(null,
                             "Xóa ca làm thất bại! Không tìm thấy ca làm với mã: " + maCaLam,
                             "Error",
@@ -149,17 +167,56 @@ public class CaLamDAO implements CRUD<CaLamDTO>{
                 }
                 pstmt.close();
                 connDB.closeConnectDB();
-            }
-            else {
+            } else {
                 JOptionPane.showMessageDialog(null,
                         "Không thể kết nối đến cơ sở dữ liệu!",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null,
+                    "Lỗi khi xóa ca làm: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
-        catch (SQLException ex){
-            JOptionPane.showMessageDialog(null, "Lỗi khi xóa ca làm: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace();
+        return success;
+    }
+
+    @Override
+    public boolean hide(String id){
+        boolean success = false;
+        try {
+            if (connDB.openConnectDB()) {
+                String deleteQuery = "UPDATE calam SET trangThai = 0 WHERE maCa = ?";
+                PreparedStatement pstmt = connDB.conn.prepareStatement(deleteQuery);
+                pstmt.setString(2, id);
+
+                int rowsAffected = pstmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(null,
+                            "Ẩn ca làm thành công!",
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    success = true;
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Ẩn ca làm thất bại! Không tìm thấy ca làm với mã: " + id,
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                pstmt.close();
+                connDB.closeConnectDB();
+            } else {
+                JOptionPane.showMessageDialog(null,
+                        "Không thể kết nối đến cơ sở dữ liệu!",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null,
+                    "Lỗi khi ẩn ca làm: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
         return success;
     }
@@ -189,7 +246,6 @@ public class CaLamDAO implements CRUD<CaLamDTO>{
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Lỗi khi tạo mã ca làm mới: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace();
         }
         return newMaCa;
     }
@@ -226,8 +282,33 @@ public class CaLamDAO implements CRUD<CaLamDTO>{
             catch(SQLException ex){
                 JOptionPane.showMessageDialog(null, "Lỗi khi kiểm tra trùng lặp: " + ex.getMessage(),
                         "Error", JOptionPane.ERROR_MESSAGE);
-                ex.printStackTrace();
             }
         return isDuplicate;
+    }
+
+    public String getThoiGianCaById(String maCa) {
+        String moTaCaLam = null;
+        String sql = "SELECT gioBD, gioKT FROM caLam WHERE maCa = ?";
+
+        try {
+            if (connDB.openConnectDB()) {
+                PreparedStatement pstmt = connDB.conn.prepareStatement(sql);
+                pstmt.setString(1, maCa);
+                ResultSet rs = pstmt.executeQuery();
+
+                if (rs.next()) {
+                    String gioBD = rs.getString("gioBD");
+                    String gioKT = rs.getString("gioKT");
+                    moTaCaLam = gioBD + " - " + gioKT;
+                }
+                rs.close();
+                pstmt.close();
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Đã có lỗi: " + e.getMessage());
+        } finally {
+            connDB.closeConnectDB();
+        }
+        return moTaCaLam;
     }
 }
