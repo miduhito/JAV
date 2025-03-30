@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `fastfood` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `fastfood`;
 -- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
 --
 -- Host: localhost    Database: fastfood
@@ -40,7 +38,7 @@ CREATE TABLE `calam` (
 
 LOCK TABLES `calam` WRITE;
 /*!40000 ALTER TABLE `calam` DISABLE KEYS */;
-INSERT INTO `calam` VALUES ('C1','Sáng','07:00','11:00',1),('C2','Trưa','12:00','16:00',1),('C3','Tối','17:00','21:00',1);
+INSERT INTO `calam` VALUES ('C10','Tối','17:00','23:00',1),('C2','Trưa','12:00','16:00',1),('C4','Sáng','08:00','15:00',1),('C5','Sáng','08:00','16:00',1),('C6','Trưa','10:00','16:00',1),('C7','Sáng','08:00','14:00',1),('C8','Tối','15:00','23:00',1),('C9','Tối','16:00','23:00',1);
 /*!40000 ALTER TABLE `calam` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -301,6 +299,33 @@ INSERT INTO `khuyenmai` VALUES ('KM001','Khuyến mãi A','Phần trăm','2023-0
 UNLOCK TABLES;
 
 --
+-- Table structure for table `lichlamviec`
+--
+
+DROP TABLE IF EXISTS `lichlamviec`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `lichlamviec` (
+  `maLichLam` varchar(50) NOT NULL,
+  `maNhanVien` varchar(50) NOT NULL,
+  `ngayLamViec` datetime DEFAULT NULL,
+  `maCaLam` varchar(50) DEFAULT NULL,
+  `trangThai` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`maLichLam`,`maNhanVien`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `lichlamviec`
+--
+
+LOCK TABLES `lichlamviec` WRITE;
+/*!40000 ALTER TABLE `lichlamviec` DISABLE KEYS */;
+INSERT INTO `lichlamviec` VALUES ('LL001','NV001','2025-03-17 00:00:00','C2',1),('LL002','NV002','2025-03-18 00:00:00','C2',1),('LL003','NV001','2025-03-30 00:00:00','C7',1),('LL006','NV002','2025-03-30 00:00:00','C2',1),('LL008','NV001','2025-03-31 00:00:00','C6',1),('LL009','NV002','2025-03-31 00:00:00','C5',1);
+/*!40000 ALTER TABLE `lichlamviec` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `nguyenlieu`
 --
 
@@ -366,7 +391,7 @@ DROP TABLE IF EXISTS `nhanvien`;
 CREATE TABLE `nhanvien` (
   `maNhanVien` varchar(20) NOT NULL,
   `tenNhanVien` varchar(100) DEFAULT NULL,
-  `SDT` int DEFAULT NULL,
+  `SDT` varchar(50) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `ngaySinh` date DEFAULT NULL,
   `gioiTinh` varchar(10) DEFAULT NULL,
@@ -388,7 +413,7 @@ CREATE TABLE `nhanvien` (
 
 LOCK TABLES `nhanvien` WRITE;
 /*!40000 ALTER TABLE `nhanvien` DISABLE KEYS */;
-INSERT INTO `nhanvien` VALUES ('NV001','Nguyễn Văn A',912345678,'a@example.com','1990-05-01','Nam','Hà Nội','Active','CV1','user1'),('NV002','Trần Thị B',987654321,'b@example.com','1992-08-15','Nữ','HCM','Active','CV2','admin');
+INSERT INTO `nhanvien` VALUES ('NV001','Nguyễn Văn A','912345678','a@example.com','1990-05-01','Nam','Hà Nội','Active','CV1','user1'),('NV002','Trần Thị B','987654321','b@example.com','1992-08-15','Nữ','HCM','Active','CV2','admin');
 /*!40000 ALTER TABLE `nhanvien` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -512,4 +537,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-29  4:01:00
+-- Dump completed on 2025-03-30 16:01:33
