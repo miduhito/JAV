@@ -3,7 +3,7 @@ package DTO;
 public class NhanVienDTO {
     private String maNhanVien;
     private String tenNhanVien;
-    private int SDT;
+    private String SDT;
     private String email;
     private String ngaySinh;
     private String gioiTinh;
@@ -13,7 +13,7 @@ public class NhanVienDTO {
     private String tenDangNhap;
 
     public NhanVienDTO() {}
-    public NhanVienDTO(String maNhanVien, String tenNhanVien, int SDT, String email, String ngaySinh, String gioiTinh, String diaChi, String trangThai, String maChucVu, String tenDangNhap) {
+    public NhanVienDTO(String maNhanVien, String tenNhanVien, String SDT, String email, String ngaySinh, String gioiTinh, String diaChi, String trangThai, String maChucVu, String tenDangNhap) {
         this.maNhanVien = maNhanVien;
         this.tenNhanVien = tenNhanVien;
         this.SDT =SDT;
@@ -42,11 +42,11 @@ public class NhanVienDTO {
         this.tenNhanVien = tenNhanVien;
     }
 
-    public int getSDT() {
+    public String getSDT() {
         return this.SDT;
     }
 
-    public void setSDT(int SDT) {
+    public void setSDT(String SDT) {
         this.SDT = SDT;
     }
 

@@ -3,21 +3,29 @@ package DTO;
 public class KhuyenMaiDTO {
     private String maKhuyenMai;
     private String tenKhuyenMai;
-    private String hinhThucKhuyenMai;
+    private String moTaKhuyenMai;
     private String ngayBatDau;
     private String ngayKetThuc;
-    private Double giaTriKhuyenMai;
+    private String donViKhuyenMai;
     private String dieuKienApDung;
 
     public KhuyenMaiDTO() {}
-    public KhuyenMaiDTO(String maKhuyenMai, String tenKhuyenMai, String hinhThucKhuyenMai, String ngayBatDau, String ngayKetThuc, Double giaTriKhuyenMai, String dieuKienApDung) {
+    public KhuyenMaiDTO(String maKhuyenMai, String tenKhuyenMai, String moTaKhuyenMai, String ngayBatDau, String ngayKetThuc, String donViKhuyenMai, String dieuKienApDung) {
         this.maKhuyenMai = maKhuyenMai;
         this.tenKhuyenMai = tenKhuyenMai;
-        this.hinhThucKhuyenMai = hinhThucKhuyenMai;
+        this.moTaKhuyenMai = moTaKhuyenMai;
         this.ngayBatDau = ngayBatDau;
         this.ngayKetThuc = ngayKetThuc;
-        this.giaTriKhuyenMai = giaTriKhuyenMai;
+        this.donViKhuyenMai = donViKhuyenMai;
         this.dieuKienApDung = dieuKienApDung;
+    }
+
+    public String getDonViKhuyenMai() {
+        return donViKhuyenMai;
+    }
+
+    public void setDonViKhuyenMai(String donViKhuyenMai) {
+        this.donViKhuyenMai = donViKhuyenMai;
     }
 
     public String getMaKhuyenMai() {
@@ -36,12 +44,12 @@ public class KhuyenMaiDTO {
         this.tenKhuyenMai = tenKhuyenMai;
     }
     
-    public String getHinhThucKhuyenMai() {
-        return this.hinhThucKhuyenMai;
+    public String getMoTaKhuyenMai() {
+        return this.moTaKhuyenMai;
     }
     
-    public void setHinhThucKhuyenMai(String hinhThucKhuyenMai) {
-        this.hinhThucKhuyenMai = hinhThucKhuyenMai;
+    public void setMoTaKhuyenMai(String moTaKhuyenMai) {
+        this.moTaKhuyenMai = moTaKhuyenMai;
     }
     
     public String getNgayBatDau() {
@@ -58,14 +66,6 @@ public class KhuyenMaiDTO {
     
     public void setNgayKetThuc(String ngayKetThuc) {
         this.ngayKetThuc = ngayKetThuc;
-    }
-    
-    public Double getGiaTriKhuyenMai() {
-        return this.giaTriKhuyenMai;
-    }
-    
-    public void setGiaTriKhuyenMai(Double giaTriKhuyenMai) {
-        this.giaTriKhuyenMai = giaTriKhuyenMai;
     }
     
     public String getDieuKienApDung() {

@@ -2,18 +2,14 @@ package GUI;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class TrangChuGUI extends JPanel {
-    // contentPanel - vùng bao ngoài có bo tròn
-    private RoundedPanel contentPanel = new RoundedPanel(40, 40, Color.decode("#F5ECE0"));
     // dynamicContentPanel - vùng chứa giao diện động (như QuanLiNhanVienGUI)
-    private JPanel dynamicContentPanel = new JPanel(new BorderLayout());
+    private final JPanel dynamicContentPanel = new JPanel(new BorderLayout());
 
     public TrangChuGUI() {
         // Sử dụng BorderLayout cho TrangChuGUI
@@ -46,9 +42,13 @@ public class TrangChuGUI extends JPanel {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         buttonPanel.setBackground(Color.WHITE);
         // Thêm các nút chức năng vào buttonPanel
-        addButtonToPanel(buttonPanel, "Quản lí nhân viên", Color.WHITE, "Image\\EmployeeIcon.png");
-        addButtonToPanel(buttonPanel, "Quản lí khách hàng", Color.WHITE, "Image\\CustomerIcon.png");
-        addButtonToPanel(buttonPanel, "Quản lí tài khoản", Color.WHITE, "Image\\AccountIcon.png");
+        addButtonToPanel(buttonPanel, "Quản lí nhân viên", "Image\\EmployeeIcon.png");
+        addButtonToPanel(buttonPanel, "Quản lí khách hàng", "Image\\CustomerIcon.png");
+        addButtonToPanel(buttonPanel, "Quản lí tài khoản", "Image\\AccountIcon.png");
+        addButtonToPanel(buttonPanel, "Quản lí ca - lịch làm", "Image\\Shift.png");
+        addButtonToPanel(buttonPanel, "Chấm công", "Image\\Timekeeping.png");
+        addButtonToPanel(buttonPanel, "Quản lí nhập hàng", "Image\\EntryProduct.png");
+        addButtonToPanel(buttonPanel, "Quản lí Khuyến mãi", "Image\\Promotion.png");
         
         // Thêm các nút khác nếu cần:
         // addButtonToPanel(buttonPanel, "Quản lí thức ăn", Color.WHITE);
@@ -66,6 +66,8 @@ public class TrangChuGUI extends JPanel {
         // 1. helloPanel ở NORTH (hiển thị "Hello" và thời gian)
         // 2. dynamicContentPanel ở CENTER (hiển thị giao diện động)
         // -----------------------
+        // contentPanel - vùng bao ngoài có bo tròn
+        RoundedPanel contentPanel = new RoundedPanel(40, 40, Color.decode("#F5ECE0"));
         contentPanel.setLayout(new BorderLayout());
         
         // Tạo helloPanel sử dụng BorderLayout để tách vị trí trái – phải
@@ -93,12 +95,7 @@ public class TrangChuGUI extends JPanel {
         
         // Định dạng giờ theo mẫu HH:mm:ss
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        Timer timer = new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                clockLabel.setText(LocalTime.now().format(timeFormatter));
-            }
-        });
+        Timer timer = new Timer(1000, _ -> clockLabel.setText(LocalTime.now().format(timeFormatter)));
         timer.start();
         
         // Thêm helloPanel vào vùng NORTH của contentPanel
@@ -113,7 +110,7 @@ public class TrangChuGUI extends JPanel {
     }
 
     // Phương thức tạo nút với hiệu ứng hover và ActionListener
-    private void addButtonToPanel(JPanel buttonPanel, String buttonText, Color backgroundColor, String iconPath) {
+    private void addButtonToPanel(JPanel buttonPanel, String buttonText, String iconPath) {
         JButton button = new JButton(buttonText);
         
         // Đặt icon cho nút
@@ -124,7 +121,7 @@ public class TrangChuGUI extends JPanel {
         // Căn chữ nút về bên trái
         button.setFont(new Font("Segoe UI", Font.BOLD, 16));
         button.setHorizontalAlignment(SwingConstants.LEFT);
-        button.setBackground(backgroundColor);
+        button.setBackground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.setOpaque(true);
@@ -144,22 +141,32 @@ public class TrangChuGUI extends JPanel {
     
             @Override
             public void mouseExited(MouseEvent e) {
-                button.setBackground(backgroundColor);
+                button.setBackground(Color.WHITE);
             }
         });
     
         // Nếu nút "Quản lí nhân viên" được bấm thì hiển thị giao diện QuanLiNhanVienGUI
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (buttonText.equals("Quản lí nhân viên")) {
-                    showQuanLiNhanVien();
-                }
-                // Bạn có thể xử lý ActionListener cho các nút khác ở đây
-                if (buttonText.equals("Quản lí tài khoản")){
-                    showQuanLiTaiKhoan();
-                }
+        button.addActionListener(_ -> {
+            if (buttonText.equals("Quản lí nhân viên")) {
+                showQuanLiNhanVien();
             }
+            // Bạn có thể xử lý ActionListener cho các nút khác ở đây
+            if (buttonText.equals("Quản lí tài khoản")){
+                showQuanLiTaiKhoan();
+            }
+            if (buttonText.equals("Quản lí ca - lịch làm")){
+                showQuanLiCaLam();
+            }
+            if (buttonText.equals("Chấm công")){
+                showChamCong();
+            }
+            if (buttonText.equals("Quản lí nhập hàng")){
+                showQuanLiNhapHang();
+            }
+            if (buttonText.equals("Quản lí khuyến mãi")){
+                showQuanLiKhuyenMai();
+            }
+
         });
     
         buttonPanel.add(button);
@@ -173,12 +180,42 @@ public class TrangChuGUI extends JPanel {
         dynamicContentPanel.revalidate();
         dynamicContentPanel.repaint();
     }
+
     private void showQuanLiTaiKhoan(){
         dynamicContentPanel.removeAll();
         dynamicContentPanel.add(new QuanLiTaiKhoan(), BorderLayout.CENTER);
         dynamicContentPanel.revalidate();
         dynamicContentPanel.repaint();
     }
+
+    private void showQuanLiCaLam(){
+        dynamicContentPanel.removeAll();
+        dynamicContentPanel.add(new QuanLiCaLamGUI(), BorderLayout.CENTER);
+        dynamicContentPanel.revalidate();
+        dynamicContentPanel.repaint();
+    }
+
+    private void showChamCong(){
+        dynamicContentPanel.removeAll();
+        dynamicContentPanel.add(new ChamCongGUI(), BorderLayout.CENTER);
+        dynamicContentPanel.revalidate();
+        dynamicContentPanel.repaint();
+    }
+
+    private void showQuanLiNhapHang() {
+        dynamicContentPanel.removeAll();
+        dynamicContentPanel.add(new QuanLyNhapHangGUI(), BorderLayout.CENTER);
+        dynamicContentPanel.revalidate();
+        dynamicContentPanel.repaint();
+    }
+
+    private void showQuanLiKhuyenMai(){
+        dynamicContentPanel.removeAll();
+        dynamicContentPanel.add(new QuanLiKhuyenMaiGUI(), BorderLayout.CENTER);
+        dynamicContentPanel.revalidate();
+        dynamicContentPanel.repaint();
+    }
+
     public static void main(String[] args) {
         JFrame frame = new JFrame("Trang Chủ");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

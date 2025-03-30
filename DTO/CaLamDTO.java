@@ -5,10 +5,10 @@ public class CaLamDTO {
     private String moTa;
     private String gioBD;
     private String gioKT;
-    private String trangThai;
+    private Boolean trangThai;
 
     public CaLamDTO() {}
-    public CaLamDTO(String maCa, String moTa, String gioBD, String gioKT, String trangThai) {
+    public CaLamDTO(String maCa, String moTa, String gioBD, String gioKT, Boolean trangThai) {
         this.maCa = maCa;
         this.moTa = moTa;
         this.gioBD = gioBD;
@@ -47,12 +47,23 @@ public class CaLamDTO {
     public void setGioKT(String gioKT) {
         this.gioKT = gioKT;
     }
-    
-    public String getTrangThai() {
-        return this.trangThai;
+
+    public Boolean getTrangThai() {
+        return trangThai;
     }
-    
-    public void setTrangThai(String trangThai) {
+
+    public void setTrangThai(Boolean trangThai) {
         this.trangThai = trangThai;
-    }    
+    }
+
+    @Override
+    public String toString() {
+        return "CaLamDTO{" +
+                "maCa='" + maCa + '\'' +
+                ", moTa='" + moTa + '\'' +
+                ", gioBD='" + gioBD + '\'' +
+                ", gioKT='" + gioKT + '\'' +
+                ", trangThai=" + trangThai +
+                '}';
+    }
 }
