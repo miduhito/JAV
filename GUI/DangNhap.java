@@ -1,54 +1,88 @@
 package GUI;
 import javax.swing.*;
-import java.awt.event.MouseEvent;
+
 import java.awt.*;
 import java.awt.event.*;
 public class DangNhap {
     private static JFrame frame = new JFrame("Login Page");
+    @SuppressWarnings("FieldMayBeFinal")
+        static class BackgroundPanel extends JPanel{
+            private Image bgImg ;
+
+            public BackgroundPanel(){
+                String imgPath="Image\\BG.png";
+                bgImg = new ImageIcon(imgPath).getImage() ;
+            }
+
+            @Override
+            protected void paintComponent(Graphics g){
+                super.paintComponent(g) ;
+                g.drawImage(bgImg , 0 , 0 , this.getWidth() , this.getHeight() , this) ;
+            }
+    }
     public static void main(String[] args) {
         // Tạo khung chính
-        
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500, 500);
-        frame.setLayout(new GridBagLayout());
+        frame.setSize(700, 400);
         frame.setLocationRelativeTo(null);
-        frame.getContentPane().setBackground(Color.decode("#F5ECE0"));
         // Tạo các thành phần
+        JPanel LoginPanel = new JPanel();
+        BackgroundPanel Bg = new BackgroundPanel();
+        
         JLabel userLabel = new JLabel("Username:");
         JTextField userText = new JTextField("",15);
+
         JLabel passwordLabel = new JLabel("Password:");
         JPasswordField passwordText = new JPasswordField("",15);
+
         userText.setText("midu");
-        passwordText.setText("123");
+        passwordText.setText("12345");
+        //Chinh sua
+        LoginPanel.setOpaque(false) ;
+        LoginPanel.setLayout(new GridBagLayout());
+        LoginPanel.setBorder(BorderFactory.createTitledBorder("Login Form")) ;
+
+        userText.setPreferredSize(new Dimension(150 , 20)) ;
+        passwordText.setPreferredSize(new Dimension(150 , 20)) ;
+        userText.setBorder(null) ;
+        passwordText.setBorder(null) ;
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor= GridBagConstraints.WEST;
-        gbc.gridx=0;gbc.gridy=0;gbc.gridheight=2;
+        gbc.insets = new Insets(10 , 10 , 10 , 10) ;
+        gbc.gridx=0;gbc.gridy=0;
         ImageIcon img = new ImageIcon("Image\\meme.jpg");
         Image scaledImage = img.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
         JLabel iconLabel = new JLabel();
         iconLabel.setIcon(new ImageIcon(scaledImage));
         JPanel p = new JPanel();
+        p.setBackground(Color.WHITE);
         p.add(iconLabel);
-        JPanel LoginPanel = new JPanel();
-        LoginPanel.setLayout(new FlowLayout());
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(Color.BLACK);
+        buttonPanel.setLayout(new FlowLayout());
         String Login = "Đăng Nhập";
-        addButtonToPanel(LoginPanel,Login,Color.BLACK);
+        addButtonToPanel(buttonPanel,Login,Color.BLACK);
         // Thêm các thành phần vào khung
-        gbc.gridx=0;gbc.gridy=0;gbc.gridheight=2;
-        frame.add(p,gbc);
-        gbc.gridx=1;gbc.gridy=0;gbc.gridheight=1;
-        frame.add(userLabel,gbc);
-        gbc.gridx=2;gbc.gridy=0;
-        frame.add(userText,gbc);
+        gbc.gridx=0;gbc.gridy=0;
+        LoginPanel.add(userLabel,gbc);
+        gbc.gridx=1;gbc.gridy=0;
+        LoginPanel.add(userText,gbc);
+        gbc.gridx=0;gbc.gridy=1;
+        LoginPanel.add(passwordLabel,gbc);
         gbc.gridx=1;gbc.gridy=1;
-        frame.add(passwordLabel,gbc);
-        gbc.gridx=2;gbc.gridy=1;
-        frame.add(passwordText,gbc);
-        gbc.gridx=1;gbc.gridy=2;gbc.gridwidth=2;gbc.anchor=GridBagConstraints.CENTER;
-        frame.add(LoginPanel,gbc);
+        LoginPanel.add(passwordText,gbc);
+        gbc.gridx=0;gbc.gridy=2;gbc.gridwidth=2;gbc.anchor=GridBagConstraints.CENTER;
+        LoginPanel.add(buttonPanel,gbc);
+
+        gbc.gridx=0;
+        Bg.add(p,gbc);
+        gbc.gridx=1;gbc.gridy=0;gbc.anchor=GridBagConstraints.CENTER;
+        Bg.add(LoginPanel,gbc);
+        frame.setContentPane(Bg);
         //Event
         // Hiển thị khung
         frame.setVisible(true);
+        frame.setResizable(false);
     }
     public static void showTrangChu(){
                     frame.dispose();
@@ -85,10 +119,24 @@ public class DangNhap {
             public void mouseEntered(MouseEvent e) {
                 button.setBackground(Color.decode("#F5ECE0"));
                 button.setForeground(Color.BLACK);
+                buttonPanel.setBackground(Color.decode("#F5ECE0"));
             }
     
             @Override
             public void mouseExited(MouseEvent e) {
+                button.setBackground(backgroundColor);
+                button.setForeground(Color.WHITE);
+                buttonPanel.setBackground(backgroundColor);
+            }
+        });
+        buttonPanel.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e){
+                buttonPanel.setBackground(Color.decode("#F5ECE0"));
+                button.setBackground(Color.decode("#F5ECE0"));
+                button.setForeground(Color.BLACK);
+            }
+            public void mouseExited(MouseEvent e){
+                buttonPanel.setBackground(backgroundColor);
                 button.setBackground(backgroundColor);
                 button.setForeground(Color.WHITE);
             }
@@ -107,5 +155,6 @@ public class DangNhap {
         buttonPanel.add(button);
         buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
     }
+    
 }
 
