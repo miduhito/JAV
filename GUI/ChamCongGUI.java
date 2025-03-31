@@ -44,6 +44,7 @@ public class ChamCongGUI extends RoundedPanel {
 
             MyLabel labelChamCong = new MyLabel("Chấm Công", 24f, "Bold");
             labelChamCong.setBorder(BorderFactory.createEmptyBorder(20, 15, 20, 15));
+            labelChamCong.setPreferredSize(new Dimension(getWidth(), 70));
 
             JPanel functionPanel = new JPanel();
             functionPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -51,7 +52,6 @@ public class ChamCongGUI extends RoundedPanel {
             functionPanel.setBackground(Color.WHITE);
 
             JLabel employeeLabel = new JLabel("Nhân viên: ");
-
             ArrayList<NhanVienDTO> listNhanVien = nvBUS.getData();
             ArrayList<String> employees = new ArrayList<>();
             employees.add("Tất cả");
@@ -59,18 +59,20 @@ public class ChamCongGUI extends RoundedPanel {
                 employees.add(nhanVien.getMaNV() + " - " + nhanVien.getTenNV());
             }
             employeeComboBox = new JComboBox<>(employees.toArray(new String[0]));
-            employeeComboBox.setPreferredSize(new Dimension(170, 30));
+            employeeComboBox.setPreferredSize(new Dimension(170, 45));
+            employeeComboBox.setFont(RobotoFont.getRobotoBold(14f));
 
             JLabel monthLabel = new JLabel("Tháng: ");
             String[] months = {"Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
                     "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"};
             monthComboBox = new JComboBox<>(months);
-            monthComboBox.setPreferredSize(new Dimension(100, 30));
+            monthComboBox.setPreferredSize(new Dimension(100, 45));
+            monthComboBox.setFont(RobotoFont.getRobotoBold(14f));
 
             JLabel yearLabel = new JLabel("Năm: ");
             String[] years = {"Năm 2022", "Năm 2023", "Năm 2024", "Năm 2025"};
             yearComboBox = new JComboBox<>(years);
-            yearComboBox.setPreferredSize(new Dimension(100, 30));
+            yearComboBox.setPreferredSize(new Dimension(100, 45));
 
             // đặt tháng và năm mặc định
             LocalDate currentDate = LocalDate.now();
@@ -78,9 +80,16 @@ public class ChamCongGUI extends RoundedPanel {
             int currentYear = currentDate.getYear();
             monthComboBox.setSelectedIndex(currentMonth - 1);
             yearComboBox.setSelectedItem("Năm " + currentYear);
+            yearComboBox.setFont(RobotoFont.getRobotoBold(14f));
 
-            calculateButton = new MyButton("Tính chấm công");
-            calculateButton.setPreferredSize(new Dimension(150, 30));
+            ImageIcon calculateIcon = new ImageIcon("Resources\\Image\\Calculate.png");
+            Image calculateImg = calculateIcon.getImage();
+
+            Image newCalculateImg = calculateImg.getScaledInstance(30,30,Image.SCALE_SMOOTH);
+            calculateIcon = new ImageIcon(newCalculateImg);
+            calculateButton = new MyButton("Tính chấm công", calculateIcon);
+            calculateButton.setPreferredSize(new Dimension(180, 45));
+            calculateButton.setFont(RobotoFont.getRobotoBold(14f));
             calculateButton.addActionListener(e -> updateAttendanceTable());
 
             functionPanel.add(labelChamCong);
@@ -108,6 +117,7 @@ public class ChamCongGUI extends RoundedPanel {
             attendanceTable.setBackground(Color.WHITE);
             attendanceTable.setShowGrid(true);
             attendanceTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            attendanceTable.setFont(RobotoFont.getRobotoRegular(12f));
 
             JScrollPane scrollPane = new JScrollPane(attendanceTable,
                     JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,

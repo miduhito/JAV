@@ -124,10 +124,10 @@ public class QuanLiCaLamGUI extends RoundedPanel {
             controlPanel.add(buttonPanel, BorderLayout.WEST);
             this.add(controlPanel, BorderLayout.CENTER);
 
-            contentPanel = new RoundedPanel(50, 50, Color.WHITE);
+            contentPanel = new RoundedPanel(0, 0, Color.WHITE);
             contentPanel.setLayout(cardLayout = new CardLayout());
             contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-            contentPanel.setPreferredSize(new Dimension(0, 400));
+            contentPanel.setPreferredSize(new Dimension(0, 380));
             this.add(contentPanel, BorderLayout.SOUTH);
 
             createShiftPanel();
@@ -156,6 +156,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
 
             RoundedPanel headerPanel = new RoundedPanel(30, 30, Color.WHITE);
             headerPanel.setLayout(new BorderLayout());
+
             JLabel titleLabel = new JLabel(mode.equals("CaLam") ? "Thêm Ca Làm" : "Thêm Lịch Làm", SwingConstants.CENTER);
             titleLabel.setFont(RobotoFont.getRobotoBold(24f));
             titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));

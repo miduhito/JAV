@@ -50,6 +50,7 @@ public class MyButton extends JButton {
         setContentAreaFilled(false);
         setFocusPainted(false);
         setForeground(Color.WHITE);
+        setFont(RobotoFont.getRobotoBold(14f));
 
         addMouseListener(new MouseAdapter() {
             @Override

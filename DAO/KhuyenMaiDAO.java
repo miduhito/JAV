@@ -270,4 +270,36 @@ public class KhuyenMaiDAO implements DAO_Interface<KhuyenMaiDTO> {
         }
         return newMaKhuyenMai;
     }
+
+    public String getDonViKhuyenMai(String maKhuyenMai) {
+        KhuyenMaiDTO khuyenMaiDTO = null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            if (connDB.openConnectDB()) {
+                String query = "SELECT * FROM khuyenmai WHERE maKhuyenMai = ?";
+                PreparedStatement pstmt = connDB.conn.prepareStatement(query);
+                pstmt.setString(1, maKhuyenMai);
+                ResultSet rs = pstmt.executeQuery();
+                if (rs.next()) {
+                    khuyenMaiDTO = new KhuyenMaiDTO();
+                    khuyenMaiDTO.setMaKhuyenMai(rs.getString("maKhuyenMai"));
+                    khuyenMaiDTO.setTenKhuyenMai(rs.getString("tenKhuyenMai"));
+                    khuyenMaiDTO.setDonViKhuyenMai(rs.getString("donViKhuyenMai"));
+                    khuyenMaiDTO.setNgayBatDau(rs.getDate("ngayBatDau"));
+                    khuyenMaiDTO.setNgayKetThuc(rs.getDate("ngayKetThuc"));
+                    khuyenMaiDTO.setDieuKienApDung(rs.getString("dieuKienApDung"));
+                }
+                rs.close();
+                pstmt.close();
+                connDB.closeConnectDB();
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Lỗi kết nối cơ sở dữ liệu! " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Không tìm thấy class driver " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return khuyenMaiDTO.getDonViKhuyenMai();
+    }
 }

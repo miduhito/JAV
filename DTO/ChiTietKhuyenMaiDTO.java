@@ -2,15 +2,18 @@ package DTO;
 
 public class ChiTietKhuyenMaiDTO {
     private String maKhuyenMai;
-    private String maSanPham;
-    private Float giaTriKhuyenMai;
+    private String maThucAn;
+    private Double giaTriKhuyenMai;
+    private Boolean trangThai;
 
 
     public ChiTietKhuyenMaiDTO() {}
-    public ChiTietKhuyenMaiDTO(String maKhuyenMai, String maHoaDon, Float giaTriKhuyenMai) {
+
+    public ChiTietKhuyenMaiDTO(String maKhuyenMai, String maHoaDon, Double giaTriKhuyenMai, Boolean trangThai) {
         this.maKhuyenMai = maKhuyenMai;
-        this.maSanPham = maHoaDon;
+        this.maThucAn = maHoaDon;
         this.giaTriKhuyenMai = giaTriKhuyenMai;
+        this.trangThai = trangThai;
     }
 
     public String getMaKhuyenMai() {
@@ -21,19 +24,27 @@ public class ChiTietKhuyenMaiDTO {
         this.maKhuyenMai = maKhuyenMai;
     }
     
-    public String getMaSanPham() {
-        return this.maSanPham;
+    public String getMaThucAn() {
+        return this.maThucAn;
     }
     
-    public void setMaSanPham(String maSanPham) {
-        this.maSanPham = maSanPham;
+    public void setMaThucAn(String maThucAn) {
+        this.maThucAn = maThucAn;
     }
 
-    public Float getGiaTriKhuyenMai() {
+    public Double getGiaTriKhuyenMai() {
         return giaTriKhuyenMai;
     }
 
-    public void setGiaTriKhuyenMai(Float giaTriKhuyenMai) {
+    public void setGiaTriKhuyenMai(Double giaTriKhuyenMai) {
         this.giaTriKhuyenMai = giaTriKhuyenMai;
+    }
+
+    public Boolean getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(Boolean trangThai) {
+        this.trangThai = trangThai;
     }
 }

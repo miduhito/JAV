@@ -94,11 +94,16 @@ public class KhuyenMaiBUS implements BUS_Interface<KhuyenMaiDTO> {
         Date currentDate = new Date();
         if (entity.getNgayKetThuc().before(currentDate)) {
             JOptionPane.showMessageDialog(null,
-                    "Ngày kết thúc không được nhỏ hơn ngày hiện tại!",
+                    "Ngày kết thúc không được nhỏ hơn hoặc bằng ngày hiện tại!",
                     "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-
+        if (entity.getDieuKienApDung() == null || entity.getDieuKienApDung().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null,
+                    "Vui lòng nhập mô tả điều kiện áp dụng!",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
         return true;
     }
 
@@ -124,5 +129,9 @@ public class KhuyenMaiBUS implements BUS_Interface<KhuyenMaiDTO> {
                 tableModel.addRow(row);
             }
         }
+    }
+
+    public String getDonViKhuyenMai(String maKhuyenMai) {
+        return khuyenMaiDAO.getDonViKhuyenMai(maKhuyenMai);
     }
 }
