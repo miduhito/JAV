@@ -109,10 +109,11 @@ DROP TABLE IF EXISTS `chitietkhuyenmai`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `chitietkhuyenmai` (
   `maKhuyenMai` varchar(20) NOT NULL,
-  `maSanPham` varchar(20) NOT NULL,
-  `giaTriKhuyenMai` float DEFAULT NULL,
-  PRIMARY KEY (`maKhuyenMai`,`maSanPham`),
-  KEY `chitietkhuyenmai_ibfk_2_idx` (`maSanPham`),
+  `maThucAn` varchar(20) NOT NULL,
+  `giaTriKhuyenMai` decimal(10,2) DEFAULT NULL,
+  `trangThai` tinyint DEFAULT NULL,
+  PRIMARY KEY (`maKhuyenMai`,`maThucAn`),
+  KEY `chitietkhuyenmai_ibfk_2_idx` (`maThucAn`),
   CONSTRAINT `chitietkhuyenmai_ibfk_1` FOREIGN KEY (`maKhuyenMai`) REFERENCES `khuyenmai` (`maKhuyenMai`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -123,7 +124,7 @@ CREATE TABLE `chitietkhuyenmai` (
 
 LOCK TABLES `chitietkhuyenmai` WRITE;
 /*!40000 ALTER TABLE `chitietkhuyenmai` DISABLE KEYS */;
-INSERT INTO `chitietkhuyenmai` VALUES ('KM001','HD001',10),('KM002','HD002',20000);
+INSERT INTO `chitietkhuyenmai` VALUES ('KM001','TA001',25.00,1),('KM001','TA002',20.00,1),('KM002','TA002',25000.00,1),('KM003','TA001',35000.00,1);
 /*!40000 ALTER TABLE `chitietkhuyenmai` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -167,7 +168,7 @@ DROP TABLE IF EXISTS `chucvu`;
 CREATE TABLE `chucvu` (
   `maChucVu` varchar(20) NOT NULL,
   `tenChucVu` varchar(100) DEFAULT NULL,
-  `trangThai` varchar(50) DEFAULT NULL,
+  `trangThai` tinyint DEFAULT NULL,
   `luongTheoGio` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`maChucVu`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -179,7 +180,7 @@ CREATE TABLE `chucvu` (
 
 LOCK TABLES `chucvu` WRITE;
 /*!40000 ALTER TABLE `chucvu` DISABLE KEYS */;
-INSERT INTO `chucvu` VALUES ('CV1','Nhân viên','Active',50.00),('CV2','Quản lý','Active',100.00);
+INSERT INTO `chucvu` VALUES ('CV1','Nhân viên',1,25000.00),('CV2','Quản lý',1,35000.00);
 /*!40000 ALTER TABLE `chucvu` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -284,6 +285,7 @@ CREATE TABLE `khuyenmai` (
   `ngayBatDau` date DEFAULT NULL,
   `ngayKetThuc` date DEFAULT NULL,
   `dieuKienApDung` varchar(255) DEFAULT NULL,
+  `trangThai` tinyint DEFAULT NULL,
   PRIMARY KEY (`maKhuyenMai`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -294,7 +296,7 @@ CREATE TABLE `khuyenmai` (
 
 LOCK TABLES `khuyenmai` WRITE;
 /*!40000 ALTER TABLE `khuyenmai` DISABLE KEYS */;
-INSERT INTO `khuyenmai` VALUES ('KM001','Khuyến mãi A','Phần trăm','2023-03-01','2023-03-31','Áp dụng cho hóa đơn trên 1000'),('KM002','Khuyến mãi B','Số tiền','2023-04-01','2023-04-30','Áp dụng cho hóa đơn trên 2000');
+INSERT INTO `khuyenmai` VALUES ('KM001','Khuyến mãi A','Phần trăm','2023-03-01','2023-03-31','Áp dụng cho hóa đơn trên 1000',1),('KM002','Khuyến mãi B','Số tiền','2023-04-01','2023-04-30','Áp dụng cho hóa đơn trên 2000',1),('KM003','Khuyến mãi Test','Số tiền','2025-03-31','2025-04-02','Không có',1),('KM004','Khuyến mãi Testt','Phần trăm','2025-03-24','2025-04-02','Không cóo',1);
 /*!40000 ALTER TABLE `khuyenmai` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -537,4 +539,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-30 16:01:33
+-- Dump completed on 2025-04-01  5:47:18

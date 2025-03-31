@@ -13,3 +13,4 @@ Package Custom gồm các lớp kế thừa từ các Component của Java Swing
 Interface gồm yêu cầu các hàm cơ bản của Package đó
 nhưng không phải class nào cũng cần implements Interface ( ví dụ như lớp ChamCong)
 
++ Lọc sẵn các sản phẩm đã có trong chi tiết khuyến mãi
