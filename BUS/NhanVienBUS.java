@@ -10,13 +10,14 @@ public class NhanVienBUS implements CRUD<NhanVienDTO> {
 
     public NhanVienBUS() {}
 
-    public String getTenNhanVienById(String maNhanVien) {
-        return nvDAO.getTenNhanVienById(maNhanVien);
-    }
-
     @Override
     public ArrayList<NhanVienDTO> getData() {
         return nvDAO.getData();
+    }
+
+    @Override
+    public NhanVienDTO getDataById(String id) {
+        return nvDAO.getDataById(id);
     }
 
     @Override

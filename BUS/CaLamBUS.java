@@ -2,6 +2,7 @@ package BUS;
 
 import DAO.CaLamDAO;
 import DTO.CaLamDTO;
+import DTO.LichLamDTO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -9,38 +10,53 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 public class CaLamBUS implements CRUD<CaLamDTO> {
-    ArrayList<CaLamDTO> danhSachCaLam;
-    CaLamDAO clccDAO = new CaLamDAO();
+    private ArrayList<CaLamDTO> danhSachCaLam;
+    private final CaLamDAO clDAO;
 
-    public ArrayList<CaLamDTO> getData (){
+    public CaLamBUS(){
         danhSachCaLam  = new ArrayList<>();
-        danhSachCaLam = clccDAO.getData();
+        clDAO = new CaLamDAO();
+    }
+
+    @Override
+    public ArrayList<CaLamDTO> getData (){
+        danhSachCaLam = clDAO.getData();
         return danhSachCaLam;
     }
 
+    @Override
+    public CaLamDTO getDataById(String id){
+        return clDAO.getDataById(id);
+    }
+
+    @Override
     public boolean add(CaLamDTO newCaLam){
         // SAVE TO DB
         if (regexInput(newCaLam)){
-            return clccDAO.add(newCaLam);
+            return clDAO.add(newCaLam);
         }
         return false;
     }
 
+    @Override
     public boolean update(CaLamDTO newCaLam){
         if (regexInput(newCaLam)){
-            return clccDAO.update(newCaLam);
+            return clDAO.update(newCaLam);
         }
         return false;
     }
 
+    @Override
     public boolean delete(String maCaLam){
-        return clccDAO.delete(maCaLam);
+        return clDAO.delete(maCaLam);
     }
 
+    @Override
     public String generateID(){
-        return clccDAO.generateID();
+        return clDAO.generateID();
     }
 
+    @Override
     public boolean regexInput(CaLamDTO caLam){
         // GUI REGEX
         String moTa = caLam.getMoTa();
@@ -90,6 +106,6 @@ public class CaLamBUS implements CRUD<CaLamDTO> {
     }
 
     public String getThoiGianCa(String maCa){
-        return clccDAO.getThoiGianCaById(maCa);
+        return clDAO.getThoiGianCaById(maCa);
     }
 }

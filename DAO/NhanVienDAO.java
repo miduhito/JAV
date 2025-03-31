@@ -50,6 +50,40 @@ public class NhanVienDAO implements CRUD<NhanVienDTO> {
     }
 
     @Override
+    public NhanVienDTO getDataById(String id) {
+        NhanVienDTO nv = new NhanVienDTO();
+        String sql = "SELECT * FROM nhanVien WHERE maNhanVien = ?";
+
+        try {
+            if (connDB.openConnectDB()) {
+                PreparedStatement pstmt = connDB.conn.prepareStatement(sql);
+                pstmt.setString(1, id);
+                ResultSet rs = pstmt.executeQuery();
+
+                while (rs.next()) {
+                    nv.setMaNV(rs.getString("maNhanVien"));
+                    nv.setTenNV(rs.getString("tenNhanVien"));
+                    nv.setSDT(rs.getString("SDT"));
+                    nv.setEmail(rs.getString("email"));
+                    nv.setNgaySinh(rs.getString("ngaySinh"));
+                    nv.setGioiTinh(rs.getString("gioiTinh"));
+                    nv.setDiaChi(rs.getString("diaChi"));
+                    nv.setTrangThai(rs.getString("trangThai"));
+                    nv.setMaChucVu(rs.getString("maChucVu"));
+                    nv.setTenDangNhap(rs.getString("tenDangNhap"));
+                }
+                rs.close();
+                pstmt.close();
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        } finally {
+            connDB.closeConnectDB();
+        }
+        return nv;
+    }
+
+    @Override
     public boolean add(NhanVienDTO entity) {
         return false;
     }

@@ -7,6 +7,8 @@ public interface CRUD<T> {
 
     ArrayList<T> getData();
 
+    T getDataById(String id);
+
     boolean add(T entity);
 
     boolean update(T entity);

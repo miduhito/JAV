@@ -23,6 +23,7 @@ public class LichLamBUS implements CRUD<LichLamDTO> {
         return danhSachLichLam;
     }
 
+    @Override
     public LichLamDTO getDataById(String id){
         return llDAO.getDataById(id);
     }
@@ -93,7 +94,7 @@ public class LichLamBUS implements CRUD<LichLamDTO> {
                 Vector<Object> vec = new Vector<>();
                 vec.add(LichLam.getMaLichLam());
                 vec.add(LichLam.getNgayLam());
-                vec.add(nvBUS.getTenNhanVienById(LichLam.getMaNhanVien()));
+                vec.add(nvBUS.getDataById(LichLam.getMaNhanVien()).getTenNV());
                 vec.add(clccBUS.getThoiGianCa(LichLam.getMaCaLam()));
                 vec.add(LichLam.getTrangThai() ? "Hiệu lực" : "Không hiệu lực");
                 tableModelLL.addRow(vec);

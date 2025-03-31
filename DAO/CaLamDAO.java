@@ -1,6 +1,8 @@
 package DAO;
 
 import DTO.CaLamDTO;
+import DTO.LichLamDTO;
+
 import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
@@ -310,5 +312,34 @@ public class CaLamDAO implements CRUD<CaLamDTO>{
             connDB.closeConnectDB();
         }
         return moTaCaLam;
+    }
+
+    @Override
+    public CaLamDTO getDataById(String id){
+        CaLamDTO CaLam = new CaLamDTO();
+        String sql = "SELECT * FROM calam WHERE maca = ? AND trangThai = true";
+
+        try {
+            if (connDB.openConnectDB()) {
+                PreparedStatement pstmt = connDB.conn.prepareStatement(sql);
+                pstmt.setString(1, id);
+                ResultSet rs = pstmt.executeQuery();
+
+                while (rs.next()) {
+                    CaLam.setMaCa(rs.getString("maCa"));
+                    CaLam.setMoTa(rs.getString("moTa"));
+                    CaLam.setGioBD(rs.getString("gioBD"));
+                    CaLam.setGioKT(rs.getString("gioKT"));
+                    CaLam.setTrangThai(rs.getBoolean("trangThai"));
+                }
+                rs.close();
+                pstmt.close();
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        } finally {
+            connDB.closeConnectDB();
+        }
+        return CaLam;
     }
 }

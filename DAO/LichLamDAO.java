@@ -81,7 +81,7 @@ public class LichLamDAO implements CRUD<LichLamDTO> {
     public boolean update(LichLamDTO entity) {
         String sql = "UPDATE lichLamViec SET ngayLamViec = ?, maNhanVien = ?, maCaLam = ?, trangThai = ? WHERE maLichLam = ?";
 
-        if (checkDuplicate(entity, "update")){
+        if (checkDuplicate(entity, "Update")){
             return false;
         }
 
@@ -238,7 +238,7 @@ public class LichLamDAO implements CRUD<LichLamDTO> {
     public boolean checkDuplicate(LichLamDTO entity, String Function) {
         String sql = "SELECT COUNT(*) FROM lichLamViec WHERE ngayLamViec = ? AND maNhanVien = ? AND trangThai = true";
         System.out.println(entity);
-        if (Function.equals("update")) {
+        if (Function.equals("Update")) {
             sql += " AND maLichLam != ?";
         }
 
@@ -247,7 +247,7 @@ public class LichLamDAO implements CRUD<LichLamDTO> {
                 PreparedStatement pstmt = connDB.conn.prepareStatement(sql);
                 pstmt.setDate(1, new java.sql.Date(entity.getNgayLam().getTime()));
                 pstmt.setString(2, entity.getMaNhanVien());
-                if (Function.equals("update")) {
+                if (Function.equals("Update")) {
                     pstmt.setString(3, entity.getMaLichLam());
                 }
 
@@ -329,6 +329,7 @@ public class LichLamDAO implements CRUD<LichLamDTO> {
         return list;
     }
 
+    @Override
     public LichLamDTO getDataById(String Id){
         LichLamDTO lichLam = new LichLamDTO();
         String sql = "SELECT * FROM lichLamViec WHERE maLichLam = ?";
