@@ -1,6 +1,6 @@
 package DAO;
 
-import BUS.CRUD;
+import Interface.BUS_Interface;
 import DTO.NhanVienDTO;
 
 import javax.swing.*;
@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class NhanVienDAO implements CRUD<NhanVienDTO> {
+public class NhanVienDAO implements BUS_Interface<NhanVienDTO> {
     public connectDatabase connDB = new connectDatabase();
 
     public NhanVienDAO() {}
@@ -95,6 +95,11 @@ public class NhanVienDAO implements CRUD<NhanVienDTO> {
 
     @Override
     public boolean delete(String id) {
+        return false;
+    }
+
+    @Override
+    public boolean hide(String id) {
         return false;
     }
 

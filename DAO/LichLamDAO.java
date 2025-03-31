@@ -1,6 +1,8 @@
 package DAO;
 
 import DTO.LichLamDTO;
+import Interface.DAO_Interface;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.JOptionPane;
 
-public class LichLamDAO implements CRUD<LichLamDTO> {
+public class LichLamDAO implements DAO_Interface<LichLamDTO> {
     public connectDatabase connDB = new connectDatabase();
 
     public LichLamDAO() {}

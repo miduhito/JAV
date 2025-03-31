@@ -1,10 +1,10 @@
-package GUI;
+package Custom;
 
 import javax.swing.*;
 import java.awt.*;
 
 // Lớp nút bo tròn (RoundedButton)
-class RoundedButton extends JButton {
+public class RoundedButton extends JButton {
     private int arcWidth;  // Độ cong của góc ngang
     private int arcHeight; // Độ cong của góc dọc
 

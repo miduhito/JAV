@@ -1,8 +1,8 @@
-package BUS;
+package Interface;
 
 import java.util.ArrayList;
 
-public interface CRUD<T>{
+public interface BUS_Interface<T>{
 
     ArrayList<T> getData();
 
@@ -13,6 +13,8 @@ public interface CRUD<T>{
     boolean update(T entity);
 
     boolean delete(String id);
+
+    boolean hide(String id);
 
     boolean regexInput(T entity);
 

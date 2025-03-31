@@ -11,6 +11,40 @@ public class MyButton extends JButton {
     private final Color clickColor = Color.decode("#7A2C14");
     private Color currentColor = normalColor;
 
+    public MyButton(String text) {
+        super(text);
+        setContentAreaFilled(false);
+        setFocusPainted(false);
+        setForeground(Color.WHITE);
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                currentColor = hoverColor;
+                repaint();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                currentColor = normalColor;
+                repaint();
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                currentColor = clickColor;
+                repaint();
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                currentColor = hoverColor;
+                repaint();
+            }
+        });
+    }
+
+
     public MyButton(String text, ImageIcon icon) {
         super(text, icon);
         setContentAreaFilled(false);

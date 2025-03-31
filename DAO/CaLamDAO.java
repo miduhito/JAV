@@ -1,13 +1,13 @@
 package DAO;
 
 import DTO.CaLamDTO;
-import DTO.LichLamDTO;
+import Interface.DAO_Interface;
 
 import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class CaLamDAO implements CRUD<CaLamDTO>{
+public class CaLamDAO implements DAO_Interface<CaLamDTO> {
     CaLamDTO caLamDTO;
     public CaLamDAO(){}
     public connectDatabase connDB = new connectDatabase();

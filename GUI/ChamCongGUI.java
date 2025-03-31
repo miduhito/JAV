@@ -2,9 +2,9 @@ package GUI;
 
 import BUS.CaLamBUS;
 import BUS.ChamCongBUS;
-import Custom.EmployeeData;
-import Custom.MyLabel;
-import Custom.RobotoFont;
+import BUS.NhanVienBUS;
+import Custom.*;
+import DTO.NhanVienDTO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -15,18 +15,20 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;
 
-public class ChamCongGUI extends RoundedPanel{
+public class ChamCongGUI extends RoundedPanel {
     private final DefaultTableModel tableModelCL = new DefaultTableModel();
     private CaLamBUS clBUS;
     private static ChamCongBUS ccBUS;
+    private static NhanVienBUS nvBUS;
     private JComboBox<String> employeeComboBox;
     private JComboBox<String> monthComboBox, yearComboBox;
-    private JButton calculateButton;
+    private MyButton calculateButton;
     private JTable attendanceTable;
 
     public ChamCongGUI() {
         super(50, 50, Color.decode("#F5ECE0"));
         ccBUS = new ChamCongBUS();
+        nvBUS = new NhanVienBUS();
         initComponent();
     }
 
@@ -35,17 +37,28 @@ public class ChamCongGUI extends RoundedPanel{
             this.setLayout(new BorderLayout());
 
             // ============================ NORTH Panel ===================
-            MyLabel labelCaLam = new MyLabel("Chấm Công", 24f, "Bold");
-            labelCaLam.setBorder(BorderFactory.createEmptyBorder(20, 15, 20, 15)); // Padding
+            JPanel headerPanel = new JPanel();
+            headerPanel.setLayout(new BorderLayout());
+            headerPanel.setOpaque(true);
+            headerPanel.setBackground(Color.decode("#F5ECE0"));
+
+            MyLabel labelChamCong = new MyLabel("Chấm Công", 24f, "Bold");
+            labelChamCong.setBorder(BorderFactory.createEmptyBorder(20, 15, 20, 15));
 
             JPanel functionPanel = new JPanel();
             functionPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
             functionPanel.setOpaque(true);
-            functionPanel.setBackground(Color.decode("#F5ECE0"));
+            functionPanel.setBackground(Color.WHITE);
 
             JLabel employeeLabel = new JLabel("Nhân viên: ");
-            String[] employees = {"Tất cả", "NV001 - Nguyễn Văn A", "NV002 - Trần Thị B", "NV003 - Lê Văn C"}; // Sample data
-            employeeComboBox = new JComboBox<>(employees);
+
+            ArrayList<NhanVienDTO> listNhanVien = nvBUS.getData();
+            ArrayList<String> employees = new ArrayList<>();
+            employees.add("Tất cả");
+            for (NhanVienDTO nhanVien: listNhanVien){
+                employees.add(nhanVien.getMaNV() + " - " + nhanVien.getTenNV());
+            }
+            employeeComboBox = new JComboBox<>(employees.toArray(new String[0]));
             employeeComboBox.setPreferredSize(new Dimension(170, 30));
 
             JLabel monthLabel = new JLabel("Tháng: ");
@@ -66,11 +79,11 @@ public class ChamCongGUI extends RoundedPanel{
             monthComboBox.setSelectedIndex(currentMonth - 1);
             yearComboBox.setSelectedItem("Năm " + currentYear);
 
-            calculateButton = new JButton("Tính Chấm Công");
+            calculateButton = new MyButton("Tính chấm công");
             calculateButton.setPreferredSize(new Dimension(150, 30));
             calculateButton.addActionListener(e -> updateAttendanceTable());
 
-            functionPanel.add(labelCaLam);
+            functionPanel.add(labelChamCong);
             functionPanel.add(employeeLabel);
             functionPanel.add(employeeComboBox);
             functionPanel.add(monthLabel);
@@ -79,17 +92,20 @@ public class ChamCongGUI extends RoundedPanel{
             functionPanel.add(yearComboBox);
             functionPanel.add(calculateButton);
 
-            this.add(functionPanel, BorderLayout.NORTH);
+            headerPanel.add(labelChamCong, BorderLayout.NORTH);
+            headerPanel.add(functionPanel, BorderLayout.CENTER);
 
-            // ============================ CENTER Table ===================
-            // define initial table columns (fixed columns + placeholder for days)
+            this.add(headerPanel, BorderLayout.NORTH);
+
+    // ============================ CENTER Table ===================
+    // define initial table columns (fixed columns + placeholder for days)
             String[] fixedColumns = {"STT", "Mã NV", "Tên NV", "Chức vụ"};
             tableModelCL.setColumnIdentifiers(fixedColumns);
 
             // create table
             attendanceTable = new JTable(tableModelCL);
             attendanceTable.setRowHeight(30);
-            attendanceTable.setGridColor(Color.LIGHT_GRAY);
+            attendanceTable.setBackground(Color.WHITE);
             attendanceTable.setShowGrid(true);
             attendanceTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
@@ -97,6 +113,7 @@ public class ChamCongGUI extends RoundedPanel{
                     JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                     JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            scrollPane.setBackground(Color.WHITE);
 
             this.add(scrollPane, BorderLayout.CENTER);
 
@@ -207,6 +224,7 @@ public class ChamCongGUI extends RoundedPanel{
     private void formatTableUI(){
         JTableHeader header = attendanceTable.getTableHeader();
         header.setFont(RobotoFont.getRobotoBold(12f));
+        header.setBackground(Color.WHITE);
 
         attendanceTable.getColumnModel().getColumn(2).setPreferredWidth(110);
         for (int i = 4; i < attendanceTable.getColumnCount() - 1; i++) {
@@ -229,5 +247,16 @@ public class ChamCongGUI extends RoundedPanel{
         headerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         attendanceTable.getTableHeader().setDefaultRenderer(headerRenderer);
     }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Chấm Công");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(1000, 600);
+            frame.add(new ChamCongGUI());
+            frame.setVisible(true);
+        });
+    }
 }
+
 

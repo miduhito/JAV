@@ -1,6 +1,7 @@
 package DAO;
 
 import DTO.ChucVuDTO;
+import Interface.DAO_Interface;
 
 import javax.swing.*;
 import java.sql.PreparedStatement;
@@ -9,7 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class ChucVuDAO implements CRUD<ChucVuDTO> {
+public class ChucVuDAO implements DAO_Interface<ChucVuDTO> {
 
     private final connectDatabase connDB = new connectDatabase();
 

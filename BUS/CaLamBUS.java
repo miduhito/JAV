@@ -2,14 +2,14 @@ package BUS;
 
 import DAO.CaLamDAO;
 import DTO.CaLamDTO;
-import DTO.LichLamDTO;
+import Interface.BUS_Interface;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 import java.util.Vector;
 
-public class CaLamBUS implements CRUD<CaLamDTO> {
+public class CaLamBUS implements BUS_Interface<CaLamDTO> {
     private ArrayList<CaLamDTO> danhSachCaLam;
     private final CaLamDAO clDAO;
 
@@ -49,6 +49,11 @@ public class CaLamBUS implements CRUD<CaLamDTO> {
     @Override
     public boolean delete(String maCaLam){
         return clDAO.delete(maCaLam);
+    }
+
+    @Override
+    public boolean hide(String id) {
+        return clDAO.hide(id);
     }
 
     @Override

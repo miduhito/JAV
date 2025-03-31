@@ -6,6 +6,7 @@ import BUS.NhanVienBUS;
 import Custom.MyButton;
 import Custom.MyLabel;
 import Custom.RobotoFont;
+import Custom.RoundedPanel;
 import DTO.CaLamDTO;
 import DTO.LichLamDTO;
 import DTO.NhanVienDTO;
@@ -46,10 +47,10 @@ public class QuanLiCaLamGUI extends RoundedPanel {
         super(50, 50, Color.decode("#F5ECE0"));
         llBUS = new LichLamBUS();
         clBUS = new CaLamBUS();
-        initComponent();
+        initComponents();
     }
 
-    private void initComponent() {
+    private void initComponents() {
         try {
             this.setLayout(new BorderLayout());
 
@@ -66,10 +67,10 @@ public class QuanLiCaLamGUI extends RoundedPanel {
             controlPanel.setBackground(Color.WHITE);
             controlPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-            ImageIcon addIcon = new ImageIcon("Image\\AddIcon.png");
-            ImageIcon editIcon = new ImageIcon("Image\\EditIcon.png");
-            ImageIcon deleteIcon = new ImageIcon("Image\\DeleteIcon.png");
-            ImageIcon schedulingIcon = new ImageIcon("Image\\Scheduling.png");
+            ImageIcon addIcon = new ImageIcon("Resources\\Image\\AddIcon.png");
+            ImageIcon editIcon = new ImageIcon("Resources\\Image\\EditIcon.png");
+            ImageIcon deleteIcon = new ImageIcon("Resources\\Image\\DeleteIcon.png");
+            ImageIcon schedulingIcon = new ImageIcon("Resources\\Image\\Scheduling.png");
 
             Image addImg = addIcon.getImage();
             Image editImg = editIcon.getImage();
@@ -659,8 +660,8 @@ public class QuanLiCaLamGUI extends RoundedPanel {
 
 // ============================ PHẦN XỬ LÝ SỰ KIỆN CHỨC NĂNG =================
     private void setupButtonListeners(MyLabel title) {
-        ImageIcon shiftIcon = new ImageIcon("Image\\Shift.png");
-        ImageIcon schedulingIcon = new ImageIcon("Image\\Scheduling.png");
+        ImageIcon shiftIcon = new ImageIcon("Resources\\Image\\Shift.png");
+        ImageIcon schedulingIcon = new ImageIcon("Resources\\Image\\Scheduling.png");
         Image schedulingImg = schedulingIcon.getImage();
         Image shiftImg = shiftIcon.getImage();
         Image newSchedulingImg = schedulingImg.getScaledInstance(30, 30, Image.SCALE_SMOOTH);

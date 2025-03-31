@@ -1,5 +1,7 @@
 package GUI;
 
+import Custom.RoundedPanel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -25,7 +27,7 @@ public class TrangChuGUI extends JPanel {
         headerPanel.setBackground(Color.WHITE);
 
         JLabel iconLabel = new JLabel();
-        ImageIcon icon = new ImageIcon("Image\\FastFoodIcon.png");
+        ImageIcon icon = new ImageIcon("Resources\\Image\\FastFoodIcon.png");
         Image scaledImage = icon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
         iconLabel.setIcon(new ImageIcon(scaledImage));
         headerPanel.add(iconLabel);
@@ -42,13 +44,13 @@ public class TrangChuGUI extends JPanel {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         buttonPanel.setBackground(Color.WHITE);
         // Thêm các nút chức năng vào buttonPanel
-        addButtonToPanel(buttonPanel, "Quản lí nhân viên", "Image\\EmployeeIcon.png");
-        addButtonToPanel(buttonPanel, "Quản lí khách hàng", "Image\\CustomerIcon.png");
-        addButtonToPanel(buttonPanel, "Quản lí tài khoản", "Image\\AccountIcon.png");
-        addButtonToPanel(buttonPanel, "Quản lí ca - lịch làm", "Image\\Shift.png");
-        addButtonToPanel(buttonPanel, "Chấm công", "Image\\Timekeeping.png");
-        addButtonToPanel(buttonPanel, "Quản lí nhập hàng", "Image\\EntryProduct.png");
-        addButtonToPanel(buttonPanel, "Quản lí Khuyến mãi", "Image\\Promotion.png");
+        addButtonToPanel(buttonPanel, "Quản lí nhân viên", "Resources\\Image\\EmployeeIcon.png");
+        addButtonToPanel(buttonPanel, "Quản lí khách hàng", "Resources\\Image\\CustomerIcon.png");
+        addButtonToPanel(buttonPanel, "Quản lí tài khoản", "Resources\\Image\\AccountIcon.png");
+        addButtonToPanel(buttonPanel, "Quản lí ca - lịch làm", "Resources\\Image\\Shift.png");
+        addButtonToPanel(buttonPanel, "Chấm công", "Resources\\Image\\Timekeeping.png");
+        addButtonToPanel(buttonPanel, "Quản lí nhập hàng", "Resources\\Image\\EntryProduct.png");
+        addButtonToPanel(buttonPanel, "Quản lí khuyến mãi", "Resources\\Image\\Promotion.png");
         
         // Thêm các nút khác nếu cần:
         // addButtonToPanel(buttonPanel, "Quản lí thức ăn", Color.WHITE);

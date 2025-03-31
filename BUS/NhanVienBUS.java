@@ -2,10 +2,11 @@ package BUS;
 
 import DAO.NhanVienDAO;
 import DTO.NhanVienDTO;
+import Interface.BUS_Interface;
 
 import java.util.ArrayList;
 
-public class NhanVienBUS implements CRUD<NhanVienDTO> {
+public class NhanVienBUS implements BUS_Interface<NhanVienDTO> {
     private NhanVienDAO nvDAO = new NhanVienDAO();;
 
     public NhanVienBUS() {}
@@ -32,6 +33,11 @@ public class NhanVienBUS implements CRUD<NhanVienDTO> {
 
     @Override
     public boolean delete(String id) {
+        return false;
+    }
+
+    @Override
+    public boolean hide(String id) {
         return false;
     }
 

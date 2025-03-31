@@ -1,8 +1,10 @@
-package DAO;
+package Interface;
+
+import DAO.connectDatabase;
 
 import java.util.ArrayList;
 
-public interface CRUD<T> {
+public interface DAO_Interface<T> {
     connectDatabase connDB = new connectDatabase();
 
     ArrayList<T> getData();

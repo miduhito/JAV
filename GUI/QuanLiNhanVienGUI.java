@@ -1,5 +1,8 @@
 package GUI;
 
+import Custom.RoundedButton;
+import Custom.RoundedPanel;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -52,7 +55,7 @@ public class QuanLiNhanVienGUI extends RoundedPanel {
 
         // Create an icon label
         JLabel searchIcon = new JLabel();
-        ImageIcon search = new ImageIcon("C:\\Users\\Lenovo\\Downloads\\BanDoAnNhanh\\Image\\MagnifyingGlass.png");
+        ImageIcon search = new ImageIcon("Resources\\Image\\MagnifyingGlass.png");
         Image scaledIcon = search.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         searchIcon.setIcon(new ImageIcon(scaledIcon));
 

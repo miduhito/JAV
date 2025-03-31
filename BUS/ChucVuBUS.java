@@ -2,10 +2,11 @@ package BUS;
 
 import DAO.ChucVuDAO;
 import DTO.ChucVuDTO;
+import Interface.BUS_Interface;
 
 import java.util.ArrayList;
 
-public class ChucVuBUS implements CRUD<ChucVuDTO> {
+public class ChucVuBUS implements BUS_Interface<ChucVuDTO> {
     private ArrayList<ChucVuDTO> danhSachChucVu;
     private final ChucVuDAO chucVuDAO;
 
@@ -44,6 +45,11 @@ public class ChucVuBUS implements CRUD<ChucVuDTO> {
     @Override
     public boolean delete(String maChucVu) {
         return chucVuDAO.delete(maChucVu);
+    }
+
+    @Override
+    public boolean hide(String id) {
+        return chucVuDAO.hide(id);
     }
 
     @Override

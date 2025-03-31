@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class MyLabel extends JLabel {
     public MyLabel(String content, float fontSize, String fontStyle) {
-        super(content);
+        super(content, SwingConstants.CENTER);
 
         if (Objects.equals(fontStyle, "Regular")){
             setFont(RobotoFont.getRobotoRegular(fontSize));

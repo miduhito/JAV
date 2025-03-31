@@ -1,16 +1,19 @@
 package DTO;
 
+import java.util.Date;
+
 public class KhuyenMaiDTO {
     private String maKhuyenMai;
     private String tenKhuyenMai;
     private String moTaKhuyenMai;
-    private String ngayBatDau;
-    private String ngayKetThuc;
+    private Date ngayBatDau;
+    private Date ngayKetThuc;
     private String donViKhuyenMai;
     private String dieuKienApDung;
+    private Boolean trangThai;
 
     public KhuyenMaiDTO() {}
-    public KhuyenMaiDTO(String maKhuyenMai, String tenKhuyenMai, String moTaKhuyenMai, String ngayBatDau, String ngayKetThuc, String donViKhuyenMai, String dieuKienApDung) {
+    public KhuyenMaiDTO(String maKhuyenMai, String tenKhuyenMai, String moTaKhuyenMai, Date ngayBatDau, Date ngayKetThuc, String donViKhuyenMai, String dieuKienApDung, boolean trangThai) {
         this.maKhuyenMai = maKhuyenMai;
         this.tenKhuyenMai = tenKhuyenMai;
         this.moTaKhuyenMai = moTaKhuyenMai;
@@ -18,6 +21,7 @@ public class KhuyenMaiDTO {
         this.ngayKetThuc = ngayKetThuc;
         this.donViKhuyenMai = donViKhuyenMai;
         this.dieuKienApDung = dieuKienApDung;
+        this.trangThai = trangThai;
     }
 
     public String getDonViKhuyenMai() {
@@ -52,19 +56,19 @@ public class KhuyenMaiDTO {
         this.moTaKhuyenMai = moTaKhuyenMai;
     }
     
-    public String getNgayBatDau() {
+    public Date getNgayBatDau() {
         return this.ngayBatDau;
     }
     
-    public void setNgayBatDau(String ngayBatDau) {
+    public void setNgayBatDau(Date ngayBatDau) {
         this.ngayBatDau = ngayBatDau;
     }
     
-    public String getNgayKetThuc() {
+    public Date getNgayKetThuc() {
         return this.ngayKetThuc;
     }
     
-    public void setNgayKetThuc(String ngayKetThuc) {
+    public void setNgayKetThuc(Date ngayKetThuc) {
         this.ngayKetThuc = ngayKetThuc;
     }
     
@@ -74,5 +78,13 @@ public class KhuyenMaiDTO {
     
     public void setDieuKienApDung(String dieuKienApDung) {
         this.dieuKienApDung = dieuKienApDung;
-    }    
+    }
+
+    public Boolean getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(Boolean trangThai) {
+        this.trangThai = trangThai;
+    }
 }
