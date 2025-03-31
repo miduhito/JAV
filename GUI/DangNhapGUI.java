@@ -3,7 +3,7 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.*;
-public class DangNhap {
+public class DangNhapGUI {
     private static JFrame frame = new JFrame("Login Page");
     @SuppressWarnings("FieldMayBeFinal")
         static class BackgroundPanel extends JPanel{
@@ -41,7 +41,6 @@ public class DangNhap {
         //Chinh sua
         LoginPanel.setOpaque(false) ;
         LoginPanel.setLayout(new GridBagLayout());
-        LoginPanel.setBorder(BorderFactory.createTitledBorder("Login Form")) ;
 
         userText.setPreferredSize(new Dimension(150 , 20)) ;
         passwordText.setPreferredSize(new Dimension(150 , 20)) ;
