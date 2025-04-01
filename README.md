@@ -14,4 +14,4 @@ Interface gồm yêu cầu các hàm cơ bản của Package đó
 nhưng không phải class nào cũng cần implements Interface ( ví dụ như lớp ChamCong)
 
 + Lọc sẵn các sản phẩm đã có trong chi tiết khuyến mãi
-+ Hiển thị đơn vị khuyến mãi ở chức năng chi tiết khuyến mãi và bảng khuyến mãi
++ Check trước khi xóa 

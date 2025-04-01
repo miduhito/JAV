@@ -61,7 +61,7 @@ public class QuanLiKhuyenMaiGUI extends RoundedPanel {
         buttonPanel.add(detailButton);
 
         // bảng hiển thị khuyến mãi
-        String[] columnNames = {"Mã khuyến mãi", "Tên khuyến mãi", "Ngày bắt đầu", "Ngày kết thúc", "Điều kiện áp dụng"};
+        String[] columnNames = {"Mã khuyến mãi", "Tên khuyến mãi", "Ngày bắt đầu", "Ngày kết thúc", "Đơn vị khuyến mãi", "Điều kiện áp dụng"};
         tableModel = new DefaultTableModel(columnNames, 0);
         khuyenMaiTable = new JTable(tableModel);
         khuyenMaiTable.setRowHeight(35);

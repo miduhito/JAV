@@ -2,34 +2,32 @@ package BUS;
 
 import DAO.ChiTietKhuyenMaiDAO;
 import DTO.ChiTietKhuyenMaiDTO;
+import Interface.BUS_SubInterface;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
+import java.util.Objects;
 
-public class ChiTietKhuyenMaiBUS{
+public class ChiTietKhuyenMaiBUS implements BUS_SubInterface<ChiTietKhuyenMaiDTO> {
     ArrayList<ChiTietKhuyenMaiDTO> danhSachChiTietKhuyenMai;;
     ChiTietKhuyenMaiDAO chiTietKhuyenMaiDAO = new ChiTietKhuyenMaiDAO();
     KhuyenMaiBUS khuyenMaiBUS = new KhuyenMaiBUS();
     ThucAnBUS thucAnBUS = new ThucAnBUS();
 
-    
+    @Override
     public ArrayList<ChiTietKhuyenMaiDTO> getData(){
         danhSachChiTietKhuyenMai  = new ArrayList<>();
         danhSachChiTietKhuyenMai = chiTietKhuyenMaiDAO.getData();
         return danhSachChiTietKhuyenMai;
     }
 
-    
-    public ChiTietKhuyenMaiDTO getDataById(String id){
-        return null;
+    @Override
+    public ArrayList<ChiTietKhuyenMaiDTO> getDataById(String id) {
+        return chiTietKhuyenMaiDAO.getDataById(id);
     }
 
-    public ArrayList<ChiTietKhuyenMaiDTO> getDataByIdSub(String id) {
-        return chiTietKhuyenMaiDAO.getDataByIdSub(id);
-    }
-
-    
+    @Override
     public boolean add(ChiTietKhuyenMaiDTO entity) {
         if (!regexInput(entity)) {
             return false;
@@ -37,7 +35,7 @@ public class ChiTietKhuyenMaiBUS{
         return chiTietKhuyenMaiDAO.add(entity);
     }
 
-    
+    @Override
     public boolean update(ChiTietKhuyenMaiDTO entity) {
         if (!regexInput(entity)) {
             return false;
@@ -45,17 +43,17 @@ public class ChiTietKhuyenMaiBUS{
         return chiTietKhuyenMaiDAO.update(entity);
     }
 
-    
+    @Override
     public boolean delete(String id, String maThucAn) {
         return chiTietKhuyenMaiDAO.delete(id, maThucAn);
     }
 
-    
-    public boolean hide(String id) {
-        return chiTietKhuyenMaiDAO.hide(id);
+    @Override
+    public boolean hide(String id, String maThucAn) {
+        return chiTietKhuyenMaiDAO.hide(id, maThucAn);
     }
 
-    
+    @Override
     public boolean regexInput(ChiTietKhuyenMaiDTO entity) {
         String donViKhuyenMai = khuyenMaiBUS.getDonViKhuyenMai(entity.getMaKhuyenMai());
         if (donViKhuyenMai == null) {
@@ -94,21 +92,18 @@ public class ChiTietKhuyenMaiBUS{
         }
     }
 
-    
-    public String generateID() {
-        return "";
-    }
-
     public void loadDataTable(DefaultTableModel tableModel, String maKhuyenMai){
-        ArrayList<ChiTietKhuyenMaiDTO> danhSachChiTietKhuyenMai = getDataByIdSub(maKhuyenMai);
+        ArrayList<ChiTietKhuyenMaiDTO> danhSachChiTietKhuyenMai = getDataById(maKhuyenMai);
         tableModel.setRowCount(0); // Xóa dữ liệu cũ
 
         if (danhSachChiTietKhuyenMai != null) {
+            System.out.println(khuyenMaiBUS.getDataById(maKhuyenMai).getDonViKhuyenMai());
             for (ChiTietKhuyenMaiDTO chiTietKhuyenMai : danhSachChiTietKhuyenMai) {
                 Object[] row = {
                         chiTietKhuyenMai.getMaThucAn(),
                         thucAnBUS.getDataById(chiTietKhuyenMai.getMaThucAn()).getTenThucAn(),
-                        chiTietKhuyenMai.getGiaTriKhuyenMai()
+                        chiTietKhuyenMai.getGiaTriKhuyenMai(),
+                        Objects.equals(khuyenMaiBUS.getDataById(maKhuyenMai).getDonViKhuyenMai(), "Phần trăm") ? "%" : "VNĐ"
                 };
                 tableModel.addRow(row);
             }

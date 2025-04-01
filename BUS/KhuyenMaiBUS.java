@@ -9,6 +9,7 @@ import javax.swing.table.DefaultTableModel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class KhuyenMaiBUS implements BUS_Interface<KhuyenMaiDTO> {
@@ -124,6 +125,7 @@ public class KhuyenMaiBUS implements BUS_Interface<KhuyenMaiDTO> {
                         khuyenMai.getTenKhuyenMai(),
                         dateFormat.format(khuyenMai.getNgayBatDau()),
                         dateFormat.format(khuyenMai.getNgayKetThuc()),
+                        Objects.equals(khuyenMai.getDonViKhuyenMai(), "Phần trăm") ? "%" : "VNĐ" ,
                         khuyenMai.getDieuKienApDung()
                 };
                 tableModel.addRow(row);

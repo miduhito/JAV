@@ -81,7 +81,7 @@ public class ChiTietKhuyenMaiGUI extends JFrame{
 
         mainPanel.add(buttonPanel, BorderLayout.NORTH);
 
-        String[] columnNames = {"Mã sản phẩm", "Tên sản phẩm", "Giá khuyến mãi"};
+        String[] columnNames = {"Mã sản phẩm", "Tên sản phẩm", "Giá khuyến mãi", "Đơn vị"};
         chiTietTableModel = new DefaultTableModel(columnNames, 0);
         chiTietTable = new JTable(chiTietTableModel);
         chiTietTable.setRowHeight(30);

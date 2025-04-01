@@ -128,7 +128,7 @@ public class ChamCongGUI extends RoundedPanel {
             this.add(scrollPane, BorderLayout.CENTER);
 
             // render data table
-            updateAttendanceTable();
+            // updateAttendanceTable();
         } catch (Exception e) {
             e.printStackTrace();
         }

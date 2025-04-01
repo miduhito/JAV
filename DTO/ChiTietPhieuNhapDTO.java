@@ -6,14 +6,18 @@ public class ChiTietPhieuNhapDTO {
     private Double giaNhap;
     private int soLuongNhap;
     private Double thanhTien;
+    private String ghiChu;
+    private boolean trangThai;
 
     public ChiTietPhieuNhapDTO() {}
-    public ChiTietPhieuNhapDTO(String maPhieuNhap, int soLuongNhap, String maNguyenLieu, Double giaNhap, Double thanhTien) {
+    public ChiTietPhieuNhapDTO(String maPhieuNhap, int soLuongNhap, String maNguyenLieu, Double giaNhap, Double thanhTien, String ghiChu, boolean trangThai) {
         this.maPhieuNhap = maPhieuNhap;
         this.soLuongNhap = soLuongNhap;
         this.maNguyenLieu = maNguyenLieu;
         this.giaNhap = giaNhap;
         this.thanhTien = thanhTien;
+        this.ghiChu = ghiChu;
+        this.trangThai = trangThai;
     }
 
     public String getMaPhieuNhap() {
@@ -54,5 +58,21 @@ public class ChiTietPhieuNhapDTO {
     
     public void setThanhTien(Double thanhTien) {
         this.thanhTien = thanhTien;
+    }
+
+    public boolean isTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(boolean trangThai) {
+        this.trangThai = trangThai;
+    }
+
+    public String getGhiChu() {
+        return ghiChu;
+    }
+
+    public void setGhiChu(String ghiChu) {
+        this.ghiChu = ghiChu;
     }
 }

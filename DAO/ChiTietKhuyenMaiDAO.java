@@ -1,6 +1,7 @@
 package DAO;
 
 import DTO.ChiTietKhuyenMaiDTO;
+import Interface.DAO_SubInterface;
 
 import javax.swing.*;
 import java.sql.PreparedStatement;
@@ -9,13 +10,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class ChiTietKhuyenMaiDAO{
+public class ChiTietKhuyenMaiDAO implements DAO_SubInterface<ChiTietKhuyenMaiDTO> {
     ChiTietKhuyenMaiDTO ChiTietKhuyenMaiDTO;
 
     public connectDatabase connDB = new connectDatabase();
 
     public ChiTietKhuyenMaiDAO(){}
 
+    @Override
     public ArrayList<ChiTietKhuyenMaiDTO> getData(){
         ArrayList<ChiTietKhuyenMaiDTO> danhSachChiTietKhuyenMai = null;
         try {
@@ -53,7 +55,8 @@ public class ChiTietKhuyenMaiDAO{
         return danhSachChiTietKhuyenMai;
     }
 
-    public ArrayList<ChiTietKhuyenMaiDTO> getDataByIdSub(String id) {
+    @Override
+    public ArrayList<ChiTietKhuyenMaiDTO> getDataById(String id) {
         ArrayList<ChiTietKhuyenMaiDTO> danhSachChiTiet = null;
         String query = "SELECT * FROM chitietkhuyenmai WHERE maKhuyenMai = ? AND trangThai = true";
 
@@ -80,6 +83,7 @@ public class ChiTietKhuyenMaiDAO{
         return danhSachChiTiet;
     }
 
+    @Override
     public ChiTietKhuyenMaiDTO getDataById(String id, String maThucAn) {
         ChiTietKhuyenMaiDTO chiTiet = null;
         String query = "SELECT * FROM chitietkhuyenmai WHERE maKhuyenMai = ? AND maThucAn = ? AND trangThai = true";
@@ -107,7 +111,7 @@ public class ChiTietKhuyenMaiDAO{
         return chiTiet;
     }
 
-    
+    @Override
     public boolean add(ChiTietKhuyenMaiDTO entity) {
         String query = "INSERT INTO chitietkhuyenmai (maKhuyenMai, maThucAn, giaTriKhuyenMai, trangThai) VALUES (?, ?, ?, ?)";
         boolean result = false;
@@ -134,7 +138,7 @@ public class ChiTietKhuyenMaiDAO{
         return result;
     }
 
-    
+    @Override
     public boolean update(ChiTietKhuyenMaiDTO entity) {
         String query = "UPDATE chitietkhuyenmai SET giaTriKhuyenMai = ?, trangThai = ? WHERE maKhuyenMai = ? AND maThucAn = ?";
         boolean result = false;
@@ -156,7 +160,7 @@ public class ChiTietKhuyenMaiDAO{
         return result;
     }
 
-    
+    @Override
     public boolean delete(String id, String maThucAn) {
         String query = "DELETE FROM chitietkhuyenmai WHERE maKhuyenMai = ? and maThucAn = ?";
         boolean result = false;
@@ -176,15 +180,16 @@ public class ChiTietKhuyenMaiDAO{
         return result;
     }
 
-    
-    public boolean hide(String id) {
-        String query = "UPDATE chitietkhuyenmai SET trangThai = false WHERE maKhuyenMai = ?";
+    @Override
+    public boolean hide(String id, String maThucAn) {
+        String query = "UPDATE chitietkhuyenmai SET trangThai = false WHERE maKhuyenMai = ? and maThucAn = ?";
         boolean result = false;
 
         if (connDB.openConnectDB()) {
             try {
                 PreparedStatement ps = connDB.conn.prepareStatement(query);
                 ps.setString(1, id);
+                ps.setString(2, maThucAn);
                 result = ps.executeUpdate() > 0;
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -195,7 +200,7 @@ public class ChiTietKhuyenMaiDAO{
         return result;
     }
 
-    
+    @Override
     public boolean checkDuplicate(ChiTietKhuyenMaiDTO entity, String Function) {
         boolean isDuplicate = false;
 
@@ -230,12 +235,5 @@ public class ChiTietKhuyenMaiDAO{
         }
         return isDuplicate;
     }
-
-    
-    public String generateID() {
-        return "";
-    }
-
-
 }
 
