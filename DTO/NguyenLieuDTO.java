@@ -1,16 +1,18 @@
 package DTO;
 
+import java.util.Date;
+
 public class NguyenLieuDTO {
     private String maNguyenLieu;
     private String tenNguyenLieu;
     private String loaiNguyenLieu;
-    private String ngayNhap;
-    private String ngayHetHan;
+    private Date ngayNhap;
+    private Date ngayHetHan;
     private Double soLuong;
     private String donViDo;
 
     public NguyenLieuDTO() {}
-    public NguyenLieuDTO(String maNguyenLieu, String tenNguyenLieu, String loaiNguyenLieu, String ngayNhap, String ngayHetHan, Double soLuong, String donViDo) {
+    public NguyenLieuDTO(String maNguyenLieu, String tenNguyenLieu, String loaiNguyenLieu, Date ngayNhap, Date ngayHetHan, Double soLuong, String donViDo) {
         this.maNguyenLieu = maNguyenLieu;
         this.tenNguyenLieu = tenNguyenLieu;
         this.loaiNguyenLieu = loaiNguyenLieu;
@@ -43,23 +45,23 @@ public class NguyenLieuDTO {
     public void setLoaiNguyenLieu(String loaiNguyenLieu) {
         this.loaiNguyenLieu = loaiNguyenLieu;
     }
-    
-    public String getNgayNhap() {
-        return this.ngayNhap;
+
+    public Date getNgayHetHan() {
+        return ngayHetHan;
     }
-    
-    public void setNgayNhap(String ngayNhap) {
-        this.ngayNhap = ngayNhap;
-    }
-    
-    public String getNgayHetHan() {
-        return this.ngayHetHan;
-    }
-    
-    public void setNgayHetHan(String ngayHetHan) {
+
+    public void setNgayHetHan(Date ngayHetHan) {
         this.ngayHetHan = ngayHetHan;
     }
-    
+
+    public Date getNgayNhap() {
+        return ngayNhap;
+    }
+
+    public void setNgayNhap(Date ngayNhap) {
+        this.ngayNhap = ngayNhap;
+    }
+
     public Double getSoLuong() {
         return this.soLuong;
     }
@@ -74,5 +76,18 @@ public class NguyenLieuDTO {
     
     public void setDonViDo(String donViDo) {
         this.donViDo = donViDo;
-    }    
+    }
+
+    @Override
+    public String toString() {
+        return "NguyenLieuDTO{" +
+                "maNguyenLieu='" + maNguyenLieu + '\'' +
+                ", tenNguyenLieu='" + tenNguyenLieu + '\'' +
+                ", loaiNguyenLieu='" + loaiNguyenLieu + '\'' +
+                ", ngayNhap='" + ngayNhap + '\'' +
+                ", ngayHetHan='" + ngayHetHan + '\'' +
+                ", soLuong=" + soLuong +
+                ", donViDo='" + donViDo + '\'' +
+                '}';
+    }
 }

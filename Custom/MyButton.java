@@ -98,9 +98,4 @@ public class MyButton extends JButton {
         g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
         g2.dispose();
     }
-
-    protected void setHorizontalLeft(){
-        super.setHorizontalAlignment(LEFT);
-    }
-
 }

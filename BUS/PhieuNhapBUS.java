@@ -1,15 +1,34 @@
 package BUS;
 
 import DAO.PhieuNhapDAO;
+import DTO.KhuyenMaiDTO;
+import DTO.NguyenLieuDTO;
 import DTO.PhieuNhapDTO;
 import Interface.BUS_Interface;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class PhieuNhapBUS implements BUS_Interface<PhieuNhapDTO> {
     ArrayList<PhieuNhapDTO> danhSachPhieuNhap;
-    PhieuNhapDAO phieuNhapDAO = new PhieuNhapDAO();
+    ArrayList<NguyenLieuDTO> danhSachNguyenLieu;
+    NguyenLieuBUS nguyenLieuBUS;
+    PhanPhoiBUS phanPhoiBUS;
+    NhaCungCapBUS nhaCungCapBUS;
+    PhieuNhapDAO phieuNhapDAO;
+
+    public PhieuNhapBUS(){
+        danhSachPhieuNhap = new ArrayList<>();
+        danhSachNguyenLieu = new ArrayList<>();
+        nguyenLieuBUS = new NguyenLieuBUS();
+        phanPhoiBUS = new PhanPhoiBUS();
+        nhaCungCapBUS = new NhaCungCapBUS();
+        phieuNhapDAO = new PhieuNhapDAO();
+    }
+
 
 
     @Override
@@ -73,4 +92,33 @@ public class PhieuNhapBUS implements BUS_Interface<PhieuNhapDTO> {
     public String generateID() {
         return phieuNhapDAO.generateID();
     }
+
+    // load data table Nguyên Liệu
+    public void loadDataTable(DefaultTableModel tableModel){
+        danhSachNguyenLieu = new ArrayList<>();
+        danhSachNguyenLieu = nguyenLieuBUS.getData();
+        tableModel.setRowCount(0); // Xóa dữ liệu cũ
+
+        if (danhSachNguyenLieu != null) {
+            for (NguyenLieuDTO nguyenLieu: danhSachNguyenLieu) {
+                String maNCC = phanPhoiBUS.getDataByIdSub(nguyenLieu.getMaNguyenLieu()).getMaNhaCungCap();
+                Object[] row = {
+                        nguyenLieu.getMaNguyenLieu(),
+                        nguyenLieu.getTenNguyenLieu(),
+                        nhaCungCapBUS.getDataById(maNCC).getTenNhaCungCap(),
+                        phanPhoiBUS.getDataByIdSub(nguyenLieu.getMaNguyenLieu()).getGiaNhap(),
+                        nguyenLieu.getDonViDo()
+                };
+                tableModel.addRow(row);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Không tìm thấy dữ liệu nguyên liệu", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void loadDataCart(){
+
+    }
+
+
 }
