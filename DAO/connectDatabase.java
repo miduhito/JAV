@@ -14,9 +14,6 @@ public class connectDatabase {
 
     public boolean openConnectDB() {
         try {
-            if (conn != null && !conn.isClosed()) {
-                return true;
-            }
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(url, nameUser, pass);
             return true;

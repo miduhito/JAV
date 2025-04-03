@@ -27,7 +27,7 @@ public class PhieuNhapDAO implements DAO_Interface<PhieuNhapDTO> {
                 String query = "SELECT * FROM phieunhap WHERE trangThai = true";
                 Statement stmt = connDB.conn.createStatement();
                 ResultSet rs = stmt.executeQuery(query);
-                danhSachPhieuNhap = new ArrayList<>();
+                danhSachPhieuNhap = new ArrayList<PhieuNhapDTO>();
                 while (rs.next()) {
                     phieuNhapDTO = new PhieuNhapDTO();
                     phieuNhapDTO.setMaPhieuNhap(rs.getString("maPhieuNhap"));
@@ -98,20 +98,19 @@ public class PhieuNhapDAO implements DAO_Interface<PhieuNhapDTO> {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             if (connDB.openConnectDB()) {
-                String query = "INSERT INTO phieunhap (maPhieuNhap, ngayNhap, maNhanVien, maNCC, tongTien, trangThai) VALUES (?, ?, ?, ?, ?, ?)";
+                String query = "INSERT INTO phieunhap (maPhieuNhap, ngayNhap, maNhanVien, maNCC, tongTien) VALUES (?, ?, ?, ?, ?)";
                 PreparedStatement ps = connDB.conn.prepareStatement(query);
                 ps.setString(1, entity.getMaPhieuNhap());
                 ps.setDate(2, new java.sql.Date(entity.getNgayNhap().getTime()));
                 ps.setString(3, entity.getMaNhanVien());
                 ps.setString(4, entity.getMaNhaCungCap());
                 ps.setDouble(5, entity.getTongTien());
-                ps.setBoolean(6, true);
                 result = ps.executeUpdate() > 0;
-            } else {
-                JOptionPane.showMessageDialog(null, "Lỗi kết nối cơ sở dữ liệu!", "Error", JOptionPane.ERROR_MESSAGE);
+                ps.close();
+                connDB.closeConnectDB();
             }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Lỗi truy vấn!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Lỗi kết nối cơ sở dữ liệu!", "Error", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         } catch (ClassNotFoundException e) {
             JOptionPane.showMessageDialog(null, "Không tìm thấy class driver", "Error", JOptionPane.ERROR_MESSAGE);
@@ -226,9 +225,9 @@ public class PhieuNhapDAO implements DAO_Interface<PhieuNhapDTO> {
                 } else {
                     newID = "PN001";
                 }
-//                rs.close();
-//                stmt.close();
-//                connDB.closeConnectDB();
+                rs.close();
+                stmt.close();
+                connDB.closeConnectDB();
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Lỗi kết nối cơ sở dữ liệu!", "Error", JOptionPane.ERROR_MESSAGE);

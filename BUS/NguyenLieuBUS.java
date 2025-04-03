@@ -20,7 +20,7 @@ public class NguyenLieuBUS implements BUS_Interface<NguyenLieuDTO> {
 
     @Override
     public NguyenLieuDTO getDataById(String id) {
-        return nguyenLieuDAO.getDataById(id);
+        return null;
     }
 
     @Override
@@ -52,9 +52,4 @@ public class NguyenLieuBUS implements BUS_Interface<NguyenLieuDTO> {
     public String generateID() {
         return "";
     }
-
-    public void updateAmount(String maNguyenLieu, double soLuong){
-        nguyenLieuDAO.updateAmount(maNguyenLieu, soLuong);
-    }
-
 }

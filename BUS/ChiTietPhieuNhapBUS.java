@@ -8,14 +8,7 @@ import java.util.ArrayList;
 
 public class ChiTietPhieuNhapBUS implements BUS_SubInterface<ChiTietPhieuNhapDTO> {
     ArrayList<ChiTietPhieuNhapDTO> danhSachChiTietPhieuNhap;
-    ChiTietPhieuNhapDAO ctpnDAO;
-    NguyenLieuBUS nguyenLieuBUS;
-
-    public ChiTietPhieuNhapBUS(){
-        danhSachChiTietPhieuNhap = new ArrayList<>();
-        ctpnDAO = new ChiTietPhieuNhapDAO();
-        nguyenLieuBUS = new NguyenLieuBUS();
-    }
+    ChiTietPhieuNhapDAO ctpnDAO = new ChiTietPhieuNhapDAO();
 
     public ArrayList<ChiTietPhieuNhapDTO> getData(){
         danhSachChiTietPhieuNhap = new ArrayList<>();
@@ -31,7 +24,6 @@ public class ChiTietPhieuNhapBUS implements BUS_SubInterface<ChiTietPhieuNhapDTO
     @Override
     public boolean add(ChiTietPhieuNhapDTO entity) {
         if (regexInput(entity)){
-            nguyenLieuBUS.updateAmount(entity.getMaNguyenLieu(), entity.getSoLuongNhap());
             return ctpnDAO.add(entity);
         }
         return false;
@@ -59,10 +51,4 @@ public class ChiTietPhieuNhapBUS implements BUS_SubInterface<ChiTietPhieuNhapDTO
     public boolean regexInput(ChiTietPhieuNhapDTO entity) {
         return true;
     }
-
-    public void closeConnectDB(){
-        ChiTietPhieuNhapDAO chiTietPhieuNhapDAO = new ChiTietPhieuNhapDAO();
-        chiTietPhieuNhapDAO.closeConnectDB();
-    }
-
 }

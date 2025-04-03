@@ -15,4 +15,3 @@ nhưng không phải class nào cũng cần implements Interface ( ví dụ như
 
 + Lọc sẵn các sản phẩm đã có trong chi tiết khuyến mãi
 + Check trước khi xóa 
-+ Chức năng tìm và ẩn hiện
