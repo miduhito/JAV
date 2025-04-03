@@ -3,6 +3,7 @@ package BUS;
 import DAO.PhieuNhapDAO;
 import DTO.KhuyenMaiDTO;
 import DTO.NguyenLieuDTO;
+import DTO.PhanPhoiDTO;
 import DTO.PhieuNhapDTO;
 import Interface.BUS_Interface;
 
@@ -95,7 +96,7 @@ public class PhieuNhapBUS implements BUS_Interface<PhieuNhapDTO> {
     }
 
     // load data table Nguyên Liệu
-    public void loadDataTable(DefaultTableModel tableModel){
+    public void loadDataTableNguyenLieu(DefaultTableModel tableModel){
         danhSachNguyenLieu = new ArrayList<>();
         danhSachNguyenLieu = nguyenLieuBUS.getData();
         tableModel.setRowCount(0); // Xóa dữ liệu cũ
@@ -106,8 +107,8 @@ public class PhieuNhapBUS implements BUS_Interface<PhieuNhapDTO> {
                 Object[] row = {
                         nguyenLieu.getMaNguyenLieu(),
                         nguyenLieu.getTenNguyenLieu(),
-                        maNCC + " - " + nhaCungCapBUS.getDataById(maNCC).getTenNhaCungCap(),
-                        phanPhoiBUS.getDataByIdSub(nguyenLieu.getMaNguyenLieu()).getGiaNhap(),
+                        nhaCungCapBUS.getDataById(maNCC).getTenNhaCungCap(),
+                        phanPhoiBUS.getDataByIdSub(nguyenLieu.getMaNguyenLieu()).getGiaNhap() + "/" + nguyenLieu.getDonViDo(),
                         nguyenLieu.getSoLuong(),
                         nguyenLieu.getDonViDo()
                 };
@@ -117,6 +118,33 @@ public class PhieuNhapBUS implements BUS_Interface<PhieuNhapDTO> {
             JOptionPane.showMessageDialog(null, "Không tìm thấy dữ liệu nguyên liệu", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+    // load khi chọn nhà cung cấp
+    public void loadDataTableNguyenLieu(DefaultTableModel tableModel, String maNhaCungCap){
+        danhSachNguyenLieu = new ArrayList<>();
+        danhSachNguyenLieu = nguyenLieuBUS.getData();
+        tableModel.setRowCount(0); // Xóa dữ liệu cũ
+
+        if (danhSachNguyenLieu != null) {
+            for (NguyenLieuDTO nguyenLieu: danhSachNguyenLieu) {
+                String maNCC = phanPhoiBUS.getDataByIdSub(nguyenLieu.getMaNguyenLieu()).getMaNhaCungCap();
+                if (maNCC.equals(maNhaCungCap)){
+                    Object[] row = {
+                            nguyenLieu.getMaNguyenLieu(),
+                            nguyenLieu.getTenNguyenLieu(),
+                            nhaCungCapBUS.getDataById(maNCC).getTenNhaCungCap(),
+                            phanPhoiBUS.getDataByIdSub(nguyenLieu.getMaNguyenLieu()).getGiaNhap() + "/" + nguyenLieu.getDonViDo(),
+                            nguyenLieu.getSoLuong(),
+                            nguyenLieu.getDonViDo()
+                    };
+                    tableModel.addRow(row);
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Không tìm thấy dữ liệu nguyên liệu", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
 
     public void loadDataPhieuNhap(DefaultTableModel tableModel){
         danhSachPhieuNhap = new ArrayList<>();
@@ -136,7 +164,7 @@ public class PhieuNhapBUS implements BUS_Interface<PhieuNhapDTO> {
                 rowData.add(String.valueOf(phieuNhap.getTongTien()));
                 tableModel.addRow(rowData);
             }
-        }else {
+        } else {
             JOptionPane.showMessageDialog(null, "Không tìm thấy dữ liệu phiếu nhập", "Error", JOptionPane.ERROR_MESSAGE);
         }
 

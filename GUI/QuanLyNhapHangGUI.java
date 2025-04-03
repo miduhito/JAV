@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Vector;
-import javax.lang.model.element.NestingKind;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -24,7 +23,7 @@ import static javax.swing.BoxLayout.Y_AXIS;
 public class QuanLyNhapHangGUI extends RoundedPanel {
     public JTable nguyenLieuTable,cartTable, phieuNhapTable;
     public DefaultTableModel nguyenLieuTableModel, cartTableModel, phieuNhapTableModel;
-    public MyLabel titleHeader;
+    public MyLabel titleHeader, donViLabel;
     public MyButton addButton, editButton, deleteButton, confirmButton, viewDetailButton, hideButton;
     public JPanel headerPanel, swicthButtonPanel, contentPanel, fieldBox1, fieldBox2, fieldBox3, fieldBox4, fieldBox5, buttonBox1, buttonBox2, buttonBox3, buttonBox4;
     public JPanel functionPanel;
@@ -37,6 +36,8 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
     public NguyenLieuBUS nguyenLieuBUS;
     public PhanPhoiBUS phanPhoiBUS;
     public JButton nhapHangButton, phieuNhapButton;
+    public JScrollPane tableScrollPane;
+    public String providerLockInValue;
 
     public QuanLyNhapHangGUI() {
         super(50, 50, Color.decode("#F5ECE0"));
@@ -48,6 +49,7 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
         nhaCungCapBUS = new NhaCungCapBUS();
         nguyenLieuBUS = new NguyenLieuBUS();
         phanPhoiBUS = new PhanPhoiBUS();
+        providerLockInValue = "";
     }
 
     private void initComponents() {
@@ -91,11 +93,18 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
         String[] columnNames = {"Mã NL", "Tên NL", "Nhà cung cấp", "Giá nhập", "Tồn kho", "Đơn vị"};
         nguyenLieuTableModel = new DefaultTableModel(columnNames, 0);
         nguyenLieuTable = new JTable(nguyenLieuTableModel);
-        JScrollPane tableScrollPane = new JScrollPane(nguyenLieuTable);
+        TableColumnModel columnModel = nguyenLieuTable.getColumnModel();
+        columnModel.getColumn(0).setPreferredWidth(80);
+        columnModel.getColumn(1).setPreferredWidth(120);
+        columnModel.getColumn(2).setPreferredWidth(200);
+        columnModel.getColumn(3).setPreferredWidth(110);
+        columnModel.getColumn(4).setPreferredWidth(110);
+        columnModel.getColumn(4).setPreferredWidth(80);
+        tableScrollPane = new JScrollPane(nguyenLieuTable);
         tableScrollPane.setBackground(Color.WHITE);
         tableScrollPane.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.BLACK),
-                "Danh sách nguyên liệu"
+                "Danh sách nguyên liệu ( Nhà cung cấp: chưa chọn )"
         ));
 
         gbc.gridx = 0;
@@ -153,8 +162,15 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
         functionBox.add(tenNguyenLieuLabel);
         functionBox.add(fieldBox2);
 
+        nhaCungCapBUS = new NhaCungCapBUS();
+        ArrayList<NhaCungCapDTO> danhSachNhaCungCap = nhaCungCapBUS.getData();
+        Vector<String> nhaCungCapData = new Vector<>();
+        for (NhaCungCapDTO nhaCungCap: danhSachNhaCungCap){
+            nhaCungCapData.add(nhaCungCap.getTenNhaCungCap());
+        }
+
         MyLabel nhaCungCapLabel = new MyLabel("Nhà cung cấp:", 14f, "Bold");
-        nhaCungCapComboBox = new JComboBox<>(new String[]{"Nhà cung cấp 1", "Nhà cung cấp 2", "Nhà cung cấp 3"});
+        nhaCungCapComboBox = new JComboBox<>(nhaCungCapData);
         nhaCungCapComboBox.setPreferredSize(new Dimension(150, 30));
         fieldBox3 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         fieldBox3.setBackground(Color.WHITE);
@@ -177,15 +193,18 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
         MyLabel soLuongLabel = new MyLabel("Số lượng:", 14f, "Bold");
         soLuongLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
         soLuongField = new JTextField();
-        soLuongField.setPreferredSize(new Dimension(150, 30));
+        soLuongField.setPreferredSize(new Dimension(60, 30));
+        soLuongField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        donViLabel = new MyLabel("", 14f, "Bold");
         fieldBox5 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         fieldBox5.setBackground(Color.WHITE);
         fieldBox5.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
         fieldBox5.add(soLuongField);
+        fieldBox5.add(donViLabel);
         functionBox.add(soLuongLabel);
         functionBox.add(fieldBox5);
 
-        ImageIcon addIcon = Utilities.loadAndResizeIcon("Resources\\Image\\AddIcon.png", 20, 20);
+        ImageIcon addIcon = Utilities.loadAndResizeIcon("Resources\\Image\\AddIcon.png", 25, 20);
         ImageIcon editIcon = Utilities.loadAndResizeIcon("Resources\\Image\\EditIcon.png", 20, 20);
         ImageIcon deleteIcon = Utilities.loadAndResizeIcon("Resources\\Image\\DeleteIcon.png", 20, 20);
         ImageIcon confirmIcon = Utilities.loadAndResizeIcon("Resources\\Image\\Confirm.png", 20, 20);
@@ -244,7 +263,7 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
         loadTableActionListener();
         loadButtonActionListener();
         phieuNhapBUS = new PhieuNhapBUS();
-        phieuNhapBUS.loadDataTable(nguyenLieuTableModel);
+        phieuNhapBUS.loadDataTableNguyenLieu(nguyenLieuTableModel);
 
         contentPanel.revalidate();
         contentPanel.repaint();
@@ -314,27 +333,14 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
                     cartTable.clearSelection();
                     String maNguyenLieu = nguyenLieuTable.getValueAt(selectedRow, 0).toString();
                     String tenNguyenLieu = nguyenLieuTable.getValueAt(selectedRow, 1).toString();
-                    String nhaCungCap = nguyenLieuTable.getValueAt(selectedRow, 2).toString();
                     String giaNhap = nguyenLieuTable.getValueAt(selectedRow, 3).toString();
+                    String donVi = giaNhap.split("/")[1];
+                    donViLabel.setText(donVi);
 
                     maNguyenLieuField.setText(maNguyenLieu);
                     tenNguyenLieuField.setText(tenNguyenLieu);
                     giaNhapField.setText(giaNhap);
-
-                    boolean found = false;
-                    for (int i = 0; i < nhaCungCapComboBox.getItemCount(); i++) {
-                        if (nhaCungCapComboBox.getItemAt(i).equals(nhaCungCap)) {
-                            nhaCungCapComboBox.setSelectedIndex(i);
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        nhaCungCapComboBox.setSelectedIndex(0);
-                    }
                     soLuongField.setText("");
-                } else {
-                    JOptionPane.showMessageDialog(null, "Vui lòng chọn một hàng để xóa!", "Lỗi", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -350,10 +356,12 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
                     String tenNguyenLieu = (String) cartTableModel.getValueAt(selectedRow, 1);
                     String soLuong = cartTableModel.getValueAt(selectedRow, 2).toString();
                     String giaNhap = cartTableModel.getValueAt(selectedRow, 3).toString();
+                    String donVi = giaNhap.split("/")[1];
+                    donViLabel.setText(donVi);
 
                     maNguyenLieuField.setText(maNguyenLieu);
                     tenNguyenLieuField.setText(tenNguyenLieu);
-                    soLuongField.setText(soLuong);
+                    soLuongField.setText(soLuong.split(" ")[0]);
                     giaNhapField.setText(giaNhap);
                 }
             }
@@ -368,45 +376,55 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
         // nút danh sách phiếu nhập
         phieuNhapButton.addActionListener(_ -> showPhieuNhapGUI());
 
+        // comboBox nhà cung cấp
+        nhaCungCapComboBox.addActionListener(_ -> lockInProvider());
+
 
         // nút thêm
         addButton.addActionListener(_ -> {
             String maNguyenLieu = maNguyenLieuField.getText().trim();
             String tenNguyenLieu = tenNguyenLieuField.getText().trim();
             String giaNhap = giaNhapField.getText().trim();
-            String soLuong = soLuongField.getText().trim();
+            String soLuong = soLuongField.getText().trim() + " " + donViLabel.getText();
+//            String tenNhaCungCap = "";
 
-            if (maNguyenLieu.isEmpty() || tenNguyenLieu.isEmpty() || giaNhap.isEmpty() || soLuong.isEmpty()) {
+            if (Objects.equals(providerLockInValue, "")){
+                providerLockInValue = (String) nguyenLieuTable.getValueAt(nguyenLieuTable.getSelectedRow(), 2);;
+            }
+
+
+            if (maNguyenLieu.isEmpty() || tenNguyenLieu.isEmpty() || giaNhap.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Vui lòng nhập đầy đủ thông tin!", "Lỗi", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            if (!soLuong.matches("\\d+") || !giaNhap.matches("\\d+(\\.\\d+)?" )) {
+            if (!soLuong.split(" ")[0].matches("\\d+")) {
                 JOptionPane.showMessageDialog(null, "Số lượng phải là số hợp lệ!", "Lỗi", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            if (Integer.parseInt(soLuong) == 0){
+            if (Integer.parseInt(soLuong.split(" ")[0]) == 0){
                 JOptionPane.showMessageDialog(null, "Số lượng phải là số hợp lệ (khác 0)!", "Lỗi", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-            int soLuongMoi = Integer.parseInt(soLuong);
+            int soLuongMoi = Integer.parseInt(soLuong.split(" ")[0]);
             boolean daTonTai = false;
 
             for (int i = 0; i < cartTableModel.getRowCount(); i++) {
                 if (cartTableModel.getValueAt(i, 0).equals(maNguyenLieu)) {
-                    int soLuongHienTai = Integer.parseInt(cartTableModel.getValueAt(i, 2).toString());
-                    cartTableModel.setValueAt(soLuongHienTai + soLuongMoi, i, 2);
+                    int soLuongHienTai = Integer.parseInt(cartTableModel.getValueAt(i, 2).toString().split(" ")[0]);
+                    cartTableModel.setValueAt(soLuongHienTai + soLuongMoi + " " + donViLabel.getText(), i, 2);
                     daTonTai = true;
                     break;
                 }
             }
 
             if (!daTonTai) {
-                cartTableModel.addRow(new Object[]{maNguyenLieu, tenNguyenLieu, soLuongMoi, giaNhap});
+                cartTableModel.addRow(new Object[]{maNguyenLieu, tenNguyenLieu, soLuongMoi + " " + donViLabel.getText(), giaNhap});
             }
 
+            lockInProvider(providerLockInValue);
             nhaCungCapComboBox.setEnabled(false);
             resetTableSelectionAndField();
 
@@ -422,7 +440,7 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
                 return;
             }
 
-            String soLuongMoi = soLuongField.getText().trim();
+            String soLuongMoi = soLuongField.getText().trim().split(" ")[0];
             if (soLuongMoi.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Số lượng không được để trống!", "Lỗi", JOptionPane.WARNING_MESSAGE);
                 return;
@@ -439,6 +457,12 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
                     cartTableModel.removeRow(selectedRow);
                     if (cartTableModel.getRowCount() <= 0){
                         nhaCungCapComboBox.setEnabled(true);
+                        phieuNhapBUS.loadDataTableNguyenLieu(nguyenLieuTableModel);
+                        tableScrollPane.setBorder(BorderFactory.createTitledBorder(
+                                BorderFactory.createLineBorder(Color.BLACK),
+                                "Danh sách nguyên liệu ( Nhà cung cấp: chưa chọn )"
+                        ));
+                        providerLockInValue = "";
                     }
                     nguyenLieuTable.clearSelection();
                     cartTable.clearSelection();
@@ -446,7 +470,7 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
                 return;
             }
 
-            cartTableModel.setValueAt(soLuongMoi, selectedRow, 2);
+            cartTableModel.setValueAt(soLuongMoi + " " + donViLabel.getText(), selectedRow, 2);
             resetTableSelectionAndField();
         });
 
@@ -464,6 +488,12 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
                 cartTableModel.removeRow(selectedRow);
                 if (cartTableModel.getRowCount() <= 0){
                     nhaCungCapComboBox.setEnabled(true);
+                    phieuNhapBUS.loadDataTableNguyenLieu(nguyenLieuTableModel);
+                    tableScrollPane.setBorder(BorderFactory.createTitledBorder(
+                            BorderFactory.createLineBorder(Color.BLACK),
+                            "Danh sách nguyên liệu ( Nhà cung cấp: chưa chọn )"
+                    ));
+                    providerLockInValue = "";
                 }
                 resetTableSelectionAndField();
             }
@@ -491,7 +521,8 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
                     phieuNhap.setMaPhieuNhap(phieuNhapBUS.generateID());
                     phieuNhap.setNgayNhap(new Date());
                     phieuNhap.setMaNhanVien("NV001");
-                    phieuNhap.setMaNhaCungCap("NCC001");
+                    String tenNCC = (String) nhaCungCapComboBox.getSelectedItem();
+                    phieuNhap.setMaNhaCungCap(nhaCungCapBUS.getDataByName(tenNCC).getMaNhaCungCap());
                     phieuNhap.setTrangThai(true);
 
                     ArrayList<ChiTietPhieuNhapDTO> chiTietList = new ArrayList<>();
@@ -501,8 +532,8 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
                         ChiTietPhieuNhapDTO chiTiet = new ChiTietPhieuNhapDTO();
 
                         String maNguyenLieu = (String) cartTable.getValueAt(i, 0); // Mã nguyên liệu
-                        int soLuongNhap = Integer.parseInt(cartTable.getValueAt(i, 2).toString()); // Số lượng
-                        double giaNhap = Double.parseDouble(cartTable.getValueAt(i, 3).toString()); // Giá nhập
+                        int soLuongNhap = Integer.parseInt(cartTable.getValueAt(i, 2).toString().split(" ")[0]); // Số lượng
+                        double giaNhap = Double.parseDouble(cartTable.getValueAt(i, 3).toString().split("/")[0]); // Giá nhập
 
                         double thanhTien = giaNhap * soLuongNhap;
 
@@ -536,7 +567,13 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
 
                         cartTableModel.setRowCount(0);
                         resetTableSelectionAndField();
-                        phieuNhapBUS.loadDataTable(nguyenLieuTableModel);
+                        phieuNhapBUS.loadDataTableNguyenLieu(nguyenLieuTableModel);
+                        tableScrollPane.setBorder(BorderFactory.createTitledBorder(
+                                BorderFactory.createLineBorder(Color.BLACK),
+                                "Danh sách nguyên liệu ( Nhà cung cấp: chưa chọn )"
+                        ));
+                        nhaCungCapComboBox.setEnabled(true);
+                        providerLockInValue = "";
 
                     } else {
                         JOptionPane.showMessageDialog(null,
@@ -554,6 +591,32 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
             }
         });
     }
+
+    private void lockInProvider(){
+        String selectedValue = (String) nhaCungCapComboBox.getSelectedItem();
+        NhaCungCapDTO nhaCungCap = nhaCungCapBUS.getDataByName(selectedValue);
+
+        tableScrollPane.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.BLACK),
+                "Danh sách nguyên liệu (" + nhaCungCap.getTenNhaCungCap() + ")"
+        ));
+
+        phieuNhapBUS.loadDataTableNguyenLieu(nguyenLieuTableModel, nhaCungCap.getMaNhaCungCap());
+    }
+
+    // dùng khi thực hiện thêm sản phẩm của nhà cung cấp nào đó
+    private void lockInProvider(String tenNhaCungCap){
+        NhaCungCapDTO nhaCungCap = nhaCungCapBUS.getDataByName(tenNhaCungCap);
+        nhaCungCapComboBox.setSelectedItem(nhaCungCap.getTenNhaCungCap());
+        tableScrollPane.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.BLACK),
+                "Danh sách nguyên liệu (" + tenNhaCungCap + ")"
+        ));
+
+        phieuNhapBUS.loadDataTableNguyenLieu(nguyenLieuTableModel, nhaCungCap.getMaNhaCungCap());
+    }
+
+
 
     private void resetTableSelectionAndField(){
         maNguyenLieuField.setText("");
@@ -588,6 +651,12 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
         String[] columnNames = {"Mã phiếu nhập", "Ngày nhập", "Nhân viên nhập", "Nhà cung cấp", "Tổng tiền"};
         phieuNhapTableModel = new DefaultTableModel(columnNames, 0);
         phieuNhapTable = new JTable(phieuNhapTableModel);
+        TableColumnModel tableColumnModel = phieuNhapTable.getColumnModel();
+        tableColumnModel.getColumn(0).setPreferredWidth(80);  // Mã phiếu
+        tableColumnModel.getColumn(1).setPreferredWidth(120); // Ngày nhập
+        tableColumnModel.getColumn(2).setPreferredWidth(200); // Nhân viên nhập
+        tableColumnModel.getColumn(3).setPreferredWidth(200); // Nhà cung cấp
+        tableColumnModel.getColumn(4).setPreferredWidth(120);  // Tổng tiền
         JScrollPane phieuNhapScrollPane = new JScrollPane(phieuNhapTable);
         phieuNhapScrollPane.setBackground(Color.WHITE);
 
@@ -661,7 +730,7 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
 
         JPanel maPhieuNhapPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         maPhieuNhapPanel.setBackground(Color.WHITE);
-        maPhieuNhapPanel.add(new MyLabel("Mã phiếu nhập: ", 14f, "Bold"));
+        maPhieuNhapPanel.add(new MyLabel("Mã phiếu nhập: ", 11f, "Bold"));
         JTextField maPhieuNhapField = new JTextField(maPhieuNhap, SwingConstants.CENTER);
         maPhieuNhapField.setEditable(false);
         maPhieuNhapField.setPreferredSize(new Dimension(220, 30));
@@ -669,7 +738,7 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
 
         JPanel ngayNhapPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         ngayNhapPanel.setBackground(Color.WHITE);
-        ngayNhapPanel.add(new MyLabel("Ngày nhập: ", 14f, "Bold"));
+        ngayNhapPanel.add(new MyLabel("Ngày nhập: ", 11f, "Bold"));
         JTextField ngayNhapField = new JTextField(sdf.format(phieuNhap.getNgayNhap()));
         ngayNhapField.setEditable(false);
         ngayNhapField.setPreferredSize(new Dimension(220, 30));
@@ -677,7 +746,7 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
 
         JPanel nhanVienNhapPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         nhanVienNhapPanel.setBackground(Color.WHITE);
-        nhanVienNhapPanel.add(new MyLabel("Nhân viên nhập: ", 14f, "Bold"));
+        nhanVienNhapPanel.add(new MyLabel("Nhân viên nhập: ", 11f, "Bold"));
         JTextField nhanVienNhapField = new JTextField(nhanVienNhap.getTenNV() + " (Mã nhân viên:  " + nhanVienNhap.getMaNV() + ")" );
         nhanVienNhapField.setEditable(false);
         nhanVienNhapField.setPreferredSize(new Dimension(220, 30));
@@ -685,7 +754,7 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
 
         JPanel nhaCungCapPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         nhaCungCapPanel.setBackground(Color.WHITE);
-        nhaCungCapPanel.add(new MyLabel("Nhà cung cấp: ", 14f, "Bold"));
+        nhaCungCapPanel.add(new MyLabel("Nhà cung cấp: ", 11f, "Bold"));
         JTextField nhaCungCapField = new JTextField(nhaCungCap.getTenNhaCungCap() + " (" + nhaCungCap.getMaNhaCungCap() + ")" );
         nhaCungCapField.setEditable(false);
         nhaCungCapField.setPreferredSize(new Dimension(220, 30));
@@ -699,9 +768,16 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
         formContentPanel.add(informationPanel, BorderLayout.NORTH);
 
         // table panel
-        String[] columnNames = {"Mã nguyên liệu"," Tên nguyên liệu", "Số lượng nhập", "Giá nhập", "Thành tiền"};
+        String[] columnNames = {"Mã NL"," Tên NL", "Số lượng nhập", "Giá nhập", "Thành tiền"};
         DefaultTableModel chiTietPhieuNhapTableModel = new DefaultTableModel(columnNames, 0);
         JTable chiTietPhieuNhapTable = new JTable(chiTietPhieuNhapTableModel);
+        TableColumnModel tableColumnModel = chiTietPhieuNhapTable.getColumnModel();
+        tableColumnModel.getColumn(0).setPreferredWidth(80);
+        tableColumnModel.getColumn(1).setPreferredWidth(170);
+        tableColumnModel.getColumn(2).setPreferredWidth(130);
+        tableColumnModel.getColumn(3).setPreferredWidth(100);
+        tableColumnModel.getColumn(4).setPreferredWidth(120);
+
         for (ChiTietPhieuNhapDTO chiTietPhieuNhap: danhSachChiTietPhieuNhap){
             NguyenLieuDTO nguyenLieu = nguyenLieuBUS.getDataById(chiTietPhieuNhap.getMaNguyenLieu());
             Vector<String> rowData = new Vector<>();
@@ -712,6 +788,7 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
             rowData.add(String.valueOf(chiTietPhieuNhap.getSoLuongNhap() * phanPhoiBUS.getDataByIdSub(nguyenLieu.getMaNguyenLieu()).getGiaNhap()));
             chiTietPhieuNhapTableModel.addRow(rowData);
         }
+
         formatTableUI(chiTietPhieuNhapTable);
 
         JScrollPane chiTietPhieuNhapScrollPane = new JScrollPane();
@@ -725,7 +802,7 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
         tablePanel.setLayout(new BorderLayout());
         tablePanel.add(chiTietPhieuNhapScrollPane, BorderLayout.CENTER);
 
-        MyLabel tongTienLabel = new MyLabel("Tổng tiền: " + String.valueOf(phieuNhap.getTongTien()), 14f, "Bold");
+        MyLabel tongTienLabel = new MyLabel("Tổng tiền: " + phieuNhap.getTongTien(), 14f, "Bold");
         tongTienLabel.setBorder(BorderFactory.createEmptyBorder(0,0,20,20));
         tongTienLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         tablePanel.add(tongTienLabel, BorderLayout.SOUTH);

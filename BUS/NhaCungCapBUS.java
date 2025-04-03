@@ -19,7 +19,7 @@ public class NhaCungCapBUS implements BUS_Interface<NhaCungCapDTO> {
 
     @Override
     public ArrayList<NhaCungCapDTO> getData() {
-        return null;
+        return nhaCungCapDAO.getData();
     }
 
     @Override
@@ -55,5 +55,9 @@ public class NhaCungCapBUS implements BUS_Interface<NhaCungCapDTO> {
     @Override
     public String generateID() {
         return "";
+    }
+
+    public NhaCungCapDTO getDataByName(String name){
+        return nhaCungCapDAO.getDataByName(name);
     }
 }
