@@ -18,7 +18,7 @@ public class KhuyenMaiDAO implements DAO_Interface<KhuyenMaiDTO> {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             if (connDB.openConnectDB()) {
-                String query = "SELECT * FROM khuyenmai";
+                String query = "SELECT * FROM khuyenmai WHERE trangThai = true";
                 Statement stmt = connDB.conn.createStatement();
                 ResultSet rs = stmt.executeQuery(query);
                 danhSachKhuyenMai = new ArrayList<>();

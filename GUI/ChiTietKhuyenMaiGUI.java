@@ -62,6 +62,7 @@ public class ChiTietKhuyenMaiGUI extends JFrame{
         ImageIcon addIcon = Utilities.loadAndResizeIcon("Resources\\Image\\AddIcon.png", 30, 30);
         ImageIcon editIcon = Utilities.loadAndResizeIcon("Resources\\Image\\EditIcon.png", 30, 30);
         ImageIcon deleteIcon = Utilities.loadAndResizeIcon("Resources\\Image\\DeleteIcon.png", 30, 30);
+        ImageIcon hideIcon = Utilities.loadAndResizeIcon("Resources\\Image\\Hide.png", 30, 30);
 
         MyButton themButton = new MyButton("Thêm", addIcon);
         themButton.setPreferredSize(new Dimension(130, 40));
@@ -75,9 +76,14 @@ public class ChiTietKhuyenMaiGUI extends JFrame{
         xoaButton.setPreferredSize(new Dimension(130, 40));
         xoaButton.addActionListener(_ -> handleXoaChiTiet());
 
+        MyButton anButton = new MyButton("Ẩn", hideIcon);
+        anButton.setPreferredSize(new Dimension(130, 40));
+        anButton.addActionListener(_ -> handleAnChiTiet());
+
         buttonPanel.add(themButton);
         buttonPanel.add(suaButton);
         buttonPanel.add(xoaButton);
+        buttonPanel.add(anButton);
 
         mainPanel.add(buttonPanel, BorderLayout.NORTH);
 
@@ -215,16 +221,19 @@ public class ChiTietKhuyenMaiGUI extends JFrame{
     private void handleThemChiTiet(JFrame formThemChiTietKhuyenMai) {
         try {
             String giaTriKhuyenMaiStr = giaTriKhuyenMaiField.getText().trim();
+
             if (giaTriKhuyenMaiStr.isEmpty()) {
                 JOptionPane.showMessageDialog(formSuaChiTietKhuyenMai, "Giá trị khuyến mãi không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+
             ChiTietKhuyenMaiDTO chiTietKhuyenMaiDTO = new ChiTietKhuyenMaiDTO();
             chiTietKhuyenMaiDTO.setMaKhuyenMai(maKhuyenMai);
             String maThucAn = String.valueOf(thucAnBox.getSelectedItem()).split(". ")[0];
             chiTietKhuyenMaiDTO.setMaThucAn(maThucAn);
             chiTietKhuyenMaiDTO.setGiaTriKhuyenMai(Double.parseDouble(giaTriKhuyenMaiField.getText()));
             chiTietKhuyenMaiDTO.setTrangThai(true);
+
             if (chiTietKhuyenMaiBUS.add(chiTietKhuyenMaiDTO)) {
                 JOptionPane.showMessageDialog(null, "Thêm chi tiết khuyến mãi thành công !", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 formThemChiTietKhuyenMai.dispose();
@@ -244,12 +253,14 @@ public class ChiTietKhuyenMaiGUI extends JFrame{
                 JOptionPane.showMessageDialog(formSuaChiTietKhuyenMai, "Giá trị khuyến mãi không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+
             ChiTietKhuyenMaiDTO chiTietKhuyenMaiDTO = new ChiTietKhuyenMaiDTO();
             chiTietKhuyenMaiDTO.setMaKhuyenMai(maKhuyenMai);
             String maThucAn = thucAnField.getText().split(". ")[0];
             chiTietKhuyenMaiDTO.setMaThucAn(maThucAn);
             chiTietKhuyenMaiDTO.setGiaTriKhuyenMai(Double.parseDouble(giaTriKhuyenMaiField.getText()));
             chiTietKhuyenMaiDTO.setTrangThai(true);
+
             if (chiTietKhuyenMaiBUS.update(chiTietKhuyenMaiDTO)) {
                 JOptionPane.showMessageDialog(null, "Sửa chi tiết khuyến mãi thành công !", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 formSuaChiTietKhuyenMai.dispose();
@@ -270,12 +281,32 @@ public class ChiTietKhuyenMaiGUI extends JFrame{
             return;
         }
 
-        String maThucAn = (String) chiTietTable.getValueAt(selectedRow, 0);
-        if (chiTietKhuyenMaiBUS.delete(maKhuyenMai, maThucAn)){
-            JOptionPane.showMessageDialog(null, "Xóa chi tiết thành công !", "Information", JOptionPane.INFORMATION_MESSAGE);
-            chiTietKhuyenMaiBUS.loadDataTable(chiTietTableModel, maKhuyenMai);
-        } else {
-            JOptionPane.showMessageDialog(null, "Xóa chi tiết thất bại !", "Error", JOptionPane.ERROR_MESSAGE);
+        if (JOptionPane.showConfirmDialog(null, "Xác nhận xóa chi tiết này ?", "Xác nhận", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION){
+            String maThucAn = (String) chiTietTable.getValueAt(selectedRow, 0);
+            if (chiTietKhuyenMaiBUS.delete(maKhuyenMai, maThucAn)){
+                JOptionPane.showMessageDialog(null, "Xóa chi tiết thành công !", "Information", JOptionPane.INFORMATION_MESSAGE);
+                chiTietKhuyenMaiBUS.loadDataTable(chiTietTableModel, maKhuyenMai);
+            } else {
+                JOptionPane.showMessageDialog(null, "Xóa chi tiết thất bại !", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    // xử lý nút ẩn
+    private void handleAnChiTiet() {
+        int selectedRow = chiTietTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một chi tiết để ẩn!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (JOptionPane.showConfirmDialog(null, "Xác nhận ẩn chi tiết này ?", "Xác nhận", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            String maThucAn = (String) chiTietTable.getValueAt(selectedRow, 0);
+            if (chiTietKhuyenMaiBUS.hide(maKhuyenMai, maThucAn)) {
+                chiTietKhuyenMaiBUS.loadDataTable(chiTietTableModel, maKhuyenMai);
+            } else {
+                JOptionPane.showMessageDialog(null, "Ẩn chi tiết thất bại !", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 

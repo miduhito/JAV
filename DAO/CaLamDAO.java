@@ -191,7 +191,7 @@ public class CaLamDAO implements DAO_Interface<CaLamDTO> {
             if (connDB.openConnectDB()) {
                 String deleteQuery = "UPDATE calam SET trangThai = 0 WHERE maCa = ?";
                 PreparedStatement pstmt = connDB.conn.prepareStatement(deleteQuery);
-                pstmt.setString(2, id);
+                pstmt.setString(1, id);
 
                 int rowsAffected = pstmt.executeUpdate();
                 if (rowsAffected > 0) {

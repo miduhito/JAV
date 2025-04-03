@@ -204,7 +204,7 @@ public class LichLamDAO implements DAO_Interface<LichLamDTO> {
             if (connDB.openConnectDB()) {
                 String deleteQuery = "UPDATE lichlamviec SET trangThai = 0 WHERE maLichLam = ?";
                 PreparedStatement pstmt = connDB.conn.prepareStatement(deleteQuery);
-                pstmt.setString(2, id);
+                pstmt.setString(1, id);
 
                 int rowsAffected = pstmt.executeUpdate();
                 if (rowsAffected > 0) {

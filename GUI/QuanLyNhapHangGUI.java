@@ -386,7 +386,6 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
             String tenNguyenLieu = tenNguyenLieuField.getText().trim();
             String giaNhap = giaNhapField.getText().trim();
             String soLuong = soLuongField.getText().trim() + " " + donViLabel.getText();
-//            String tenNhaCungCap = "";
 
             if (Objects.equals(providerLockInValue, "")){
                 providerLockInValue = (String) nguyenLieuTable.getValueAt(nguyenLieuTable.getSelectedRow(), 2);;
@@ -637,7 +636,7 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
         viewDetailButton = new MyButton("Xem chi tiết", viewDetailIcon);
         viewDetailButton.setPreferredSize(new Dimension(165, 35));
 
-        ImageIcon hideButtonIcon = Utilities.loadAndResizeIcon("Resources\\Image\\ViewDetail.png", 20, 20);
+        ImageIcon hideButtonIcon = Utilities.loadAndResizeIcon("Resources\\Image\\Hide.png", 20, 20);
         hideButton = new MyButton("Ẩn phiếu nhập", hideButtonIcon);
         hideButton.setPreferredSize(new Dimension(165, 35));
 

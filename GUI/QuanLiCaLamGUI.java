@@ -3,10 +3,7 @@ package GUI;
 import BUS.CaLamBUS;
 import BUS.LichLamBUS;
 import BUS.NhanVienBUS;
-import Custom.MyButton;
-import Custom.MyLabel;
-import Custom.RobotoFont;
-import Custom.RoundedPanel;
+import Custom.*;
 import DTO.CaLamDTO;
 import DTO.LichLamDTO;
 import DTO.NhanVienDTO;
@@ -38,6 +35,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
     private MyButton editButton;
     private MyButton deleteButton;
     private MyButton schedulingButton;
+    private MyButton hideButton;
     private JTable tableLichLam;
     private DefaultTableModel tableModelLL;
     RoundedPanel centerPanel;
@@ -67,49 +65,42 @@ public class QuanLiCaLamGUI extends RoundedPanel {
             controlPanel.setBackground(Color.WHITE);
             controlPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-            ImageIcon addIcon = new ImageIcon("Resources\\Image\\AddIcon.png");
-            ImageIcon editIcon = new ImageIcon("Resources\\Image\\EditIcon.png");
-            ImageIcon deleteIcon = new ImageIcon("Resources\\Image\\DeleteIcon.png");
-            ImageIcon schedulingIcon = new ImageIcon("Resources\\Image\\Scheduling.png");
-
-            Image addImg = addIcon.getImage();
-            Image editImg = editIcon.getImage();
-            Image deleteImg = deleteIcon.getImage();
-            Image schedulingImg = schedulingIcon.getImage();
-
-            Image newAddImg = addImg.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
-            Image newEditImg = editImg.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
-            Image newDeleteImg = deleteImg.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
-            Image newSchedulingImg = schedulingImg.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
-
-            addIcon = new ImageIcon(newAddImg);
-            editIcon = new ImageIcon(newEditImg);
-            deleteIcon = new ImageIcon(newDeleteImg);
-            schedulingIcon = new ImageIcon(newSchedulingImg);
+            ImageIcon addIcon = Utilities.loadAndResizeIcon("Resources\\Image\\AddIcon.png", 30, 30);
+            ImageIcon editIcon = Utilities.loadAndResizeIcon("Resources\\Image\\EditIcon.png", 30, 30);
+            ImageIcon deleteIcon =Utilities.loadAndResizeIcon("Resources\\Image\\DeleteIcon.png", 30, 30);
+            ImageIcon hideIcon = Utilities.loadAndResizeIcon("Resources\\Image\\Hide.png", 30, 30);
+            ImageIcon schedulingIcon = Utilities.loadAndResizeIcon("Resources\\Image\\Scheduling.png", 30, 30);
 
             addButton = new MyButton("Thêm ca làm", addIcon);
-            addButton.setPreferredSize(new Dimension(180, 40));
+            addButton.setPreferredSize(new Dimension(160, 40));
             addButton.setBackground(Color.decode("#EC5228"));
             addButton.setForeground(Color.WHITE);
             addButton.setFont(RobotoFont.getRobotoBold(14f));
             addButton.setFocusPainted(false);
 
             editButton = new MyButton("Sửa thông tin ca làm", editIcon);
-            editButton.setPreferredSize(new Dimension(220, 40));
+            editButton.setPreferredSize(new Dimension(200, 40));
             editButton.setBackground(Color.decode("#EC5228"));
             editButton.setForeground(Color.WHITE);
             editButton.setFont(RobotoFont.getRobotoBold(14f));
             editButton.setFocusPainted(false);
 
             deleteButton = new MyButton("Xóa ca làm", deleteIcon);
-            deleteButton.setPreferredSize(new Dimension(180, 40));
+            deleteButton.setPreferredSize(new Dimension(160, 40));
             deleteButton.setBackground(Color.decode("#EC5228"));
             deleteButton.setForeground(Color.WHITE);
             deleteButton.setFont(RobotoFont.getRobotoBold(14f));
             deleteButton.setFocusPainted(false);
 
+            hideButton = new MyButton("Ẩn ca làm", hideIcon);
+            hideButton.setPreferredSize(new Dimension(160, 40));
+            hideButton.setBackground(Color.decode("#EC5228"));
+            hideButton.setForeground(Color.WHITE);
+            hideButton.setFont(RobotoFont.getRobotoBold(14f));
+            hideButton.setFocusPainted(false);
+
             schedulingButton = new MyButton("Xếp lịch làm", schedulingIcon);
-            schedulingButton.setPreferredSize(new Dimension(180, 40));
+            schedulingButton.setPreferredSize(new Dimension(160, 40));
             schedulingButton.setBackground(Color.decode("#EC5228"));
             schedulingButton.setForeground(Color.WHITE);
             schedulingButton.setFont(RobotoFont.getRobotoBold(14f));
@@ -120,6 +111,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
             buttonPanel.add(addButton);
             buttonPanel.add(editButton);
             buttonPanel.add(deleteButton);
+            buttonPanel.add(hideButton);
             buttonPanel.add(schedulingButton);
             controlPanel.add(buttonPanel, BorderLayout.WEST);
             this.add(controlPanel, BorderLayout.CENTER);
@@ -713,7 +705,6 @@ public class QuanLiCaLamGUI extends RoundedPanel {
                             JOptionPane.ERROR_MESSAGE);
                 }
             } else if (deleteButton.getText().equals("Xóa lịch làm")) {
-                // TODO: Thêm logic để xóa lịch làm
                 int selectedRow = tableLichLam.getSelectedRow();
                 if (selectedRow != -1) {
                     String maLichLam = (String) tableLichLam.getValueAt(selectedRow, 0);
@@ -736,6 +727,51 @@ public class QuanLiCaLamGUI extends RoundedPanel {
             }
         });
 
+        hideButton.addActionListener(_ ->{
+            if (hideButton.getText().equals("Ẩn ca làm")){
+                JTable tableCL = (JTable) ((JScrollPane) shiftPanel.getComponent(0)).getViewport().getView();
+                int selectedRow = tableCL.getSelectedRow();
+                if (selectedRow != -1) {
+                    String maCa = (String) tableCL.getValueAt(selectedRow, 0);
+                    int confirm = JOptionPane.showConfirmDialog(null,
+                            "Bạn muốn ẩn ca làm này chứ ?",
+                            "Xác nhận ẩn",
+                            JOptionPane.YES_NO_OPTION);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        if (clBUS.hide(maCa)) {
+                            clBUS.loadDataTable(tableModelCL);
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Vui lòng chọn một ca làm để xóa!",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            else if (deleteButton.getText().equals("Ẩn lịch làm")) {
+                int selectedRow = tableLichLam.getSelectedRow();
+                if (selectedRow != -1) {
+                    String maLichLam = (String) tableLichLam.getValueAt(selectedRow, 0);
+                    int confirm = JOptionPane.showConfirmDialog(null,
+                            "Bạn có chắc muốn ẩn lịch làm này ? ",
+                            "Xác nhận ẩn",
+                            JOptionPane.YES_NO_OPTION);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        if (llBUS.hide(maLichLam)) {
+                            ArrayList<LichLamDTO> lichLamList = llBUS.getDataByDate(new Date());
+                            llBUS.loadDataTable(tableModelLL, lichLamList);
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Vui lòng chọn một lịch làm để xóa!",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
         ImageIcon finalShiftIcon = shiftIcon;
         ImageIcon finalSchedulingIcon = schedulingIcon;
         schedulingButton.addActionListener(_ -> {
@@ -744,6 +780,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
                 addButton.setText("Thêm lịch làm");
                 editButton.setText("Sửa lịch làm");
                 deleteButton.setText("Xóa lịch làm");
+                hideButton.setText("Ẩn lịch làm");
                 schedulingButton.setText("Quản lý ca làm");
                 schedulingButton.setIcon(finalShiftIcon);
                 cardLayout.show(contentPanel, "SchedulingPanel");
@@ -752,6 +789,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
                 addButton.setText("Thêm ca làm");
                 editButton.setText("Sửa thông tin ca làm");
                 deleteButton.setText("Xóa ca làm");
+                hideButton.setText("Ẩn ca làm");
                 schedulingButton.setText("Xếp lịch làm");
                 schedulingButton.setIcon(finalSchedulingIcon);
                 cardLayout.show(contentPanel, "ShiftPanel");

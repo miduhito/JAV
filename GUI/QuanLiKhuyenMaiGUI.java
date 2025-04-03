@@ -47,17 +47,22 @@ public class QuanLiKhuyenMaiGUI extends RoundedPanel {
         ImageIcon addIcon = Utilities.loadAndResizeIcon("Resources\\Image\\AddIcon.png", 30, 30);
         ImageIcon editIcon = Utilities.loadAndResizeIcon("Resources\\Image\\EditIcon.png", 30, 30);
         ImageIcon deleteIcon = Utilities.loadAndResizeIcon("Resources\\Image\\DeleteIcon.png", 30, 30);
+        ImageIcon hideIcon = Utilities.loadAndResizeIcon("Resources\\Image\\Hide.png", 30, 30);
         ImageIcon viewDetailIcon = Utilities.loadAndResizeIcon("Resources\\Image\\ViewDetail.png", 30, 30);
+
+
 
         // các nút chức năng
         MyButton addButton = new MyButton("Thêm khuyến mãi", addIcon);
-        MyButton updateButton = new MyButton("Sửa thông tin khuyến mãi", editIcon);
+        MyButton updateButton = new MyButton("Sửa thông tin", editIcon);
         MyButton deleteButton = new MyButton("Xóa khuyến mãi", deleteIcon);
-        MyButton detailButton = new MyButton("Xem chi tiết khuyến mãi", viewDetailIcon);
+        MyButton hideButton = new MyButton("Ẩn khuyến mãi", hideIcon);
+        MyButton detailButton = new MyButton("Xem chi tiết", viewDetailIcon);
 
         buttonPanel.add(addButton);
         buttonPanel.add(updateButton);
         buttonPanel.add(deleteButton);
+        buttonPanel.add(hideButton);
         buttonPanel.add(detailButton);
 
         // bảng hiển thị khuyến mãi
@@ -92,6 +97,7 @@ public class QuanLiKhuyenMaiGUI extends RoundedPanel {
         addButton.addActionListener(_ -> FormThemKhuyenMai());
         updateButton.addActionListener(_ -> FormSuaKhuyenMai(tableModel));
         deleteButton.addActionListener(_ -> handleXoaKhuyenMai());
+        hideButton.addActionListener(_ -> handleAnKhuyenMai());
         detailButton.addActionListener(_ -> handleXemChiTietKhuyenMai());
     }
 
@@ -299,6 +305,25 @@ public class QuanLiKhuyenMaiGUI extends RoundedPanel {
         if (confirm == JOptionPane.YES_OPTION) {
             if (khuyenMaiBUS.delete(maKhuyenMai)) {
                 JOptionPane.showMessageDialog(null, "Xóa khuyến mãi thành công!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                khuyenMaiBUS.loadTableData(tableModel); // Cập nhật lại bảng
+            }
+        }
+    }
+
+    // xử lý ẩn khuyến mãi
+    private void handleAnKhuyenMai() {
+        int selectedRow = khuyenMaiTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(null, "Vui lòng chọn một khuyến mãi để ẩb\n!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String maKhuyenMai = (String) tableModel.getValueAt(selectedRow, 0);
+        int confirm = JOptionPane.showConfirmDialog(null,
+                "Bạn có chắc chắn muốn ẩn khuyến mãi ?",
+                "Xác nhận ẩn", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            if (khuyenMaiBUS.hide(maKhuyenMai)) {
                 khuyenMaiBUS.loadTableData(tableModel); // Cập nhật lại bảng
             }
         }
