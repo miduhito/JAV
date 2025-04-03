@@ -124,7 +124,7 @@ CREATE TABLE `chitietkhuyenmai` (
 
 LOCK TABLES `chitietkhuyenmai` WRITE;
 /*!40000 ALTER TABLE `chitietkhuyenmai` DISABLE KEYS */;
-INSERT INTO `chitietkhuyenmai` VALUES ('KM001','TA001',25.00,1),('KM001','TA002',20.00,1),('KM002','TA002',25000.00,1),('KM003','TA001',35000.00,1);
+INSERT INTO `chitietkhuyenmai` VALUES ('KM001','TA001',23.00,1),('KM001','TA002',22.00,1),('KM003','TA001',35000.00,1);
 /*!40000 ALTER TABLE `chitietkhuyenmai` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -141,6 +141,8 @@ CREATE TABLE `chitietphieunhap` (
   `soLuongNhap` int DEFAULT NULL,
   `giaNhap` decimal(10,2) DEFAULT NULL,
   `thanhTien` decimal(10,2) DEFAULT NULL,
+  `ghiChu` varchar(255) DEFAULT NULL,
+  `trangThai` tinyint DEFAULT NULL,
   PRIMARY KEY (`maPhieuNhap`,`maNguyenLieu`),
   KEY `maNguyenLieu` (`maNguyenLieu`),
   CONSTRAINT `chitietphieunhap_ibfk_1` FOREIGN KEY (`maPhieuNhap`) REFERENCES `phieunhap` (`maPhieuNhap`),
@@ -154,7 +156,7 @@ CREATE TABLE `chitietphieunhap` (
 
 LOCK TABLES `chitietphieunhap` WRITE;
 /*!40000 ALTER TABLE `chitietphieunhap` DISABLE KEYS */;
-INSERT INTO `chitietphieunhap` VALUES ('PN001','NL1',10,15.00,150.00),('PN001','NL2',5,20.00,100.00),('PN002','NL1',8,15.00,120.00);
+INSERT INTO `chitietphieunhap` VALUES ('PN001','NL1',10,15.00,150.00,NULL,1),('PN001','NL2',5,20.00,100.00,NULL,1),('PN002','NL1',8,15.00,120.00,NULL,1),('PN008','NL1',2,15.00,30.00,'',1),('PN008','NL2',2,20.00,40.00,'',1),('PN009','NL1',2,15.00,30.00,'',1),('PN009','NL2',2,20.00,40.00,'',1),('PN010','NL1',3,15.00,45.00,'',1),('PN010','NL2',3,20.00,60.00,'',1),('PN011','NL1',5,15.00,75.00,'',1),('PN011','NL2',2,20.00,40.00,'',1),('PN012','NL1',2,15.00,30.00,'',1),('PN012','NL2',2,20.00,40.00,'',1),('PN013','NL1',2,15.00,30.00,'',1),('PN013','NL2',2,20.00,40.00,'',1),('PN014','NL1',13,15.00,195.00,'',1),('PN015','NL2',20,20.00,400.00,'',1),('PN016','NL2',19,20.00,380.00,'',1),('PN017','NL1',5,15.00,75.00,'',1),('PN018','NL1',18,15.00,270.00,'',1),('PN019','NL2',15,20.00,300.00,'',1),('PN020','NL1',25,15.00,375.00,'',1);
 /*!40000 ALTER TABLE `chitietphieunhap` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -352,7 +354,7 @@ CREATE TABLE `nguyenlieu` (
 
 LOCK TABLES `nguyenlieu` WRITE;
 /*!40000 ALTER TABLE `nguyenlieu` DISABLE KEYS */;
-INSERT INTO `nguyenlieu` VALUES ('NL1','Bánh phở','Nguyên liệu chính','2023-01-01','2023-12-31',100.00,'kg'),('NL2','Thịt bò','Thịt','2023-01-15','2023-12-31',50.00,'kg');
+INSERT INTO `nguyenlieu` VALUES ('NL1','Bánh phở','Nguyên liệu chính','2023-01-01','2023-12-31',175.00,'kg'),('NL2','Thịt bò','Thịt','2023-01-15','2023-12-31',115.00,'kg');
 /*!40000 ALTER TABLE `nguyenlieu` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -367,8 +369,9 @@ CREATE TABLE `nhacungcap` (
   `maNhaCungCap` varchar(20) NOT NULL,
   `tenNhaCungCap` varchar(100) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
-  `SDT` int DEFAULT NULL,
+  `SDT` varchar(20) DEFAULT NULL,
   `diaChi` varchar(255) DEFAULT NULL,
+  `trangThai` tinyint DEFAULT NULL,
   PRIMARY KEY (`maNhaCungCap`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -379,7 +382,7 @@ CREATE TABLE `nhacungcap` (
 
 LOCK TABLES `nhacungcap` WRITE;
 /*!40000 ALTER TABLE `nhacungcap` DISABLE KEYS */;
-INSERT INTO `nhacungcap` VALUES ('NCC001','Công ty TNHH ABC','contact@abc.com',123456789,'123 Đường A, Hà Nội'),('NCC002','Công ty TNHH XYZ','info@xyz.com',987654321,'456 Đường B, HCM');
+INSERT INTO `nhacungcap` VALUES ('NCC001','Công ty TNHH ABC','contact@abc.com','123456789','123 Đường A, Hà Nội',1),('NCC002','Công ty TNHH XYZ','info@xyz.com','987654321','456 Đường B, HCM',1);
 /*!40000 ALTER TABLE `nhacungcap` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -457,6 +460,7 @@ CREATE TABLE `phieunhap` (
   `maNhanVien` varchar(20) DEFAULT NULL,
   `maNCC` varchar(45) DEFAULT NULL,
   `tongTien` decimal(10,2) DEFAULT NULL,
+  `trangThai` tinyint DEFAULT NULL,
   PRIMARY KEY (`maPhieuNhap`),
   KEY `maNhanVien` (`maNhanVien`),
   CONSTRAINT `phieunhap_ibfk_1` FOREIGN KEY (`maNhanVien`) REFERENCES `nhanvien` (`maNhanVien`)
@@ -469,7 +473,7 @@ CREATE TABLE `phieunhap` (
 
 LOCK TABLES `phieunhap` WRITE;
 /*!40000 ALTER TABLE `phieunhap` DISABLE KEYS */;
-INSERT INTO `phieunhap` VALUES ('PN001','2023-02-15','NV001','NCC001',250.00),('PN002','2023-02-16','NV002','NCC002',120.00);
+INSERT INTO `phieunhap` VALUES ('PN001','2023-02-15','NV001','NCC001',250.00,1),('PN002','2023-02-16','NV002','NCC002',120.00,1),('PN008','2025-04-02','NV001','NCC001',70.00,1),('PN009','2025-04-02','NV001','NCC001',70.00,1),('PN010','2025-04-02','NV001','NCC001',105.00,0),('PN011','2025-04-02','NV001','NCC001',115.00,1),('PN012','2025-04-02','NV001','NCC001',70.00,1),('PN013','2025-04-02','NV001','NCC001',70.00,1),('PN014','2025-04-03','NV001','NCC001',195.00,1),('PN015','2025-04-03','NV001','NCC002',400.00,1),('PN016','2025-04-03','NV001','NCC002',380.00,1),('PN017','2025-04-03','NV001','NCC001',75.00,1),('PN018','2025-04-03','NV001','NCC001',270.00,1),('PN019','2025-04-03','NV001','NCC002',300.00,1),('PN020','2025-04-03','NV001','NCC001',375.00,1);
 /*!40000 ALTER TABLE `phieunhap` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -539,4 +543,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-01  5:47:18
+-- Dump completed on 2025-04-04  5:08:08

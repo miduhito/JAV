@@ -11,6 +11,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Vector;
 
@@ -167,8 +168,10 @@ public class PhieuNhapBUS implements BUS_Interface<PhieuNhapDTO> {
         } else {
             JOptionPane.showMessageDialog(null, "Không tìm thấy dữ liệu phiếu nhập", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
     }
 
+    public ArrayList<PhieuNhapDTO> advancedSearch(String maPhieuNhap, String maNhanVien, String maNhaCungCap, Date startDate, Date endDate) {
+        return phieuNhapDAO.advancedSearch(maPhieuNhap, maNhanVien, maNhaCungCap, startDate, endDate);
+    }
 
 }

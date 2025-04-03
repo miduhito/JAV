@@ -24,10 +24,10 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
     public JTable nguyenLieuTable,cartTable, phieuNhapTable;
     public DefaultTableModel nguyenLieuTableModel, cartTableModel, phieuNhapTableModel;
     public MyLabel titleHeader, donViLabel;
-    public MyButton addButton, editButton, deleteButton, confirmButton, viewDetailButton, hideButton;
+    public MyButton addButton, editButton, deleteButton, confirmButton, viewDetailButton, hideButton, advancedSearchButton;
     public JPanel headerPanel, swicthButtonPanel, contentPanel, fieldBox1, fieldBox2, fieldBox3, fieldBox4, fieldBox5, buttonBox1, buttonBox2, buttonBox3, buttonBox4;
     public JPanel functionPanel;
-    public JTextField maNguyenLieuField, tenNguyenLieuField, giaNhapField, soLuongField;
+    public JTextField maNguyenLieuField, tenNguyenLieuField, giaNhapField, soLuongField, filterInput;
     public JComboBox<String> nhaCungCapComboBox;
     public PhieuNhapBUS phieuNhapBUS;
     public ChiTietPhieuNhapBUS chiTietPhieuNhapBUS;
@@ -640,10 +640,27 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
         hideButton = new MyButton("Ẩn phiếu nhập", hideButtonIcon);
         hideButton.setPreferredSize(new Dimension(165, 35));
 
+        // Basic search input
+        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        filterPanel.setBackground(Color.WHITE);
+        MyLabel filterLabel = new MyLabel("Tìm mã phiếu nhập:", 14f, "Bold");
+        filterInput = new JTextField();
+        filterInput.setPreferredSize(new Dimension(160,35));
+        filterInput.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        filterPanel.add(filterLabel);
+        filterPanel.add(filterInput);
+
+        // Advanced search button
+        ImageIcon searchIcon = Utilities.loadAndResizeIcon("Resources\\Image\\MagnifyingGlass.png", 20, 20);
+        advancedSearchButton = new MyButton("Tìm kiếm nâng cao", searchIcon);
+        advancedSearchButton.setFont(RobotoFont.getRobotoBold(12f));
+        filterPanel.add(advancedSearchButton);
+
         functionPanel = new JPanel();
         functionPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         functionPanel.setBackground(Color.WHITE);
         functionPanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,0));
+        functionPanel.add(filterPanel);
         functionPanel.add(viewDetailButton);
         functionPanel.add(hideButton);
 
@@ -671,6 +688,37 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
     }
 
     public void loadPhieuNhapButtonActionListener() {
+        filterInput.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) { filterTable(); }
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) { filterTable(); }
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) { filterTable(); }
+
+            private void filterTable() {
+                String filterText = filterInput.getText().trim().toLowerCase();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                phieuNhapTableModel.setRowCount(0);
+                for (PhieuNhapDTO phieuNhap : phieuNhapBUS.getData()) {
+                    String maPhieuNhap = phieuNhap.getMaPhieuNhap();
+                    if (filterText.isEmpty() || maPhieuNhap.contains(filterText)) {
+                        Vector<String> rowData = new Vector<>();
+                        String maNhanVien = phieuNhap.getMaNhanVien();
+                        String maNCC = phieuNhap.getMaNhaCungCap();
+                        rowData.add(phieuNhap.getMaPhieuNhap());
+                        rowData.add(dateFormat.format(phieuNhap.getNgayNhap()));
+                        rowData.add(maNhanVien + " - " + nhanVienBUS.getDataById(maNhanVien).getTenNV());
+                        rowData.add(maNCC + " - " + nhaCungCapBUS.getDataById(maNCC).getTenNhaCungCap());
+                        rowData.add(String.valueOf(phieuNhap.getTongTien()));
+                        phieuNhapTableModel.addRow(rowData);
+                    }
+                }
+            }
+        });
+
+        advancedSearchButton.addActionListener(e -> showAdvancedSearchDialog());
+
         viewDetailButton.addActionListener(_ ->{
             int selectedRow = phieuNhapTable.getSelectedRow();
             if (selectedRow == -1 ){
@@ -822,6 +870,102 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
         detailForm.add(footerPanel, BorderLayout.SOUTH);
 
         detailForm.setVisible(true);
+    }
+
+    private void showAdvancedSearchDialog() {
+        JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Tìm kiếm nâng cao", true);
+        dialog.setLayout(new GridBagLayout());
+        dialog.setSize(400, 300);
+        dialog.setLocationRelativeTo(this);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JPanel fieldsPanel = new JPanel();
+        fieldsPanel.setLayout(new BoxLayout(fieldsPanel, BoxLayout.Y_AXIS));
+        fieldsPanel.setBackground(Color.WHITE);
+
+        JPanel maPhieuNhapPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        maPhieuNhapPanel.setBackground(Color.WHITE);
+        MyLabel maPhieuNhapLabel = new MyLabel("Mã phiếu nhập:", 14f, "Bold");
+        JTextField maPhieuNhapField = new JTextField(15);
+        maPhieuNhapPanel.add(maPhieuNhapLabel);
+        maPhieuNhapPanel.add(maPhieuNhapField);
+        fieldsPanel.add(maPhieuNhapPanel);
+
+        JPanel nhanVienPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        nhanVienPanel.setBackground(Color.WHITE);
+        MyLabel nhanVienLabel = new MyLabel("Nhân viên nhập:", 14f, "Bold");
+        JComboBox<String> nhanVienCombo = new JComboBox<>(new String[]{"NV001", "NV002", "NV003"});
+        nhanVienPanel.add(nhanVienLabel);
+        nhanVienPanel.add(nhanVienCombo);
+        fieldsPanel.add(nhanVienPanel);
+
+
+        JPanel nhaCungCapPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        nhaCungCapPanel.setBackground(Color.WHITE);
+        MyLabel nhaCungCapLabel = new MyLabel("Nhà cung cấp:", 14f, "Bold");
+        JComboBox<String> nhaCungCapCombo = new JComboBox<>(new String[]{"NCC001", "NCC002", "NCC003"});
+        nhaCungCapPanel.add(nhaCungCapLabel);
+        nhaCungCapPanel.add(nhaCungCapCombo);
+        fieldsPanel.add(nhaCungCapPanel);
+
+        JPanel ngayNhapPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        ngayNhapPanel.setBackground(Color.WHITE);
+        MyLabel ngayNhapLabel = new MyLabel("Ngày nhập:", 14f, "Bold");
+
+        com.toedter.calendar.JDateChooser startDate = new com.toedter.calendar.JDateChooser();
+        com.toedter.calendar.JDateChooser endDate = new com.toedter.calendar.JDateChooser();
+        ngayNhapPanel.add(ngayNhapLabel);
+        ngayNhapPanel.add(new JLabel("Từ:"));
+        ngayNhapPanel.add(startDate);
+        ngayNhapPanel.add(new JLabel("Đến:"));
+        ngayNhapPanel.add(endDate);
+        fieldsPanel.add(ngayNhapPanel);
+
+        JButton searchButton = new JButton("Tìm kiếm");
+        searchButton.setFont(RobotoFont.getRobotoBold(12f));
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        dialog.add(fieldsPanel, gbc);
+
+        gbc.gridy = 1;
+        dialog.add(searchButton, gbc);
+
+        searchButton.addActionListener(e -> {
+            String maPhieuNhap = maPhieuNhapField.getText().trim();
+            String maNhanVien = (String) nhanVienCombo.getSelectedItem();
+            String maNhaCungCap = (String) nhaCungCapCombo.getSelectedItem();
+            java.util.Date startDateValue = startDate.getDate();
+            java.util.Date endDateValue = endDate.getDate();
+
+            ArrayList<PhieuNhapDTO> filteredList = phieuNhapBUS.advancedSearch(
+                    maPhieuNhap.isEmpty() ? null : maPhieuNhap,
+                    maNhanVien.equals("Chọn nhân viên") ? null : maNhanVien,
+                    maNhaCungCap.equals("Chọn nhà cung cấp") ? null : maNhaCungCap,
+                    startDateValue,
+                    endDateValue
+            );
+
+            // Update table with filtered data
+            phieuNhapTableModel.setRowCount(0);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            for (PhieuNhapDTO phieuNhap : filteredList) {
+                String maNV = phieuNhap.getMaNhanVien();
+                String maNCC = phieuNhap.getMaNhaCungCap();
+                phieuNhapTableModel.addRow(new Object[]{
+                    phieuNhap.getMaPhieuNhap(),
+                    dateFormat.format(phieuNhap.getNgayNhap()),
+                    maNV + " - " + nhanVienBUS.getDataById(maNV).getTenNV(),
+                    maNCC + " - " + nhaCungCapBUS.getDataById(maNCC).getTenNhaCungCap(),
+                    String.valueOf(phieuNhap.getTongTien())
+                });
+            }
+            dialog.dispose();
+        });
+        dialog.setVisible(true);
     }
 
 

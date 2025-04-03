@@ -242,5 +242,68 @@ public class PhieuNhapDAO implements DAO_Interface<PhieuNhapDTO> {
         }
         return newID;
     }
+
+    public ArrayList<PhieuNhapDTO> advancedSearch(String maPhieuNhap, String maNhanVien, String maNhaCungCap, Date startDate, Date endDate) {
+        ArrayList<PhieuNhapDTO> result = new ArrayList<>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            connDB.openConnectDB();
+
+            StringBuilder sql = new StringBuilder("SELECT * FROM phieunhap WHERE 1=1");
+            ArrayList<Object> params = new ArrayList<>();
+
+            if (maPhieuNhap != null && !maPhieuNhap.isEmpty()) {
+                sql.append(" AND maPhieuNhap LIKE ?");
+                params.add("%" + maPhieuNhap + "%");
+            }
+            if (maNhanVien != null && !maNhanVien.isEmpty()) {
+                sql.append(" AND maNhanVien = ?");
+                params.add(maNhanVien);
+            }
+            if (maNhaCungCap != null && !maNhaCungCap.isEmpty()) {
+                sql.append(" AND maNCC = ?");
+                params.add(maNhaCungCap);
+            }
+            if (startDate != null) {
+                sql.append(" AND ngayNhap >= ?");
+                params.add(new java.sql.Date(startDate.getTime()));
+            }
+            if (endDate != null) {
+                sql.append(" AND ngayNhap <= ?");
+                params.add(new java.sql.Date(endDate.getTime()));
+            }
+
+            ps = connDB.conn.prepareStatement(sql.toString());
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                PhieuNhapDTO dto = new PhieuNhapDTO();
+                dto.setMaPhieuNhap(rs.getString("maPhieuNhap"));
+                dto.setNgayNhap(rs.getDate("ngayNhap"));
+                dto.setMaNhanVien(rs.getString("maNhanVien"));
+                dto.setMaNhaCungCap(rs.getString("maNCC"));
+                dto.setTongTien(rs.getDouble("tongTien"));
+                dto.setTrangThai(rs.getBoolean("trangThai"));
+                result.add(dto);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Lỗi truy vấn cơ sở dữ liệu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return result;
+    }
 }
 
