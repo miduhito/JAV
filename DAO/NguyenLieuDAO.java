@@ -5,6 +5,7 @@ import DTO.NguyenLieuDTO;
 import Interface.DAO_Interface;
 
 import javax.swing.*;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -54,7 +55,40 @@ public class NguyenLieuDAO implements DAO_Interface<NguyenLieuDTO> {
 
     @Override
     public NguyenLieuDTO getDataById(String id) {
-        return null;
+        NguyenLieuDTO nguyenLieu = null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            if(connDB.openConnectDB()){
+                String query = "SELECT * FROM nguyenLieu WHERE maNguyenLieu = ?";
+                PreparedStatement pstmt = connDB.conn.prepareStatement(query);
+                pstmt.setString(1, id);
+                ResultSet rs = pstmt.executeQuery();
+
+                if (rs.next()) {
+                    nguyenLieu = new NguyenLieuDTO();
+                    nguyenLieu.setMaNguyenLieu(rs.getString("maNguyenLieu"));
+                    nguyenLieu.setTenNguyenLieu(rs.getString("tenNguyenLieu"));
+                    nguyenLieu.setLoaiNguyenLieu(rs.getString("loaiNguyenLieu"));
+                    nguyenLieu.setNgayNhap(rs.getDate("ngayNhap"));
+                    nguyenLieu.setNgayHetHan(rs.getDate("ngayHetHan"));
+                    nguyenLieu.setSoLuong(rs.getDouble("soLuong"));
+                    nguyenLieu.setDonViDo(rs.getString("donViDo"));
+                }
+                rs.close();
+                pstmt.close();
+                connDB.closeConnectDB();
+            }
+        }
+        catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Lỗi kết nối cơ sở dữ liệu!" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        catch (ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Không tìm thấy class driver " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        catch (Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return nguyenLieu;
     }
 
     @Override
@@ -85,5 +119,48 @@ public class NguyenLieuDAO implements DAO_Interface<NguyenLieuDTO> {
     @Override
     public String generateID() {
         return "";
+    }
+
+    public void updateAmount(String maNguyenLieu, double soLuong){
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            if (connDB.openConnectDB()){
+                String sql = "UPDATE nguyenLieu SET soLuong = soLuong + ? WHERE maNguyenLieu = ?";
+                PreparedStatement ps = connDB.conn.prepareStatement(sql);
+
+                ps.setDouble(1, soLuong);
+                ps.setString(2, maNguyenLieu);
+
+                int rowsAffected = ps.executeUpdate();
+                if (rowsAffected > 0) {
+                    return;
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Không tìm thấy nguyên liệu với mã: " + maNguyenLieu,
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                try {
+                    ps.close();
+                    connDB.closeConnectDB();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                JOptionPane.showMessageDialog(null,
+                        "Không thể kết nối đến cơ sở dữ liệu!",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Lỗi kết nối cơ sở dữ liệu!" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        catch (ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Không tìm thấy class driver " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        catch (Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

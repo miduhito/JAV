@@ -17,6 +17,10 @@ public class ChiTietPhieuNhapDAO implements DAO_SubInterface<ChiTietPhieuNhapDTO
 
     public connectDatabase connDB = new connectDatabase();
 
+    public void closeConnectDB(){
+        connDB.closeConnectDB();
+    }
+
     public ArrayList<ChiTietPhieuNhapDTO> getData(){
         ArrayList<ChiTietPhieuNhapDTO> danhSachChiTietPhieuNhap = null;
         try {
@@ -153,8 +157,6 @@ public class ChiTietPhieuNhapDAO implements DAO_SubInterface<ChiTietPhieuNhapDTO
                 ps.setString(6, entity.getGhiChu());
                 ps.setBoolean(7, true);
                 result = ps.executeUpdate() > 0;
-                ps.close();
-                connDB.closeConnectDB();
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Lỗi kết nối cơ sở dữ liệu!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -275,9 +277,9 @@ public class ChiTietPhieuNhapDAO implements DAO_SubInterface<ChiTietPhieuNhapDTO
                         return true;
                     }
                 }
-                rs.close();
-                ps.close();
-                connDB.closeConnectDB();
+//                rs.close();
+//                ps.close();
+//                connDB.closeConnectDB();
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Lỗi kết nối cơ sở dữ liệu!", "Error", JOptionPane.ERROR_MESSAGE);
