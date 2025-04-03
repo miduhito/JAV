@@ -11,6 +11,7 @@ import javax.swing.table.DefaultTableModel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Vector;
 
 public class PhieuNhapBUS implements BUS_Interface<PhieuNhapDTO> {
     ArrayList<PhieuNhapDTO> danhSachPhieuNhap;
@@ -18,6 +19,7 @@ public class PhieuNhapBUS implements BUS_Interface<PhieuNhapDTO> {
     NguyenLieuBUS nguyenLieuBUS;
     PhanPhoiBUS phanPhoiBUS;
     NhaCungCapBUS nhaCungCapBUS;
+    NhanVienBUS nhanVienBUS;
     PhieuNhapDAO phieuNhapDAO;
 
     public PhieuNhapBUS(){
@@ -26,10 +28,9 @@ public class PhieuNhapBUS implements BUS_Interface<PhieuNhapDTO> {
         nguyenLieuBUS = new NguyenLieuBUS();
         phanPhoiBUS = new PhanPhoiBUS();
         nhaCungCapBUS = new NhaCungCapBUS();
+        nhanVienBUS = new NhanVienBUS();
         phieuNhapDAO = new PhieuNhapDAO();
     }
-
-
 
     @Override
     public ArrayList<PhieuNhapDTO> getData (){
@@ -105,8 +106,9 @@ public class PhieuNhapBUS implements BUS_Interface<PhieuNhapDTO> {
                 Object[] row = {
                         nguyenLieu.getMaNguyenLieu(),
                         nguyenLieu.getTenNguyenLieu(),
-                        nhaCungCapBUS.getDataById(maNCC).getTenNhaCungCap(),
+                        maNCC + " - " + nhaCungCapBUS.getDataById(maNCC).getTenNhaCungCap(),
                         phanPhoiBUS.getDataByIdSub(nguyenLieu.getMaNguyenLieu()).getGiaNhap(),
+                        nguyenLieu.getSoLuong(),
                         nguyenLieu.getDonViDo()
                 };
                 tableModel.addRow(row);
@@ -116,7 +118,27 @@ public class PhieuNhapBUS implements BUS_Interface<PhieuNhapDTO> {
         }
     }
 
-    public void loadDataCart(){
+    public void loadDataPhieuNhap(DefaultTableModel tableModel){
+        danhSachPhieuNhap = new ArrayList<>();
+        danhSachPhieuNhap = phieuNhapDAO.getData();
+        tableModel.setRowCount(0);
+
+        if (danhSachPhieuNhap != null){
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            for (PhieuNhapDTO phieuNhap: danhSachPhieuNhap){
+                Vector<String> rowData = new Vector<>();
+                String maNhanVien = phieuNhap.getMaNhanVien();
+                String maNCC = phieuNhap.getMaNhaCungCap();
+                rowData.add(phieuNhap.getMaPhieuNhap());
+                rowData.add(dateFormat.format(phieuNhap.getNgayNhap()));
+                rowData.add(maNhanVien + " - " + nhanVienBUS.getDataById(maNhanVien).getTenNV());
+                rowData.add(maNCC + " - " + nhaCungCapBUS.getDataById(maNCC).getTenNhaCungCap());
+                rowData.add(String.valueOf(phieuNhap.getTongTien()));
+                tableModel.addRow(rowData);
+            }
+        }else {
+            JOptionPane.showMessageDialog(null, "Không tìm thấy dữ liệu phiếu nhập", "Error", JOptionPane.ERROR_MESSAGE);
+        }
 
     }
 

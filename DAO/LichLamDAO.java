@@ -268,8 +268,6 @@ public class LichLamDAO implements DAO_Interface<LichLamDTO> {
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, e.getMessage());
-        } finally {
-            connDB.closeConnectDB();
         }
         return false;
     }

@@ -227,9 +227,6 @@ public class ChucVuDAO implements DAO_Interface<ChucVuDTO> {
                                 "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
-                rs.close();
-                pstmt.close();
-                connDB.closeConnectDB();
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null,

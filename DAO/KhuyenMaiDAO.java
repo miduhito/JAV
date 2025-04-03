@@ -229,9 +229,6 @@ public class KhuyenMaiDAO implements DAO_Interface<KhuyenMaiDTO> {
                                 "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
-                rs.close();
-                pstmt.close();
-                connDB.closeConnectDB();
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null,
