@@ -302,7 +302,6 @@ public class PhieuNhapDAO implements DAO_Interface<PhieuNhapDTO> {
                 e.printStackTrace();
             }
         }
-
         return result;
     }
 }

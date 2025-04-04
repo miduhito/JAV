@@ -3,6 +3,7 @@ package GUI;
 import BUS.*;
 import Custom.*;
 import DTO.*;
+import com.toedter.calendar.JDateChooser;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -13,6 +14,8 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Vector;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -290,38 +293,6 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
         headerRendererCart.setHorizontalAlignment(SwingConstants.CENTER);
         table.getTableHeader().setDefaultRenderer(headerRendererCart);
     }
-
-//    private void formatTablePhieuNhap(){
-//        if (phieuNhapTable.getRowCount() >= 1){
-//            TableColumnModel columnModel = phieuNhapTable.getColumnModel();
-//            phieuNhapTable.setRowHeight(30);
-//
-//            columnModel.getColumn(0).setPreferredWidth(80);  // Mã phiếu
-//            columnModel.getColumn(1).setPreferredWidth(120); // Ngày nhập
-//            columnModel.getColumn(2).setPreferredWidth(200); // Nhân viên nhập
-//            columnModel.getColumn(3).setPreferredWidth(200); // Nhà cung cấp
-//            columnModel.getColumn(4).setPreferredWidth(120);  // Tổng tiền
-//
-//            phieuNhapTable.setBackground(Color.WHITE);
-//            phieuNhapTable.setFont(RobotoFont.getRobotoRegular(12f));
-//
-//            JTableHeader headerInformation = phieuNhapTable.getTableHeader();
-//            headerInformation.setBackground(Color.WHITE);
-//            headerInformation.setFont(RobotoFont.getRobotoBold(14f));
-//
-//            DefaultTableCellRenderer centerRendererInformation = new DefaultTableCellRenderer();
-//            centerRendererInformation.setHorizontalAlignment(SwingConstants.CENTER);
-//
-//            for (int i = 0; i < phieuNhapTable.getColumnCount(); i++) {
-//                phieuNhapTable.getColumnModel().getColumn(i).setCellRenderer(centerRendererInformation);
-//            }
-//
-//            DefaultTableCellRenderer headerRendererInformation = (DefaultTableCellRenderer) phieuNhapTable.getTableHeader().getDefaultRenderer();
-//            headerRendererInformation.setHorizontalAlignment(SwingConstants.CENTER);
-//            phieuNhapTable.getTableHeader().setDefaultRenderer(headerRendererInformation);
-//        }
-//    }
-
 
     private void loadTableActionListener(){
         // bảng nguyên liệu
@@ -653,6 +624,7 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
         // Advanced search button
         ImageIcon searchIcon = Utilities.loadAndResizeIcon("Resources\\Image\\MagnifyingGlass.png", 20, 20);
         advancedSearchButton = new MyButton("Tìm kiếm nâng cao", searchIcon);
+        advancedSearchButton.setPreferredSize(new Dimension(165, 35));
         advancedSearchButton.setFont(RobotoFont.getRobotoBold(12f));
         filterPanel.add(advancedSearchButton);
 
@@ -688,13 +660,13 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
     }
 
     public void loadPhieuNhapButtonActionListener() {
-        filterInput.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+        filterInput.getDocument().addDocumentListener(new DocumentListener() {
             @Override
-            public void insertUpdate(javax.swing.event.DocumentEvent e) { filterTable(); }
+            public void insertUpdate(DocumentEvent e) { filterTable(); }
             @Override
-            public void removeUpdate(javax.swing.event.DocumentEvent e) { filterTable(); }
+            public void removeUpdate(DocumentEvent e) { filterTable(); }
             @Override
-            public void changedUpdate(javax.swing.event.DocumentEvent e) { filterTable(); }
+            public void changedUpdate(DocumentEvent e) { filterTable(); }
 
             private void filterTable() {
                 String filterText = filterInput.getText().trim().toLowerCase();
@@ -873,71 +845,98 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
     }
 
     private void showAdvancedSearchDialog() {
-        JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Tìm kiếm nâng cao", true);
-        dialog.setLayout(new GridBagLayout());
-        dialog.setSize(400, 300);
+        JFrame dialog = new JFrame("Tìm kiếm nâng cao");
+        dialog.setLayout(new BorderLayout());
+        dialog.setSize(400, 500);
         dialog.setLocationRelativeTo(this);
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        dialog.setBackground(Color.WHITE);
+        dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JPanel fieldsPanel = new JPanel();
         fieldsPanel.setLayout(new BoxLayout(fieldsPanel, BoxLayout.Y_AXIS));
         fieldsPanel.setBackground(Color.WHITE);
+        fieldsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 0 ,20));
 
+
+        // mã phiếu field
         JPanel maPhieuNhapPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         maPhieuNhapPanel.setBackground(Color.WHITE);
         MyLabel maPhieuNhapLabel = new MyLabel("Mã phiếu nhập:", 14f, "Bold");
-        JTextField maPhieuNhapField = new JTextField(15);
+        JTextField maPhieuNhapField = new JTextField();
+        maPhieuNhapField.setPreferredSize(new Dimension(180, 30));
+        maPhieuNhapField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         maPhieuNhapPanel.add(maPhieuNhapLabel);
         maPhieuNhapPanel.add(maPhieuNhapField);
         fieldsPanel.add(maPhieuNhapPanel);
 
+        // nhân viên field
         JPanel nhanVienPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         nhanVienPanel.setBackground(Color.WHITE);
         MyLabel nhanVienLabel = new MyLabel("Nhân viên nhập:", 14f, "Bold");
-        JComboBox<String> nhanVienCombo = new JComboBox<>(new String[]{"NV001", "NV002", "NV003"});
+
+        ArrayList<NhanVienDTO> danhSachNhanVien = nhanVienBUS.getData();
+        Vector<String> nhanVienData = new Vector<>();
+        for (NhanVienDTO nhanVien: danhSachNhanVien){
+            nhanVienData.add(nhanVien.getMaNV() + " - " + nhanVien.getTenNV());
+        }
+        JComboBox<String> nhanVienCombo = new JComboBox<>(nhanVienData);
+        nhanVienCombo.setPreferredSize(new Dimension(180,30 ));
         nhanVienPanel.add(nhanVienLabel);
         nhanVienPanel.add(nhanVienCombo);
         fieldsPanel.add(nhanVienPanel);
 
-
+        // nhà cung cấp field
         JPanel nhaCungCapPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         nhaCungCapPanel.setBackground(Color.WHITE);
         MyLabel nhaCungCapLabel = new MyLabel("Nhà cung cấp:", 14f, "Bold");
-        JComboBox<String> nhaCungCapCombo = new JComboBox<>(new String[]{"NCC001", "NCC002", "NCC003"});
+
+        ArrayList<NhaCungCapDTO> danhSachNCC = nhaCungCapBUS.getData();
+        Vector<String> nhanCungCapData = new Vector<>();
+        for (NhaCungCapDTO nhaCungCap: danhSachNCC){
+            nhanCungCapData.add(nhaCungCap.getMaNhaCungCap() + " - " + nhaCungCap.getTenNhaCungCap());
+        }
+        JComboBox<String> nhaCungCapCombo = new JComboBox<>(nhanCungCapData);
         nhaCungCapPanel.add(nhaCungCapLabel);
         nhaCungCapPanel.add(nhaCungCapCombo);
         fieldsPanel.add(nhaCungCapPanel);
 
+        // ngày nhập field
         JPanel ngayNhapPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         ngayNhapPanel.setBackground(Color.WHITE);
-        MyLabel ngayNhapLabel = new MyLabel("Ngày nhập:", 14f, "Bold");
+        JPanel ngayNhapPanel2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        ngayNhapPanel2.setBackground(Color.WHITE);
 
-        com.toedter.calendar.JDateChooser startDate = new com.toedter.calendar.JDateChooser();
-        com.toedter.calendar.JDateChooser endDate = new com.toedter.calendar.JDateChooser();
-        ngayNhapPanel.add(ngayNhapLabel);
-        ngayNhapPanel.add(new JLabel("Từ:"));
+        JDateChooser startDate = new JDateChooser();
+        JDateChooser endDate = new JDateChooser();
+        startDate.setPreferredSize(new Dimension(180, 30));
+        startDate.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        endDate.setPreferredSize(new Dimension(180,30));
+        endDate.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        ngayNhapPanel.add(new MyLabel("Từ ngày: ", 14f, "Bold"));
         ngayNhapPanel.add(startDate);
-        ngayNhapPanel.add(new JLabel("Đến:"));
-        ngayNhapPanel.add(endDate);
+        ngayNhapPanel2.add(new MyLabel("Đến ngày: ", 14f, "Bold"));
+        ngayNhapPanel2.add(endDate);
+
         fieldsPanel.add(ngayNhapPanel);
+        fieldsPanel.add(ngayNhapPanel2);
 
-        JButton searchButton = new JButton("Tìm kiếm");
-        searchButton.setFont(RobotoFont.getRobotoBold(12f));
+        // nút tìm kiếm
+        JPanel searchButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        searchButtonPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20 ));
+        searchButtonPanel.setBackground(Color.WHITE);
+        MyButton searchButton = new MyButton("Tìm kiếm");
+        searchButton.setPreferredSize(new Dimension(170, 35));
+        searchButton.setFont(RobotoFont.getRobotoBold(14f));
+        searchButtonPanel.add(searchButton);
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        dialog.add(fieldsPanel, gbc);
-
-        gbc.gridy = 1;
-        dialog.add(searchButton, gbc);
+        dialog.add(fieldsPanel, BorderLayout.CENTER);
+        dialog.add(searchButtonPanel, BorderLayout.SOUTH);
 
         searchButton.addActionListener(e -> {
             String maPhieuNhap = maPhieuNhapField.getText().trim();
-            String maNhanVien = (String) nhanVienCombo.getSelectedItem();
-            String maNhaCungCap = (String) nhaCungCapCombo.getSelectedItem();
+            String maNhanVien = String.valueOf(nhanVienCombo.getSelectedItem()).split(" - ")[0];
+            String maNhaCungCap = String.valueOf(nhaCungCapCombo.getSelectedItem()).split(" - ")[0];
             java.util.Date startDateValue = startDate.getDate();
             java.util.Date endDateValue = endDate.getDate();
 

@@ -6,24 +6,32 @@ import DTO.KhuyenMaiDTO;
 import com.toedter.calendar.JDateChooser;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
+import java.util.Vector;
 
 public class QuanLiKhuyenMaiGUI extends RoundedPanel {
     private final KhuyenMaiBUS khuyenMaiBUS;
     private JTable khuyenMaiTable;
     private DefaultTableModel tableModel;
     private JTextField maKhuyenMaiField;
-    private JTextField tenKhuyenMaiField;
+    private JTextField tenKhuyenMaiField, filterInput;
     private JDateChooser ngayBatDauChooser;
     private JDateChooser ngayKetThucChooser;
     private JComboBox<String> donViKhuyenMaiComboBox;
     private JTextField dieuKienApDungField;
     private JFrame formThemKhuyenMai;
     private JFrame formSuaKhuyenMai;
+    private MyButton advancedSearchButton;
 
     public QuanLiKhuyenMaiGUI() {
         super(50, 50, Color.decode("#F5ECE0"));
@@ -40,52 +48,70 @@ public class QuanLiKhuyenMaiGUI extends RoundedPanel {
         add(titleLabel, BorderLayout.NORTH);
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        buttonPanel.setLayout(new WrapLayout());
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        ImageIcon addIcon = Utilities.loadAndResizeIcon("Resources\\Image\\AddIcon.png", 30, 30);
-        ImageIcon editIcon = Utilities.loadAndResizeIcon("Resources\\Image\\EditIcon.png", 30, 30);
-        ImageIcon deleteIcon = Utilities.loadAndResizeIcon("Resources\\Image\\DeleteIcon.png", 30, 30);
-        ImageIcon hideIcon = Utilities.loadAndResizeIcon("Resources\\Image\\Hide.png", 30, 30);
-        ImageIcon viewDetailIcon = Utilities.loadAndResizeIcon("Resources\\Image\\ViewDetail.png", 30, 30);
-
-
+        ImageIcon addIcon = Utilities.loadAndResizeIcon("Resources\\Image\\AddIcon.png", 20, 20);
+        ImageIcon editIcon = Utilities.loadAndResizeIcon("Resources\\Image\\EditIcon.png", 20, 20);
+        ImageIcon deleteIcon = Utilities.loadAndResizeIcon("Resources\\Image\\DeleteIcon.png", 20, 20);
+        ImageIcon hideIcon = Utilities.loadAndResizeIcon("Resources\\Image\\Hide.png", 20, 20);
+        ImageIcon viewDetailIcon = Utilities.loadAndResizeIcon("Resources\\Image\\ViewDetail.png", 20, 20);
 
         // các nút chức năng
         MyButton addButton = new MyButton("Thêm khuyến mãi", addIcon);
         MyButton updateButton = new MyButton("Sửa thông tin", editIcon);
-        MyButton deleteButton = new MyButton("Xóa khuyến mãi", deleteIcon);
+        MyButton deleteButton = new MyButton("Xóa", deleteIcon);
+        deleteButton.setPreferredSize(new Dimension(120, 30));
         MyButton hideButton = new MyButton("Ẩn khuyến mãi", hideIcon);
         MyButton detailButton = new MyButton("Xem chi tiết", viewDetailIcon);
 
+        // tìm kiếm textBox và tìm kiếm nâng cao
+        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        filterPanel.setBackground(Color.WHITE);
+        MyLabel filterLabel = new MyLabel("Tìm mã khuyến mãi:", 14f, "Bold");
+        filterInput = new JTextField();
+        filterInput.setPreferredSize(new Dimension(120,30));
+        filterInput.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        filterPanel.add(filterLabel);
+        filterPanel.add(filterInput);
+
+        ImageIcon searchIcon = Utilities.loadAndResizeIcon("Resources\\Image\\MagnifyingGlass.png", 20, 20);
+        advancedSearchButton = new MyButton("Tìm kiếm nâng cao", searchIcon);
+        advancedSearchButton.setPreferredSize(new Dimension(185, 30));
+        advancedSearchButton.setFont(RobotoFont.getRobotoBold(14f));
+        filterPanel.add(advancedSearchButton);
+
+        buttonPanel.add(filterPanel);
         buttonPanel.add(addButton);
         buttonPanel.add(updateButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(hideButton);
         buttonPanel.add(detailButton);
 
+
         // bảng hiển thị khuyến mãi
         String[] columnNames = {"Mã khuyến mãi", "Tên khuyến mãi", "Ngày bắt đầu", "Ngày kết thúc", "Đơn vị khuyến mãi", "Điều kiện áp dụng"};
         tableModel = new DefaultTableModel(columnNames, 0);
         khuyenMaiTable = new JTable(tableModel);
         khuyenMaiTable.setRowHeight(35);
-        khuyenMaiTable.setFont(RobotoFont.getRobotoRegular(14f));
+        khuyenMaiTable.setFont(RobotoFont.getRobotoRegular(12f));
         khuyenMaiTable.getTableHeader().setFont(RobotoFont.getRobotoBold(14f));
+        khuyenMaiTable.getTableHeader().setVisible(true);
 
         // center chứa buttonPanel + bảng
         JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.setLayout(new BorderLayout(10, 10));
         centerPanel.setBackground(Color.WHITE);
 
         JScrollPane scrollPane = new JScrollPane(khuyenMaiTable);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
         scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         scrollPane.setBackground(Color.WHITE);
 
         // add buttonPanel và scrollPane vô centerPanel
-        centerPanel.add(buttonPanel);
-        centerPanel.add(scrollPane);
+        centerPanel.add(buttonPanel, BorderLayout.NORTH);
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
 
         // add centerPanel vô CENTER của BorderLayout
         add(centerPanel, BorderLayout.CENTER);
@@ -94,6 +120,35 @@ public class QuanLiKhuyenMaiGUI extends RoundedPanel {
         formatTableUI();
 
         // ActionListener cho mấy nút
+        filterInput.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) { filterTable(); }
+            @Override
+            public void removeUpdate(DocumentEvent e) { filterTable(); }
+            @Override
+            public void changedUpdate(DocumentEvent e) { filterTable(); }
+
+            private void filterTable() {
+                String filterText = filterInput.getText().trim().toLowerCase();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                tableModel.setRowCount(0);
+                for (KhuyenMaiDTO khuyenMai : khuyenMaiBUS.getData()) {
+                    String maKhuyenMai = khuyenMai.getMaKhuyenMai();
+                    if (filterText.isEmpty() || maKhuyenMai.contains(filterText)) {
+                        Vector<String> rowData = new Vector<>();
+                        rowData.add(khuyenMai.getMaKhuyenMai());
+                        rowData.add(khuyenMai.getTenKhuyenMai());
+                        rowData.add(dateFormat.format(khuyenMai.getNgayBatDau()));
+                        rowData.add(dateFormat.format(khuyenMai.getNgayKetThuc()));
+                        rowData.add(Objects.equals(khuyenMai.getDonViKhuyenMai(), "Phần trăm") ? "%" : "VNĐ");
+                        rowData.add(khuyenMai.getDieuKienApDung());
+                        tableModel.addRow(rowData);
+                    }
+                }
+            }
+        });
+
+        advancedSearchButton.addActionListener(_-> showAdvancedSearchDialog());
         addButton.addActionListener(_ -> FormThemKhuyenMai());
         updateButton.addActionListener(_ -> FormSuaKhuyenMai(tableModel));
         deleteButton.addActionListener(_ -> handleXoaKhuyenMai());
@@ -346,6 +401,14 @@ public class QuanLiKhuyenMaiGUI extends RoundedPanel {
         JTableHeader header = khuyenMaiTable.getTableHeader();
         header.setBackground(Color.WHITE);
 
+        TableColumnModel columnModel = khuyenMaiTable.getColumnModel();
+        columnModel.getColumn(0).setPreferredWidth(80); // Mã khuyến mãi
+        columnModel.getColumn(1).setPreferredWidth(120); // Tên khuyến mãi
+        columnModel.getColumn(2).setPreferredWidth(80); // Ngày bắt đầu
+        columnModel.getColumn(3).setPreferredWidth(80); // Ngày kết thúc
+        columnModel.getColumn(4).setPreferredWidth(110); // Đơn vị
+        columnModel.getColumn(5).setPreferredWidth(180); // Điều kiện áp dụng
+
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -356,6 +419,127 @@ public class QuanLiKhuyenMaiGUI extends RoundedPanel {
         DefaultTableCellRenderer headerRenderer = (DefaultTableCellRenderer) khuyenMaiTable.getTableHeader().getDefaultRenderer();
         headerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         khuyenMaiTable.getTableHeader().setDefaultRenderer(headerRenderer);
+    }
+
+    private void showAdvancedSearchDialog() {
+        JFrame dialog = new JFrame("Tìm kiếm nâng cao");
+        dialog.setLayout(new BorderLayout());
+        dialog.setSize(400, 500);
+        dialog.setLocationRelativeTo(this);
+        dialog.setBackground(Color.WHITE);
+        dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JPanel fieldsPanel = new JPanel();
+        fieldsPanel.setLayout(new BoxLayout(fieldsPanel, BoxLayout.Y_AXIS));
+        fieldsPanel.setBackground(Color.WHITE);
+        fieldsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 0 ,20));
+
+
+        // mã khuyến mãi field
+        JPanel maKhuyenMaiPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        maKhuyenMaiPanel.setBackground(Color.WHITE);
+        MyLabel maKhuyenMaiLabel = new MyLabel("Mã khuyến mãi:", 14f, "Bold");
+        JTextField maKhuyenMaiField = new JTextField();
+        maKhuyenMaiField.setPreferredSize(new Dimension(180, 30));
+        maKhuyenMaiField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        maKhuyenMaiPanel.add(maKhuyenMaiLabel);
+        maKhuyenMaiPanel.add(maKhuyenMaiField);
+        fieldsPanel.add(maKhuyenMaiPanel);
+
+        // tên khuyến mãi field
+        JPanel tenKhuyenMaiPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        tenKhuyenMaiPanel.setBackground(Color.WHITE);
+        MyLabel tenKhuyenMaiLabel = new MyLabel("Tên khuyến mãi:", 14f, "Bold");
+        JTextField tenKhuyenMaiField = new JTextField();
+        tenKhuyenMaiField.setPreferredSize(new Dimension(180, 30));
+        tenKhuyenMaiField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        tenKhuyenMaiPanel.add(tenKhuyenMaiLabel);
+        tenKhuyenMaiPanel.add(tenKhuyenMaiField);
+        fieldsPanel.add(tenKhuyenMaiPanel);
+
+        // đơn vị khuyến mãi field
+        JPanel donviPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        donviPanel.setBackground(Color.WHITE);
+        MyLabel donviLabel = new MyLabel("Đơn vị khuyến mãi:", 14f, "Bold");
+
+        JComboBox<String> donviCombo = new JComboBox<>(new String[]{" ", "%", "VNĐ"});
+        donviPanel.add(donviLabel);
+        donviPanel.add(donviCombo);
+        fieldsPanel.add(donviPanel);
+
+        // ngày bắt đầu & kết thúc field
+        JPanel ngayBatDauPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        ngayBatDauPanel.setBackground(Color.WHITE);
+        JPanel ngayKetThucPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        ngayKetThucPanel.setBackground(Color.WHITE);
+
+        JDateChooser startDate = new JDateChooser();
+        JDateChooser endDate = new JDateChooser();
+        startDate.setPreferredSize(new Dimension(180, 30));
+        startDate.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        endDate.setPreferredSize(new Dimension(180,30));
+        endDate.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        ngayBatDauPanel.add(new MyLabel("Ngày bắt đầu sau: ", 14f, "Bold"));
+        ngayBatDauPanel.add(startDate);
+        ngayKetThucPanel.add(new MyLabel("Ngày kết thúc trước: ", 14f, "Bold"));
+        ngayKetThucPanel.add(endDate);
+
+        fieldsPanel.add(ngayBatDauPanel);
+        fieldsPanel.add(ngayKetThucPanel);
+
+        // nút tìm kiếm
+        JPanel searchButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        searchButtonPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20 ));
+        searchButtonPanel.setBackground(Color.WHITE);
+        MyButton searchButton = new MyButton("Tìm kiếm");
+        searchButton.setPreferredSize(new Dimension(170, 35));
+        searchButton.setFont(RobotoFont.getRobotoBold(14f));
+        searchButtonPanel.add(searchButton);
+
+        dialog.add(fieldsPanel, BorderLayout.CENTER);
+        dialog.add(searchButtonPanel, BorderLayout.SOUTH);
+
+        searchButton.addActionListener(_ -> {
+            String maKhuyenMai = maKhuyenMaiField.getText().trim();
+            String tenKhuyenMai = tenKhuyenMaiField.getText().trim();
+            String donVi = String.valueOf(donviCombo.getSelectedItem());
+            donVi = Objects.equals(donVi, "%") ? "Phần trăm" : Objects.equals(donVi, "VNĐ") ? "Số tiền" : "";
+//          donVi = donVi == "%" ? "Phần trăm" : donVi == "VNĐ" ? "Số tiền" : "";
+            Date startDateValue = startDate.getDate();
+            Date endDateValue = endDate.getDate();
+
+            System.out.println(maKhuyenMai);
+            System.out.println(tenKhuyenMai);
+            System.out.println(donVi);
+            System.out.println(startDateValue);
+            System.out.println(endDateValue);
+
+
+            ArrayList<KhuyenMaiDTO> filteredList = khuyenMaiBUS.advancedSearch(
+                    maKhuyenMai.isEmpty() ? null : maKhuyenMai,
+                    tenKhuyenMai.isEmpty() ? null : maKhuyenMai,
+                    startDateValue,
+                    endDateValue,
+                    donVi
+            );
+
+            // Update table with filtered data
+            tableModel.setRowCount(0);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            for (KhuyenMaiDTO khuyenMai : filteredList) {
+                tableModel.addRow(new Object[]{
+                        khuyenMai.getMaKhuyenMai(),
+                        khuyenMai.getTenKhuyenMai(),
+                        dateFormat.format(khuyenMai.getNgayBatDau()),
+                        dateFormat.format(khuyenMai.getNgayKetThuc()),
+                        Objects.equals(khuyenMai.getDonViKhuyenMai(), "Phần trăm") ? "%" : "VNĐ" ,
+                        khuyenMai.getDieuKienApDung()
+                });
+            }
+            dialog.dispose();
+        });
+        dialog.setVisible(true);
     }
 
     public static void main(String[] args) {

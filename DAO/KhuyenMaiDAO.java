@@ -1,11 +1,13 @@
 package DAO;
 
 import DTO.KhuyenMaiDTO;
+import DTO.PhieuNhapDTO;
 import Interface.DAO_Interface;
 
 import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class KhuyenMaiDAO implements DAO_Interface<KhuyenMaiDTO> {
     public connectDatabase connDB = new connectDatabase();
@@ -82,21 +84,24 @@ public class KhuyenMaiDAO implements DAO_Interface<KhuyenMaiDTO> {
     @Override
     public boolean add(KhuyenMaiDTO entity) {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            if (connDB.openConnectDB()) {
-                String query = "INSERT INTO khuyenmai (maKhuyenMai, tenKhuyenMai, donViKhuyenMai, ngayBatDau, ngayKetThuc, dieuKienApDung) VALUES (?, ?, ?, ?, ?, ?)";
-                PreparedStatement pstmt = connDB.conn.prepareStatement(query);
-                pstmt.setString(1, entity.getMaKhuyenMai());
-                pstmt.setString(2, entity.getTenKhuyenMai());
-                pstmt.setString(3, entity.getDonViKhuyenMai());
-                pstmt.setDate(4, new java.sql.Date(entity.getNgayBatDau().getTime()));
-                pstmt.setDate(5, new java.sql.Date(entity.getNgayKetThuc().getTime()));
-                pstmt.setString(6, entity.getDieuKienApDung());
+            if (!checkDuplicate(entity, "Add")){
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                if (connDB.openConnectDB()) {
+                    String query = "INSERT INTO khuyenmai (maKhuyenMai, tenKhuyenMai, donViKhuyenMai, ngayBatDau, ngayKetThuc, dieuKienApDung, trangThai) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                    PreparedStatement pstmt = connDB.conn.prepareStatement(query);
+                    pstmt.setString(1, entity.getMaKhuyenMai());
+                    pstmt.setString(2, entity.getTenKhuyenMai());
+                    pstmt.setString(3, entity.getDonViKhuyenMai());
+                    pstmt.setDate(4, new java.sql.Date(entity.getNgayBatDau().getTime()));
+                    pstmt.setDate(5, new java.sql.Date(entity.getNgayKetThuc().getTime()));
+                    pstmt.setString(6, entity.getDieuKienApDung());
+                    pstmt.setBoolean(7, true);
 
-                int rowsAffected = pstmt.executeUpdate();
-                pstmt.close();
-                connDB.closeConnectDB();
-                return rowsAffected > 0;
+                    int rowsAffected = pstmt.executeUpdate();
+                    pstmt.close();
+                    connDB.closeConnectDB();
+                    return rowsAffected > 0;
+                }
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Lỗi kết nối cơ sở dữ liệu! " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -111,21 +116,23 @@ public class KhuyenMaiDAO implements DAO_Interface<KhuyenMaiDTO> {
     @Override
     public boolean update(KhuyenMaiDTO entity) {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            if (connDB.openConnectDB()) {
-                String query = "UPDATE khuyenmai SET tenKhuyenMai = ?, donViKhuyenMai = ?, ngayBatDau = ?, ngayKetThuc = ?, dieuKienApDung = ? WHERE maKhuyenMai = ?";
-                PreparedStatement pstmt = connDB.conn.prepareStatement(query);
-                pstmt.setString(1, entity.getTenKhuyenMai());
-                pstmt.setString(2, entity.getDonViKhuyenMai());
-                pstmt.setDate(3, new java.sql.Date(entity.getNgayBatDau().getTime()));
-                pstmt.setDate(4, new java.sql.Date(entity.getNgayKetThuc().getTime()));
-                pstmt.setString(5, entity.getDieuKienApDung());
-                pstmt.setString(6, entity.getMaKhuyenMai());
+            if (!checkDuplicate(entity, "Update")){
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                if (connDB.openConnectDB()) {
+                    String query = "UPDATE khuyenmai SET tenKhuyenMai = ?, donViKhuyenMai = ?, ngayBatDau = ?, ngayKetThuc = ?, dieuKienApDung = ? WHERE maKhuyenMai = ?";
+                    PreparedStatement pstmt = connDB.conn.prepareStatement(query);
+                    pstmt.setString(1, entity.getTenKhuyenMai());
+                    pstmt.setString(2, entity.getDonViKhuyenMai());
+                    pstmt.setDate(3, new java.sql.Date(entity.getNgayBatDau().getTime()));
+                    pstmt.setDate(4, new java.sql.Date(entity.getNgayKetThuc().getTime()));
+                    pstmt.setString(5, entity.getDieuKienApDung());
+                    pstmt.setString(6, entity.getMaKhuyenMai());
 
-                int rowsAffected = pstmt.executeUpdate();
-                pstmt.close();
-                connDB.closeConnectDB();
-                return rowsAffected > 0;
+                    int rowsAffected = pstmt.executeUpdate();
+                    pstmt.close();
+                    connDB.closeConnectDB();
+                    return rowsAffected > 0;
+                }
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Lỗi kết nối cơ sở dữ liệu! " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -206,8 +213,8 @@ public class KhuyenMaiDAO implements DAO_Interface<KhuyenMaiDTO> {
         try {
             if (connDB.openConnectDB()) {
                 String query = Function.equals("Add") ?
-                        "SELECT COUNT(*) FROM khuyenmai WHERE tenKhuyenMai = ? AND ngayBatDau = ? AND ngayKetThuc = ?" :
-                        "SELECT COUNT(*) FROM khuyenmai WHERE tenKhuyenMai = ? AND ngayBatDau = ? AND ngayKetThuc = ? AND maKhuyenMai != ?";
+                        "SELECT COUNT(*) FROM khuyenmai WHERE tenKhuyenMai = ? AND ngayBatDau = ? AND ngayKetThuc = ? AND trangThai = true" :
+                        "SELECT COUNT(*) FROM khuyenmai WHERE tenKhuyenMai = ? AND ngayBatDau = ? AND ngayKetThuc = ? AND maKhuyenMai != ? AND trangThai = true";
 
                 PreparedStatement pstmt = connDB.conn.prepareStatement(query);
                 pstmt.setString(1, entity.getTenKhuyenMai());
@@ -298,5 +305,68 @@ public class KhuyenMaiDAO implements DAO_Interface<KhuyenMaiDTO> {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
         return khuyenMaiDTO.getDonViKhuyenMai();
+    }
+
+    public ArrayList<KhuyenMaiDTO> advancedSearch(String maKhuyenMai, String tenKhuyenMai, Date startDate, Date endDate, String donVi) {
+        ArrayList<KhuyenMaiDTO> result = new ArrayList<>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            connDB.openConnectDB();
+
+            StringBuilder sql = new StringBuilder("SELECT * FROM khuyenmai WHERE 1=1");
+            ArrayList<Object> params = new ArrayList<>();
+
+            if (maKhuyenMai != null && !maKhuyenMai.isEmpty()) {
+                sql.append(" AND maKhuyenMai LIKE ?");
+                params.add("%" + maKhuyenMai + "%");
+            }
+            if (tenKhuyenMai != null && !tenKhuyenMai.isEmpty()) {
+                sql.append(" AND tenKhuyenMai = ?");
+                params.add(tenKhuyenMai);
+            }
+            if (startDate != null) {
+                sql.append(" AND ngayBatDau >= ?");
+                params.add(new java.sql.Date(startDate.getTime()));
+            }
+            if (endDate != null) {
+                sql.append(" AND ngayKetThuc <= ?");
+                params.add(new java.sql.Date(endDate.getTime()));
+            }
+            if(donVi != null && !donVi.isEmpty()){
+                sql.append(" AND donViKhuyenMai = ?");
+                params.add(donVi);
+            }
+
+            ps = connDB.conn.prepareStatement(sql.toString());
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                KhuyenMaiDTO dto = new KhuyenMaiDTO();
+                dto.setMaKhuyenMai(rs.getString("maKhuyenMai"));
+                dto.setTenKhuyenMai(rs.getString("tenKhuyenMai"));
+                dto.setDonViKhuyenMai(rs.getString("donViKhuyenMai"));
+                dto.setDieuKienApDung(rs.getString("dieuKienApDung"));
+                dto.setNgayBatDau(rs.getDate("ngayBatDau"));
+                dto.setNgayKetThuc(rs.getDate("ngayKetThuc"));
+                dto.setTrangThai(rs.getBoolean("trangThai"));
+                result.add(dto);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Lỗi truy vấn cơ sở dữ liệu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 }

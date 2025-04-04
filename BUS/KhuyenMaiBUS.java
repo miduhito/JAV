@@ -2,6 +2,7 @@ package BUS;
 
 import DAO.KhuyenMaiDAO;
 import DTO.KhuyenMaiDTO;
+import DTO.PhieuNhapDTO;
 import Interface.BUS_Interface;
 
 import javax.swing.*;
@@ -135,5 +136,9 @@ public class KhuyenMaiBUS implements BUS_Interface<KhuyenMaiDTO> {
 
     public String getDonViKhuyenMai(String maKhuyenMai) {
         return khuyenMaiDAO.getDonViKhuyenMai(maKhuyenMai);
+    }
+
+    public ArrayList<KhuyenMaiDTO> advancedSearch(String maKhuyenMai, String tenKhuyenMai, Date startDate, Date endDate, String donVi) {
+        return khuyenMaiDAO.advancedSearch(maKhuyenMai, tenKhuyenMai, startDate, endDate, donVi);
     }
 }

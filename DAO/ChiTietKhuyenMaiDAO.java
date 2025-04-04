@@ -224,7 +224,7 @@ public class ChiTietKhuyenMaiDAO implements DAO_SubInterface<ChiTietKhuyenMaiDTO
                     int count = rs.getInt(1);
                     if ( count > 0 ){
                         isDuplicate = true;
-                        JOptionPane.showMessageDialog(null, "Chi tiết đã tồn tại", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Khuyến mãi này đã tồn tại", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             } catch (SQLException e) {
