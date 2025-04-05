@@ -3,11 +3,14 @@ package GUI;
 import Custom.CustomScrollBarUI;
 import Custom.RoundedButton;
 import Custom.RoundedPanel;
+import DAO.TaiKhoanDAO;
+import DTO.TaiKhoanDTO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Vector;
 
 public class QuanLiTaiKhoan extends RoundedPanel {
@@ -49,7 +52,7 @@ public class QuanLiTaiKhoan extends RoundedPanel {
 
         // Create an icon label
         JLabel searchIcon = new JLabel(); // Replace with the actual path to the icon
-        ImageIcon search = new ImageIcon("Resources\\Image\\MagnifyingGlass.png");
+        ImageIcon search = new ImageIcon("java\\Resources\\Image\\MagnifyingGlass.png");
         Image scaledIcon = search.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         searchIcon.setIcon(new ImageIcon(scaledIcon));
 
@@ -79,14 +82,21 @@ public class QuanLiTaiKhoan extends RoundedPanel {
         addEmployeeButton.setForeground(Color.WHITE);
         addEmployeeButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
         addEmployeeButton.setFocusPainted(false);
-
+        //"Them nut xoa tai khoan"
+        RoundedButton deleteEmployeeButton = new RoundedButton("Xóa nhân viên", 20, 20);
+        deleteEmployeeButton.setPreferredSize(new Dimension(180, 40));
+        deleteEmployeeButton.setBackground(Color.decode("#EC5228"));
+        deleteEmployeeButton.setForeground(Color.WHITE);
+        deleteEmployeeButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        deleteEmployeeButton.setFocusPainted(false);
         // Panel to hold buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0)); // Horizontal gap = 10
         buttonPanel.setBackground(Color.WHITE);
 
         // Add buttons to the panel
-        buttonPanel.add(editEmployeeButton);
         buttonPanel.add(addEmployeeButton);
+        buttonPanel.add(editEmployeeButton);
+        buttonPanel.add(deleteEmployeeButton);
 
         // Add the button panel to the control panel
         controlPanel.add(buttonPanel, BorderLayout.EAST);
@@ -97,6 +107,7 @@ public class QuanLiTaiKhoan extends RoundedPanel {
         JPanel tableContainer = new JPanel(new BorderLayout());
         tableContainer.setOpaque(true); // Ensure it's not transparent
         Vector<String> v = new Vector<>();
+        v.add("Tất cả");
         v.add("Admin");
         v.add("Quản lí");
         v.add("Nhân viên");
@@ -104,21 +115,15 @@ public class QuanLiTaiKhoan extends RoundedPanel {
         // Table content
         DefaultTableModel tableModel = new DefaultTableModel();
         tableModel.setColumnIdentifiers(new Object[]{
-                "Mã nhân viên", "Tên nhân viên", "Tên chức vụ", "Trạng thái", "Hành động"
+                "Tên đăng nhập", "Mật khẩu", "Vai trò", "Trạng thái", "Ngày tạo"
         });
-        tableModel.addRow(new Object[]{"NV001", "Nguyễn Văn A", "Nhân viên", "Đang làm", CongViec});
-        tableModel.addRow(new Object[]{"NV002", "Trần Thị B", "Quản lý", "Nghỉ việc", "Sửa/Xóa"});
-        // Thêm 10 dòng dữ liệu mẫu
-        tableModel.addRow(new Object[]{"NV003", "Lê Thị C", "Nhân viên", "Đang làm", "Sửa/Xóa"});
-        tableModel.addRow(new Object[]{"NV004", "Phạm Văn D", "Quản lý", "Nghỉ việc", "Sửa/Xóa"});
-        tableModel.addRow(new Object[]{"NV005", "Trần Quốc E", "Nhân viên", "Đang làm", "Sửa/Xóa"});
-        tableModel.addRow(new Object[]{"NV006", "Nguyễn Thị F", "Nhân viên", "Đang làm", "Sửa/Xóa"});
-        tableModel.addRow(new Object[]{"NV007", "Võ Minh G", "Nhân viên", "Đang làm", "Sửa/Xóa"});
-        tableModel.addRow(new Object[]{"NV008", "Lý Hải H", "Quản lý", "Nghỉ việc", "Sửa/Xóa"});
-        tableModel.addRow(new Object[]{"NV009", "Phạm Ngọc I", "Nhân viên", "Đang làm", "Sửa/Xóa"});
-        tableModel.addRow(new Object[]{"NV010", "Đỗ Thị K", "Nhân viên", "Đang làm", "Sửa/Xóa"});
-        tableModel.addRow(new Object[]{"NV011", "Bùi Xuân L", "Nhân viên", "Nghỉ việc", "Sửa/Xóa"});
-        tableModel.addRow(new Object[]{"NV012", "Ngô Tấn Mu", "Quản lý", "Đang làm", "Sửa/Xóa"});
+        buttonPanel.add(CongViec);
+        TaiKhoanDAO t = new TaiKhoanDAO();
+        ArrayList<TaiKhoanDTO> list = new ArrayList<>();
+        list = t.getdata();
+        for(TaiKhoanDTO tk : list){
+            tableModel.addRow(new Object[]{tk.getTenDangNhap(),tk.getMatKhau(),tk.getVaiTro(),tk.getTrangThai(),tk.getNgayTao()});
+        }
         JTable table = new JTable(tableModel);
         table.setRowHeight(35);
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));

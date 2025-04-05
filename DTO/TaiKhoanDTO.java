@@ -1,14 +1,15 @@
 package DTO;
 
+import java.sql.Date;
 public class TaiKhoanDTO {
     private String tenDangNhap;
     private String matKhau;
     private String trangThai;
-    private String ngayTao;
+    private Date ngayTao;
     private String vaiTro;
 
     public TaiKhoanDTO() {}
-    public TaiKhoanDTO(String tenDangNhap, String matKhau, String trangThai, String ngayTao, String vaiTro) {
+    public TaiKhoanDTO(String tenDangNhap, String matKhau, String trangThai, Date ngayTao, String vaiTro) {
         this.tenDangNhap = tenDangNhap;
         this.matKhau = matKhau;
         this.trangThai = trangThai;
@@ -40,11 +41,11 @@ public class TaiKhoanDTO {
         this.trangThai = trangThai;
     }
     
-    public String getNgayTao() {
+    public Date getNgayTao() {
         return this.ngayTao;
     }
     
-    public void setNgayTao(String ngayTao) {
+    public void setNgayTao(Date ngayTao) {
         this.ngayTao = ngayTao;
     }
     
