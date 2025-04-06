@@ -500,7 +500,7 @@ CREATE TABLE `taikhoan` (
 
 LOCK TABLES `taikhoan` WRITE;
 /*!40000 ALTER TABLE `taikhoan` DISABLE KEYS */;
-INSERT INTO `taikhoan` VALUES ('admin','adminpass','Active','2023-01-01','Admin'),('user1','pass1','Active','2023-01-01','Employee');
+INSERT INTO `taikhoan` VALUES ('admin','adminpass','Active','2023-01-01','Admin'),('user1','pass1','Active','2023-01-01','Employee'),('midu','12345','Active','2023-01-01','Admin');
 /*!40000 ALTER TABLE `taikhoan` ENABLE KEYS */;
 UNLOCK TABLES;
 
