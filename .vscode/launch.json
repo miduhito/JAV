@@ -3,6 +3,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "DangNhapGUI",
+            "request": "launch",
+            "mainClass": "GUI.DangNhapGUI",
+            "projectName": "java_2d95560"
+        },
+        {
+            "type": "java",
             "name": "LoginForm",
             "request": "launch",
             "mainClass": "LoginForm",
