@@ -1,10 +1,18 @@
 package GUI;
 import javax.swing.*;
-
+import BUS.TaiKhoanBUS;
 import java.awt.*;
 import java.awt.event.*;
 public class DangNhapGUI {
     private static JFrame frame = new JFrame("Login Page");
+    static JPanel LoginPanel = new JPanel();
+    static BackgroundPanel Bg = new BackgroundPanel();
+        
+    static JLabel userLabel = new JLabel("Username:");
+    static JTextField userText = new JTextField("",15);
+
+    static JLabel passwordLabel = new JLabel("Password:");
+    static JPasswordField passwordText = new JPasswordField("",15);
     @SuppressWarnings("FieldMayBeFinal")
         static class BackgroundPanel extends JPanel{
             private Image bgImg ;
@@ -22,20 +30,11 @@ public class DangNhapGUI {
     }
     public static void main(String[] args) {
         // Tạo khung chính
-
+        
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(700, 400);
         frame.setLocationRelativeTo(null);
         // Tạo các thành phần
-        JPanel LoginPanel = new JPanel();
-        BackgroundPanel Bg = new BackgroundPanel();
-        
-        JLabel userLabel = new JLabel("Username:");
-        JTextField userText = new JTextField("",15);
-
-        JLabel passwordLabel = new JLabel("Password:");
-        JPasswordField passwordText = new JPasswordField("",15);
-
         userText.setText("midu");
         passwordText.setText("12345");
         //Chinh sua
@@ -128,6 +127,16 @@ public class DangNhapGUI {
                 buttonPanel.setBackground(backgroundColor);
             }
         });
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int i = TaiKhoanBUS.kiemtra(userText.getText(),passwordText.getText());
+                if (i==1) {
+                    showTrangChu();
+                }
+                else JOptionPane.showMessageDialog(null,"Nhap sai du lieu");
+            }
+        });
         buttonPanel.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e){
                 buttonPanel.setBackground(Color.decode("#F5ECE0"));
@@ -140,17 +149,6 @@ public class DangNhapGUI {
                 button.setForeground(Color.WHITE);
             }
         });
-    
-        // Nếu nút "Quản lí nhân viên" được bấm thì hiển thị giao diện QuanLiNhanVienGUI
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (buttonText.equals("Đăng Nhập")) {
-                    showTrangChu();
-                }
-            }
-        });
-    
         buttonPanel.add(button);
         buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
     }

@@ -97,7 +97,7 @@ public class TrangChuGUI extends JPanel {
         
         // Định dạng giờ theo mẫu HH:mm:ss
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        Timer timer = new Timer(1000, _ -> clockLabel.setText(LocalTime.now().format(timeFormatter)));
+        Timer timer = new Timer(1000, e -> clockLabel.setText(LocalTime.now().format(timeFormatter)));
         timer.start();
         
         // Thêm helloPanel vào vùng NORTH của contentPanel
@@ -148,7 +148,7 @@ public class TrangChuGUI extends JPanel {
         });
     
         // Nếu nút "Quản lí nhân viên" được bấm thì hiển thị giao diện QuanLiNhanVienGUI
-        button.addActionListener(_ -> {
+        button.addActionListener(e -> {
             if (buttonText.equals("Quản lí nhân viên")) {
                 showQuanLiNhanVien();
             }
@@ -185,7 +185,7 @@ public class TrangChuGUI extends JPanel {
 
     private void showQuanLiTaiKhoan(){
         dynamicContentPanel.removeAll();
-        dynamicContentPanel.add(new QuanLiTaiKhoan(), BorderLayout.CENTER);
+        dynamicContentPanel.add(new QuanLiTaiKhoanGUI(), BorderLayout.CENTER);
         dynamicContentPanel.revalidate();
         dynamicContentPanel.repaint();
     }

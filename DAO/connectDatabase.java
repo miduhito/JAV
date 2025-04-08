@@ -8,9 +8,9 @@ import java.sql.Statement;
 public class connectDatabase {
     protected Connection conn = null;
 
-    static final String url = "jdbc:mysql://localhost:3306/fastfood";
+    static final String url = "jdbc:mysql://localhost:3306/quanlidoan?useSSL=false&allowPublicKeyRetrieval=true";
     static final String nameUser = "root";
-    static final String pass = "Tuan171204@";
+    static final String pass = "root";
 
     public boolean openConnectDB() {
         try {

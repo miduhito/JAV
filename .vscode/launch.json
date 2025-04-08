@@ -3,6 +3,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "TaiKhoanBUS",
+            "request": "launch",
+            "mainClass": "BUS.TaiKhoanBUS",
+            "projectName": "java_2d95560"
+        },
+        {
+            "type": "java",
+            "name": "TrangChuGUI",
+            "request": "launch",
+            "mainClass": "GUI.TrangChuGUI",
+            "projectName": "java_2d95560"
+        },
+        {
+            "type": "java",
             "name": "DangNhapGUI",
             "request": "launch",
             "mainClass": "GUI.DangNhapGUI",
