@@ -48,7 +48,7 @@ public class TaiKhoanDAO {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             if(con.openConnectDB()){
-                String query = "SELECT * FROM taikhoan";
+                String query = "SELECT * FROM taikhoan ORDER BY vaiTro";
                 Statement s = con.conn.createStatement();
                 ResultSet r = s.executeQuery(query);
                 while (r.next()) {
@@ -119,6 +119,7 @@ public class TaiKhoanDAO {
                         cstm.setString(5, vaiTro);
                         cstm.setString(6, maNV);
                         cstm.execute();
+                        cstm.close();
                         con.closeConnectDB();
                     }
                 } catch (SQLException e) {
@@ -157,6 +158,8 @@ public class TaiKhoanDAO {
                         nv.setMaNV(r.getString("maNhanVien"));
                         return nv;
                     }
+                r.close();
+                con.closeConnectDB();
                 }
             } catch (Exception e) {
                 System.out.println(e);
@@ -177,6 +180,7 @@ public class TaiKhoanDAO {
                     cs.setString(5, tenDangNhapCu);     // old username
         
                     cs.execute();
+                    cs.close();
                     con.closeConnectDB();
                 }
             } catch (Exception e) {

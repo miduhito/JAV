@@ -6,6 +6,8 @@ import DTO.TaiKhoanDTO;
 import Custom.*;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.text.TabExpander;
@@ -61,6 +63,21 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
         searchField.setPreferredSize(new Dimension(200, 30));
         searchField.setToolTipText("Nhập tên nhân viên để tìm kiếm...");
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        searchField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                tk.searchTableData(tableModel, searchField.getText());
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                tk.searchTableData(tableModel, searchField.getText());
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                tk.searchTableData(tableModel, searchField.getText());
+            }
+        });
 
         // Create an icon label
         JLabel searchIcon = new JLabel(); // Replace with the actual path to the icon
@@ -279,18 +296,18 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
         browsePanel.add(emptylabel2);
         browsePanel.add(Browse);
         Browse.setPreferredSize(new Dimension(130, 30));
-        Browse.setBackground(Color.decode("#EC5228"));
+        Browse.setBackground(Color.decode("#07b6f0"));
         Browse.setForeground(Color.WHITE);
         Browse.setFont(new Font("Segoe UI", Font.BOLD, 14));
         Browse.setFocusPainted(false);
         Browse.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                Browse.setBackground(Color.decode("#C14600"));
+                Browse.setBackground(Color.decode("#0095c7"));
             }
             @Override
             public void mouseExited(MouseEvent e) {
-                Browse.setBackground(Color.decode("#EC5228"));
+                Browse.setBackground(Color.decode("#07b6f0"));
             }
         });
         themNVCenter.add(maNVLabel);
@@ -373,13 +390,13 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
         //nút lưu
         JButton saveButton = new JButton("Lưu");
         saveButton.setPreferredSize(new Dimension(100, 40));
-        saveButton.setBackground(Color.decode("#EC5228"));
+        saveButton.setBackground(Color.decode("#30f222"));
         saveButton.setForeground(Color.WHITE);
         saveButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
         //nút hủy
         JButton cancelButton = new JButton("Hủy");
         cancelButton.setPreferredSize(new Dimension(100, 40));
-        cancelButton.setBackground(Color.decode("#EC5228"));
+        cancelButton.setBackground(Color.decode("#de2002"));
         cancelButton.setForeground(Color.WHITE);
         cancelButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
         
@@ -655,13 +672,13 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
         //nút lưu
         JButton saveButton = new JButton("Lưu");
         saveButton.setPreferredSize(new Dimension(100, 40));
-        saveButton.setBackground(Color.decode("#EC5228"));
+        saveButton.setBackground(Color.decode("#30f222"));
         saveButton.setForeground(Color.WHITE);
         saveButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
         //nút hủy
         JButton cancelButton = new JButton("Hủy");
         cancelButton.setPreferredSize(new Dimension(100, 40));
-        cancelButton.setBackground(Color.decode("#EC5228"));
+        cancelButton.setBackground(Color.decode("#de2002"));
         cancelButton.setForeground(Color.WHITE);
         cancelButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
         

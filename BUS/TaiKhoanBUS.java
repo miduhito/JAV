@@ -1,5 +1,6 @@
 package BUS;
 import java.util.ArrayList;
+import java.util.List;
 import java.sql.*;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -35,9 +36,9 @@ public class TaiKhoanBUS {
                 tableModel.addRow(new Object[]{
                         emp.getTenDangNhap(),
                         emp.getMatKhau(),
-                        emp.getNgayTao(),
-                        emp.getTrangThai(),
                         emp.getVaiTro(),
+                        emp.getTrangThai(),
+                        emp.getNgayTao(),
                 });
             }
         } catch (Exception ex) {
@@ -89,6 +90,54 @@ public class TaiKhoanBUS {
     public void editTaiKhoan(String tenDangNhap,String matKhau,String trangThai,String vaiTro,String tenDangNhapCu){
         tk.editTaiKhoan(tenDangNhap, matKhau, trangThai, vaiTro,tenDangNhapCu);
     }
+    public void searchTableData(DefaultTableModel table, String searchText) {
+        table.setRowCount(0);
+        try {
+            if(!findTaiKhoan(searchText).isEmpty()) {
+                for(TaiKhoanDTO emp: findTaiKhoan(searchText)) {
+                    table.addRow(new Object[] {
+                        emp.getTenDangNhap(),
+                        emp.getMatKhau(),
+                        emp.getVaiTro(),
+                        emp.getTrangThai(),
+                        emp.getNgayTao(),
+                    });
+                }
+            }
+            else {
+                refreshTableData(table);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Không thể kết nối đến cơ sở dữ liệu!",
+                    "Thông báo", JOptionPane.ERROR_MESSAGE);
+            refreshTableData(table);
+        }
+    }
+    public ArrayList<TaiKhoanDTO> findTaiKhoan(String searchText) {
+        try {
+            ArrayList<TaiKhoanDTO> tkSearch = new ArrayList<>();
+            // Lặp qua tất cả nhân viên từ nhanVienDAO
+            for (TaiKhoanDTO t : tk.getdata()) {
+                // Kiểm tra từng thuộc tính của NhanVienDTO
+                if ((t.getTenDangNhap() != null && t.getTenDangNhap().toLowerCase().contains(searchText.toLowerCase())) ||
+                    (t.getMatKhau() != null && t.getMatKhau().toLowerCase().contains(searchText.toLowerCase())) ||
+                    (t.getNgayTao() != null && t.getNgayTao().toString().contains(searchText.toLowerCase())) ||
+                    (t.getTrangThai() != null && t.getTrangThai().toLowerCase().contains(searchText.toLowerCase())) ||
+                    (t.getVaiTro() != null && t.getVaiTro().toLowerCase().contains(searchText.toLowerCase()))) {
+                    // Nếu bất kỳ thuộc tính nào chứa chuỗi tìm kiếm, thêm vào danh sách kết quả
+                    tkSearch.add(t);
+                }
+            }
+            return tkSearch;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Lỗi khi lấy thông tin của tất cả nhân viên", "Thông báo", JOptionPane.ERROR_MESSAGE);
+            return new ArrayList<>();
+        }
+    }
+    
     // public static void main(String[] args) {
     //     TaiKhoanDAO dao = new TaiKhoanDAO();
     //     ArrayList<NhanVienDTO> ds = dao.getdatanv();
