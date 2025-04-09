@@ -3,6 +3,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "TaiKhoanDAO",
+            "request": "launch",
+            "mainClass": "DAO.TaiKhoanDAO",
+            "projectName": "java_2d95560"
+        },
+        {
+            "type": "java",
             "name": "TaiKhoanBUS",
             "request": "launch",
             "mainClass": "BUS.TaiKhoanBUS",

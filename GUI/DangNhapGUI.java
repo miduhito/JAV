@@ -4,6 +4,7 @@ import BUS.TaiKhoanBUS;
 import java.awt.*;
 import java.awt.event.*;
 public class DangNhapGUI {
+    private static TaiKhoanBUS tk = new TaiKhoanBUS();
     private static JFrame frame = new JFrame("Login Page");
     static JPanel LoginPanel = new JPanel();
     static BackgroundPanel Bg = new BackgroundPanel();
@@ -130,7 +131,7 @@ public class DangNhapGUI {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int i = TaiKhoanBUS.kiemtra(userText.getText(),passwordText.getText());
+                int i = tk.kiemtra(userText.getText(),passwordText.getText());
                 if (i==1) {
                     showTrangChu();
                 }

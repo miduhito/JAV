@@ -533,6 +533,79 @@ LOCK TABLES `thucan` WRITE;
 INSERT INTO `thucan` VALUES ('TA001','Phở bò','Phở bò thơm ngon','Phở',150.00,'CT1'),('TA002','Bún chả','Bún chả chuẩn Hà Nội','Bún',200.00,'CT2');
 /*!40000 ALTER TABLE `thucan` ENABLE KEYS */;
 UNLOCK TABLES;
+DELIMITER //
+
+CREATE PROCEDURE editTaiKhoan(
+    IN newTenDangNhap VARCHAR(255),
+    IN newMatKhau VARCHAR(255),
+    IN newTrangThai VARCHAR(50),
+    IN newVaiTro VARCHAR(50),
+    IN oldTenDangNhap VARCHAR(255)
+)
+BEGIN
+    -- 1. Xóa tạm tenDangNhap ở bảng nhân viên để tránh lỗi khoá ngoại (nếu có ràng buộc)
+    UPDATE nhanvien 
+    SET tenDangNhap = NULL 
+    WHERE tenDangNhap = oldTenDangNhap;
+
+    -- 2. Gán lại tenDangNhap mới ở bảng nhân viên
+    UPDATE nhanvien 
+    SET tenDangNhap = newTenDangNhap 
+    WHERE tenDangNhap IS NULL AND oldTenDangNhap IS NOT NULL;
+
+    -- 3. Cập nhật tài khoản mới
+    UPDATE taikhoan 
+    SET tenDangNhap = newTenDangNhap,
+        matKhau = newMatKhau,
+        trangThai = newTrangThai,
+        vaiTro = newVaiTro
+    WHERE tenDangNhap = oldTenDangNhap;
+END //
+
+DELIMITER ;
+DELIMITER //
+
+CREATE PROCEDURE editTaiKhoan(
+    IN newTenDangNhap VARCHAR(255),
+    IN newMatKhau VARCHAR(255),
+    IN newTrangThai VARCHAR(50),
+    IN newVaiTro VARCHAR(50),
+    IN oldTenDangNhap VARCHAR(255)
+)
+BEGIN
+    -- 1. Cập nhật tạm bảng nhanvien sang giá trị tạm (tránh lỗi khoá ngoại)
+    UPDATE nhanvien 
+    SET tenDangNhap = NULL 
+    WHERE tenDangNhap = oldTenDangNhap;
+
+    -- 2. Cập nhật bảng taikhoan
+    UPDATE taikhoan 
+    SET tenDangNhap = newTenDangNhap,
+        matKhau = newMatKhau,
+        trangThai = newTrangThai,
+        vaiTro = newVaiTro
+    WHERE tenDangNhap = oldTenDangNhap;
+
+    -- 3. Cập nhật lại bảng nhanvien với tenDangNhap mới
+    UPDATE nhanvien 
+    SET tenDangNhap = newTenDangNhap 
+    WHERE tenDangNhap IS NULL;
+END //
+
+DELIMITER ;
+DELIMITER //
+
+CREATE PROCEDURE deleteTaiKhoanProc(IN pTenDangNhap VARCHAR(255))
+BEGIN
+    -- Bước 1: Set NULL trong nhanvien
+    UPDATE nhanvien SET tenDangNhap = NULL WHERE tenDangNhap = pTenDangNhap;
+
+    -- Bước 2: Xóa trong taikhoan
+    DELETE FROM taikhoan WHERE tenDangNhap = pTenDangNhap;
+END //
+
+DELIMITER ;
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
