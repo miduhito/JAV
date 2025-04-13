@@ -1,21 +1,14 @@
 package GUI;
 import javax.swing.*;
 import BUS.TaiKhoanBUS;
+import DTO.TaiKhoanDTO;
+
 import java.awt.*;
 import java.awt.event.*;
 public class DangNhapGUI {
     private static TaiKhoanBUS tk = new TaiKhoanBUS();
-    private static JFrame frame = new JFrame("Login Page");
-    static JPanel LoginPanel = new JPanel();
-    static BackgroundPanel Bg = new BackgroundPanel();
-        
-    static JLabel userLabel = new JLabel("Username:");
-    static JTextField userText = new JTextField("",15);
-
-    static JLabel passwordLabel = new JLabel("Password:");
-    static JPasswordField passwordText = new JPasswordField("",15);
     @SuppressWarnings("FieldMayBeFinal")
-        static class BackgroundPanel extends JPanel{
+        private static class BackgroundPanel extends JPanel{
             private Image bgImg ;
 
             public BackgroundPanel(){
@@ -30,14 +23,25 @@ public class DangNhapGUI {
             }
     }
     public static void main(String[] args) {
+        DangNhapGUI trang = new DangNhapGUI();
+        trang.showDangNhapGUI();
+    }
+    public void showDangNhapGUI(){
         // Tạo khung chính
-        
+        JFrame frame = new JFrame("Login Page");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(700, 400);
         frame.setLocationRelativeTo(null);
+        JPanel LoginPanel = new JPanel();
+        BackgroundPanel Bg = new BackgroundPanel();
+        JLabel userLabel = new JLabel("Username:");
+        JTextField userText = new JTextField("",15);
+
+        JLabel passwordLabel = new JLabel("Password:");
+        JPasswordField passwordText = new JPasswordField("",15);
         // Tạo các thành phần
         userText.setText("midu");
-        passwordText.setText("12345");
+        passwordText.setText("12345@");
         //Chinh sua
         LoginPanel.setOpaque(false) ;
         LoginPanel.setLayout(new GridBagLayout());
@@ -60,7 +64,7 @@ public class DangNhapGUI {
         buttonPanel.setBackground(Color.BLACK);
         buttonPanel.setLayout(new FlowLayout());
         String Login = "Đăng Nhập";
-        addButtonToPanel(buttonPanel,Login,Color.BLACK);
+        addButtonToPanel(buttonPanel,Login,Color.BLACK,frame,userText,passwordText);
         // Thêm các thành phần vào khung
         gbc.gridx=0;gbc.gridy=0;
         LoginPanel.add(userLabel,gbc);
@@ -83,17 +87,17 @@ public class DangNhapGUI {
         frame.setVisible(true);
         frame.setResizable(false);
     }
-    public static void showTrangChu(){
-        frame.dispose();
+    public static void showTrangChu(TaiKhoanDTO taikhoan,JFrame frameDN){
+        frameDN.dispose();
         JFrame f = new JFrame("Trang Chủ");
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setSize(1200, 650);
-        TrangChuGUI dashboard = new TrangChuGUI();
+        TrangChuGUI dashboard = new TrangChuGUI(taikhoan,f);
         f.add(dashboard);
         f.setLocationRelativeTo(null);
         f.setVisible(true);
     }
-    private static void addButtonToPanel(JPanel buttonPanel, String buttonText, Color backgroundColor) {
+    private static void addButtonToPanel(JPanel buttonPanel, String buttonText, Color backgroundColor,JFrame frameDN,JTextField userText,JTextField passwordText) {
         JButton button = new JButton(buttonText);
         button.setForeground(Color.WHITE);
         // Đặt icon cho nút
@@ -133,7 +137,8 @@ public class DangNhapGUI {
             public void actionPerformed(ActionEvent e) {
                 int i = tk.kiemtra(userText.getText(),passwordText.getText());
                 if (i==1) {
-                    showTrangChu();
+                    TaiKhoanDTO taikhoan = tk.timTK(userText.getText());
+                    showTrangChu(taikhoan,frameDN);
                 }
                 else JOptionPane.showMessageDialog(null,"Nhap sai du lieu");
             }

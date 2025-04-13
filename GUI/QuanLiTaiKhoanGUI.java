@@ -28,7 +28,7 @@ import java.text.SimpleDateFormat;
 public class QuanLiTaiKhoanGUI extends RoundedPanel {
     private DefaultTableModel tableModel = new DefaultTableModel();
     private static TaiKhoanBUS tk = new TaiKhoanBUS();
-    public QuanLiTaiKhoanGUI() {
+    public QuanLiTaiKhoanGUI(TaiKhoanDTO taiKhoanDTO) {
         super(50, 50, Color.decode("#F5ECE0")); // RoundedPanel with corner radius 50px
         this.setLayout(new BorderLayout());
 
@@ -94,7 +94,8 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
         searchPanel.add(searchField); // Add the search field
 
         // Add the search panel to the control panel
-        controlPanel.add(searchPanel, BorderLayout.WEST);
+        if(taiKhoanDTO.getVaiTro().equals("Admin"))
+        {controlPanel.add(searchPanel, BorderLayout.WEST);}
         
         //button image
         ImageIcon addIcon = Utilities.loadAndResizeIcon("Resources\\Image\\AddIcon.png", 30, 30);
@@ -102,20 +103,20 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
         ImageIcon deleteIcon =Utilities.loadAndResizeIcon("Resources\\Image\\DeleteIcon.png", 30, 30);
 
         // "Edit Employee" button
-        MyButton editEmployeeButton = new MyButton("Sửa tài khoản", editIcon);
-        editEmployeeButton.setPreferredSize(new Dimension(180, 40));
-        editEmployeeButton.setBackground(Color.decode("#EC5228"));
-        editEmployeeButton.setForeground(Color.WHITE);
-        editEmployeeButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        editEmployeeButton.setFocusPainted(false);
-        editEmployeeButton.addMouseListener(new MouseAdapter() {
+        MyButton editAccountButton = new MyButton("Sửa tài khoản", editIcon);
+        editAccountButton.setPreferredSize(new Dimension(180, 40));
+        editAccountButton.setBackground(Color.decode("#EC5228"));
+        editAccountButton.setForeground(Color.WHITE);
+        editAccountButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        editAccountButton.setFocusPainted(false);
+        editAccountButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                editEmployeeButton.setBackground(Color.decode("#C14600"));
+                editAccountButton.setBackground(Color.decode("#C14600"));
             }
             @Override
             public void mouseExited(MouseEvent e) {
-                editEmployeeButton.setBackground(Color.decode("#EC5228"));
+                editAccountButton.setBackground(Color.decode("#EC5228"));
             }
         });
 
@@ -141,21 +142,21 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
             }
         });
         //Them nut xoa tai khoan
-        MyButton deleteEmployeeButton = new MyButton("Xóa tài khoản",deleteIcon);
-        deleteEmployeeButton.setPreferredSize(new Dimension(180, 40));
-        deleteEmployeeButton.setBackground(Color.decode("#EC5228"));
-        deleteEmployeeButton.setForeground(Color.WHITE);
-        deleteEmployeeButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        deleteEmployeeButton.setFocusPainted(false);
+        MyButton deleteAccountButton = new MyButton("Xóa tài khoản",deleteIcon);
+        deleteAccountButton.setPreferredSize(new Dimension(180, 40));
+        deleteAccountButton.setBackground(Color.decode("#EC5228"));
+        deleteAccountButton.setForeground(Color.WHITE);
+        deleteAccountButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        deleteAccountButton.setFocusPainted(false);
         //Button effect
-        deleteEmployeeButton.addMouseListener(new MouseAdapter() {
+        deleteAccountButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                deleteEmployeeButton.setBackground(Color.decode("#C14600"));
+                deleteAccountButton.setBackground(Color.decode("#C14600"));
             }
             @Override
             public void mouseExited(MouseEvent e) {
-                deleteEmployeeButton.setBackground(Color.decode("#EC5228"));
+                deleteAccountButton.setBackground(Color.decode("#EC5228"));
             }
         });
         // Panel to hold buttons
@@ -163,9 +164,14 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
         buttonPanel.setBackground(Color.WHITE);
 
         // Add buttons to the panel
-        buttonPanel.add(addAccountButton);
-        buttonPanel.add(editEmployeeButton);
-        buttonPanel.add(deleteEmployeeButton);
+        if(taiKhoanDTO.getVaiTro().equals("Admin")){
+            buttonPanel.add(addAccountButton);
+            buttonPanel.add(editAccountButton);
+            buttonPanel.add(deleteAccountButton);
+        }
+        else{
+            buttonPanel.add(editAccountButton);
+        }
 
         // Add the button panel to the control panel
         controlPanel.add(buttonPanel, BorderLayout.EAST);
@@ -180,10 +186,16 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
                 "Tên đăng nhập", "Mật khẩu", "Vai trò", "Trạng thái", "Ngày tạo"
         });
         TaiKhoanDAO t = new TaiKhoanDAO();
-        ArrayList<TaiKhoanDTO> list = new ArrayList<>();
-        list = t.getdata();
-        for(TaiKhoanDTO tk : list){
-            tableModel.addRow(new Object[]{tk.getTenDangNhap(),tk.getMatKhau(),tk.getVaiTro(),tk.getTrangThai(),tk.getNgayTao()});
+        if(taiKhoanDTO.getVaiTro().equals("Admin"))
+        {
+            ArrayList<TaiKhoanDTO> list = new ArrayList<>();
+            list = t.getdata();
+            for(TaiKhoanDTO tk : list){
+                tableModel.addRow(new Object[]{tk.getTenDangNhap(),tk.getMatKhau(),tk.getVaiTro(),tk.getTrangThai(),tk.getNgayTao()});
+            }
+        }
+        else{
+            tableModel.addRow(new Object[]{taiKhoanDTO.getTenDangNhap(),taiKhoanDTO.getMatKhau(),taiKhoanDTO.getVaiTro(),taiKhoanDTO.getTrangThai(),taiKhoanDTO.getNgayTao()});
         }
         JTable table = new JTable(tableModel);
         table.setRowHeight(35);
@@ -221,7 +233,7 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
         });
         
         //Action cho nut delete
-        deleteEmployeeButton.addActionListener(e->{
+        deleteAccountButton.addActionListener(e->{
             int Select = table.getSelectedRow();
             if(Select!=-1){
                 String tenDangNhap = tableModel.getValueAt(Select, 0).toString();
@@ -234,14 +246,16 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
         });
 
         //Action cho nút edit 
-        editEmployeeButton.addActionListener(e->{
+        editAccountButton.addActionListener(e->{
+            editAccountButton.setEnabled(false);
             int Select = table.getSelectedRow();
             if(Select!=-1){
                 String tenDangNhap = tableModel.getValueAt(Select, 0).toString();
-                FormSuaTaiKhoan(addAccountButton, tenDangNhap);
+                FormSuaTaiKhoan(editAccountButton, tenDangNhap,taiKhoanDTO);
             }
             else{
                 JOptionPane.showMessageDialog(null, "Vui lòng chọn một tài khoản!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                editAccountButton.setEnabled(true);
             }
         });
     }
@@ -365,16 +379,16 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
 
         // ----- Dòng 5: Trạng thái -----
         JLabel trangThaiLabel = new JLabel("Trạng thái:");
-        JComboBox<String> trangThaiField = new JComboBox<>(new String[]{"Active", "Inactive"});
+        JComboBox<String> trangThaiBox = new JComboBox<>(new String[]{"Active", "Inactive"});
         JLabel emptyLabel4 = new JLabel();
         emptyLabel4.setPreferredSize(new Dimension(60, 60));
         themNVCenter.add(trangThaiLabel);
-        themNVCenter.add(trangThaiField);
+        themNVCenter.add(trangThaiBox);
         themNVCenter.add(emptyLabel4);
 
         // ----- Dòng 6: Vai trò -----
         JLabel vaiTroLabel = new JLabel("Vai trò:");
-        JComboBox<String> vaiTroBox = new JComboBox<>(new String[]{"Admin","Manager","Employee"});
+        JComboBox<String> vaiTroBox = new JComboBox<>(new String[]{"Admin","Quản lí","Quản lí kho","Thu ngân","Kế toán"});
         JLabel emptyLabel5 = new JLabel();
         emptyLabel5.setPreferredSize(new Dimension(60, 60));
         themNVCenter.add(vaiTroLabel);
@@ -384,8 +398,8 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
         formThemTK.add(themNVCenter, BorderLayout.CENTER);
 
         // Footer chứa nút Lưu
-        RoundedPanel themNVFooter = new RoundedPanel(30, 30, Color.WHITE);
-        themNVFooter.setLayout(new FlowLayout(FlowLayout.CENTER));
+        RoundedPanel themTKFooter = new RoundedPanel(30, 30, Color.WHITE);
+        themTKFooter.setLayout(new FlowLayout(FlowLayout.CENTER));
         
         //nút lưu
         JButton saveButton = new JButton("Lưu");
@@ -449,7 +463,7 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
                             tenDNField.getText(),
                             passwordField.getText(),
                             sqlDate,
-                            trangThaiField.getSelectedItem().toString(),
+                            trangThaiBox.getSelectedItem().toString(),
                             vaiTroBox.getSelectedItem().toString(),
                             maNVField.getText()
                     );
@@ -468,9 +482,9 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
         cancelButton.addActionListener(e->{
             formThemTK.dispose();
         });
-        themNVFooter.add(saveButton);
-        themNVFooter.add(cancelButton);
-        formThemTK.add(themNVFooter, BorderLayout.SOUTH);
+        themTKFooter.add(saveButton);
+        themTKFooter.add(cancelButton);
+        formThemTK.add(themTKFooter, BorderLayout.SOUTH);
 
         formThemTK.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -555,7 +569,7 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
 
 
     //FormSuaTaiKhoan
-    private void FormSuaTaiKhoan(JButton editButton,String tenDangNhap) {
+    private void FormSuaTaiKhoan(JButton editButton,String tenDangNhap,TaiKhoanDTO taiKhoanDTO) {
         TaiKhoanDTO acc= tk.timTK(tenDangNhap);
         JFrame formsuaTK = new JFrame("Sửa Tài Khoản");
         formsuaTK.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE); // Set the close operation correctly
@@ -627,8 +641,6 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
 
         // ----- Dòng 4: Ngày tạo -----
         JLabel ngayTaoLabel = new JLabel("Ngày tạo (yyy-mm-dd):");
-        java.util.Date Date = new java.util.Date();
-        Date sqldate = new Date(Date.getTime());
         JTextField ngayTaoField = new JTextField();
         ngayTaoField.setText(acc.getNgayTao().toString());
         ngayTaoField.setBackground(Color.lightGray);
@@ -645,24 +657,29 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
 
         // ----- Dòng 5: Trạng thái -----
         JLabel trangThaiLabel = new JLabel("Trạng thái:");
-        JComboBox<String> trangThaiField = new JComboBox<>(new String[]{"Active", "Inactive"});
-        trangThaiField.setSelectedItem(acc.getTrangThai());
+        JComboBox<String> trangThaiBox = new JComboBox<>(new String[]{"Active", "Inactive"});
+        trangThaiBox.setSelectedItem(acc.getTrangThai());
         JLabel emptyLabel4 = new JLabel();
         emptyLabel4.setPreferredSize(new Dimension(60, 60));
         suaTKCenter.add(trangThaiLabel);
-        suaTKCenter.add(trangThaiField);
+        suaTKCenter.add(trangThaiBox);
         suaTKCenter.add(emptyLabel4);
+        if(!taiKhoanDTO.getVaiTro().equals("Admin")){
+            trangThaiBox.setEnabled(false);
+        }
 
         // ----- Dòng 6: Vai trò -----
         JLabel vaiTroLabel = new JLabel("Vai trò:");
-        JComboBox<String> vaiTroBox = new JComboBox<>(new String[]{"Admin","Manager","Employee"});
+        JComboBox<String> vaiTroBox = new JComboBox<>(new String[]{"Admin","Quản lí","Quản lí kho","Thu ngân","Kế toán"});
         vaiTroBox.setSelectedItem(acc.getVaiTro());
         JLabel emptyLabel5 = new JLabel();
         emptyLabel5.setPreferredSize(new Dimension(60, 60));
         suaTKCenter.add(vaiTroLabel);
         suaTKCenter.add(vaiTroBox);
         suaTKCenter.add(emptyLabel5);
-
+        if(!taiKhoanDTO.getVaiTro().equals("Admin")){
+            vaiTroBox.setEnabled(false);
+        }
         formsuaTK.add(suaTKCenter, BorderLayout.CENTER);
 
         // Footer chứa nút Lưu
@@ -714,20 +731,42 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
             }
             if(isValid) {
                 try {
+                    //Neu ten dang nhap ko doi thi ko can check duplicate
                     if(!acc.getTenDangNhap().equals(tenDNField.getText())){
+                        //Check duplicate
                         if(tk.checkduplicate(tenDNField.getText())){
-                            tk.editTaiKhoan(tenDNField.getText(), passwordField.getText(), trangThaiField.getSelectedItem().toString(), vaiTroBox.getSelectedItem().toString(),acc.getTenDangNhap());
-                            tk.refreshTableData(tableModel);
-                            JOptionPane.showMessageDialog(formsuaTK, "Cập nhật thành công!");
-                            formsuaTK.dispose();}
+                            //Check vai tro de refresh table
+                            if(taiKhoanDTO.getVaiTro().equals("Admin")){
+                                tk.editTaiKhoan(tenDNField.getText(), passwordField.getText(), trangThaiBox.getSelectedItem().toString(), vaiTroBox.getSelectedItem().toString(),acc.getTenDangNhap());
+                                tk.refreshTableData(tableModel);
+                                JOptionPane.showMessageDialog(formsuaTK, "Cập nhật thành công!");
+                                formsuaTK.dispose();
+                            }
+                            else{
+                                tk.editTaiKhoan(tenDNField.getText(), passwordField.getText(), trangThaiBox.getSelectedItem().toString(), vaiTroBox.getSelectedItem().toString(),acc.getTenDangNhap());
+                                tableModel.setRowCount(0);
+                                tableModel.addRow(new Object[]{tenDNField.getText(),passwordField.getText(),vaiTroBox.getSelectedItem(),trangThaiBox.getSelectedItem(),ngayTaoField.getText()});
+                                JOptionPane.showMessageDialog(formsuaTK, "Cập nhật thành công!");
+                                formsuaTK.dispose();
+                            }}
                         else{
                             JOptionPane.showMessageDialog(null, "Tên đăng nhập này đã tồn tại vui lòng chọn tên đăng nhập khác", "Cảnh báobáo", JOptionPane.WARNING_MESSAGE);
                         }
-                }else{
-                            tk.editTaiKhoan(tenDNField.getText(), passwordField.getText(), trangThaiField.getSelectedItem().toString(), vaiTroBox.getSelectedItem().toString(),acc.getTenDangNhap());
-                            tk.refreshTableData(tableModel);
-                            JOptionPane.showMessageDialog(formsuaTK, "Cập nhật thành công!");
-                            formsuaTK.dispose();
+                }else{      
+                            //Check vai tro
+                            if(taiKhoanDTO.getVaiTro().equals("Admin")){
+                                tk.editTaiKhoan(tenDNField.getText(), passwordField.getText(), trangThaiBox.getSelectedItem().toString(), vaiTroBox.getSelectedItem().toString(),acc.getTenDangNhap());
+                                tk.refreshTableData(tableModel);
+                                JOptionPane.showMessageDialog(formsuaTK, "Cập nhật thành công!");
+                                formsuaTK.dispose();
+                            }
+                            else{
+                                tk.editTaiKhoan(tenDNField.getText(), passwordField.getText(), trangThaiBox.getSelectedItem().toString(), vaiTroBox.getSelectedItem().toString(),acc.getTenDangNhap());
+                                tableModel.setRowCount(0);
+                                tableModel.addRow(new Object[]{tenDNField.getText(),passwordField.getText(),vaiTroBox.getSelectedItem(),trangThaiBox.getSelectedItem(),ngayTaoField.getText()});
+                                JOptionPane.showMessageDialog(formsuaTK, "Cập nhật thành công!");
+                                formsuaTK.dispose();
+                            }
                 }
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -745,7 +784,7 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
         formsuaTK.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent e) {
-                formsuaTK.setEnabled(true);
+                editButton.setEnabled(true);
             }
         });
         formsuaTK.setVisible(true);

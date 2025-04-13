@@ -3,6 +3,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "test",
+            "request": "launch",
+            "mainClass": "GUI.test",
+            "projectName": "java_2d95560"
+        },
+        {
+            "type": "java",
             "name": "TaiKhoanDAO",
             "request": "launch",
             "mainClass": "DAO.TaiKhoanDAO",

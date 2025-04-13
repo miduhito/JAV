@@ -1,8 +1,14 @@
 package GUI;
 
+import Custom.MyButton;
+import Custom.RoundedButton;
 import Custom.RoundedPanel;
+import DTO.TaiKhoanDTO;
 
 import javax.swing.*;
+
+import BUS.TaiKhoanBUS;
+import Custom.Utilities;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -12,8 +18,8 @@ import java.time.format.DateTimeFormatter;
 public class TrangChuGUI extends JPanel {
     // dynamicContentPanel - vùng chứa giao diện động (như QuanLiNhanVienGUI)
     private final JPanel dynamicContentPanel = new JPanel(new BorderLayout());
-
-    public TrangChuGUI() {
+    private TaiKhoanDTO taiKhoanDTO = new TaiKhoanDTO();
+    public TrangChuGUI(TaiKhoanDTO taikhoan,JFrame frame) {
         // Sử dụng BorderLayout cho TrangChuGUI
         this.setLayout(new BorderLayout());
 
@@ -44,19 +50,94 @@ public class TrangChuGUI extends JPanel {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         buttonPanel.setBackground(Color.WHITE);
         // Thêm các nút chức năng vào buttonPanel
-        addButtonToPanel(buttonPanel, "Quản lí nhân viên", "Resources\\Image\\EmployeeIcon.png");
-        addButtonToPanel(buttonPanel, "Quản lí khách hàng", "Resources\\Image\\CustomerIcon.png");
-        addButtonToPanel(buttonPanel, "Quản lí tài khoản", "Resources\\Image\\AccountIcon.png");
-        addButtonToPanel(buttonPanel, "Quản lí ca - lịch làm", "Resources\\Image\\Shift.png");
-        addButtonToPanel(buttonPanel, "Chấm công", "Resources\\Image\\Timekeeping.png");
-        addButtonToPanel(buttonPanel, "Quản lí nhập hàng", "Resources\\Image\\EntryProduct.png");
-        addButtonToPanel(buttonPanel, "Quản lí khuyến mãi", "Resources\\Image\\Promotion.png");
+        //     addButtonToPanel(buttonPanel, "Quản lí nhân viên", "Resources\\Image\\EmployeeIcon.png");
+        //     addButtonToPanel(buttonPanel, "Quản lí khách hàng", "Resources\\Image\\CustomerIcon.png");
+        //     addButtonToPanel(buttonPanel, "Quản lí thức ăn", "Resources\\Image\\ThucAn.png");
+        //     addButtonToPanel(buttonPanel, "Quản lí công thức", "Resources\\Image\\CongThuc.png");
+        //     addButtonToPanel(buttonPanel, "Quản lí nguyên liệu", "Resources\\Image\\NguyenLieu.png");
+        //     addButtonToPanel(buttonPanel, "Quản lí tài khoản", "Resources\\Image\\AccountIcon.png");
+        //     addButtonToPanel(buttonPanel, "Quản lí ca - lịch làm", "Resources\\Image\\Shift.png");
+        //     addButtonToPanel(buttonPanel, "Chấm công", "Resources\\Image\\Timekeeping.png");
+        //     addButtonToPanel(buttonPanel, "Quản lí nhập hàng", "Resources\\Image\\EntryProduct.png");
+        //     addButtonToPanel(buttonPanel, "Quản lí khuyến mãi", "Resources\\Image\\Promotion.png");
+        //     addButtonToPanel(buttonPanel, "Thanh toán", "Resources\\Image\\Payment.png");
+        //     addButtonToPanel(buttonPanel, "Thống kê", "Resources\\Image\\Statistic.png");
+        //System.out.println(taiKhoanDTO.getVaiTro());
+        switch (taikhoan.getVaiTro()) {
+            case "Admin":
+                addButtonToPanel(buttonPanel, "Quản lí tài khoản", "Resources\\Image\\AccountIcon.png");
+                break;
+            case "Thu ngân":
+                addButtonToPanel(buttonPanel, "Quản lí khách hàng", "Resources\\Image\\CustomerIcon.png");
+                addButtonToPanel(buttonPanel, "Thanh toán", "Resources\\Image\\Payment.png");
+                addButtonToPanel(buttonPanel, "Thống kê", "Resources\\Image\\Statistic.png");
+                addButtonToPanel(buttonPanel, "Quản lí tài khoản", "Resources\\Image\\AccountIcon.png");
+                break;
+            case "Kế toán":
+                addButtonToPanel(buttonPanel, "Quản lí nhập hàng", "Resources\\Image\\EntryProduct.png");
+                addButtonToPanel(buttonPanel, "Quản lí khuyến mãi", "Resources\\Image\\Promotion.png");
+                addButtonToPanel(buttonPanel, "Thanh toán", "Resources\\Image\\Payment.png");
+                addButtonToPanel(buttonPanel, "Thống kê", "Resources\\Image\\Statistic.png");
+                addButtonToPanel(buttonPanel, "Quản lí tài khoản", "Resources\\Image\\AccountIcon.png");
+                break;
+            case "Quản lí kho":
+                addButtonToPanel(buttonPanel, "Quản lí thức ăn", "Resources\\Image\\ThucAn.png");
+                addButtonToPanel(buttonPanel, "Quản lí công thức", "Resources\\Image\\CongThuc.png");
+                addButtonToPanel(buttonPanel, "Quản lí nguyên liệu", "Resources\\Image\\NguyenLieu.png");
+                addButtonToPanel(buttonPanel, "Quản lí nhập hàng", "Resources\\Image\\EntryProduct.png");
+                addButtonToPanel(buttonPanel, "Thống kê", "Resources\\Image\\Statistic.png");
+                addButtonToPanel(buttonPanel, "Quản lí tài khoản", "Resources\\Image\\AccountIcon.png");
+                break;
+            case "Quản lí":
+                addButtonToPanel(buttonPanel, "Quản lí nhân viên", "Resources\\Image\\EmployeeIcon.png");
+                addButtonToPanel(buttonPanel, "Quản lí khách hàng", "Resources\\Image\\CustomerIcon.png");
+                addButtonToPanel(buttonPanel, "Quản lí thức ăn", "Resources\\Image\\ThucAn.png");
+                addButtonToPanel(buttonPanel, "Quản lí công thức", "Resources\\Image\\CongThuc.png");
+                addButtonToPanel(buttonPanel, "Quản lí nguyên liệu", "Resources\\Image\\NguyenLieu.png");
+                addButtonToPanel(buttonPanel, "Quản lí ca - lịch làm", "Resources\\Image\\Shift.png");
+                addButtonToPanel(buttonPanel, "Chấm công", "Resources\\Image\\Timekeeping.png");
+                addButtonToPanel(buttonPanel, "Quản lí nhập hàng", "Resources\\Image\\EntryProduct.png");
+                addButtonToPanel(buttonPanel, "Quản lí khuyến mãi", "Resources\\Image\\Promotion.png");
+                addButtonToPanel(buttonPanel, "Thanh toán", "Resources\\Image\\Payment.png");
+                addButtonToPanel(buttonPanel, "Thống kê", "Resources\\Image\\Statistic.png");
+                addButtonToPanel(buttonPanel, "Quản lí tài khoản", "Resources\\Image\\AccountIcon.png");
+                break;
+            default:
+                break;
+        }
         
         // Thêm các nút khác nếu cần:
         // addButtonToPanel(buttonPanel, "Quản lí thức ăn", Color.WHITE);
         // addButtonToPanel(buttonPanel, "Thanh toán", Color.WHITE);
         // addButtonToPanel(buttonPanel, "Thống kê", Color.WHITE);
-
+        JPanel exitPanel = new JPanel();
+        exitPanel.setLayout(new FlowLayout());
+        RoundedButton exitButton = new RoundedButton("Đăng xuất", 10,10);
+        exitButton.setPreferredSize(new Dimension(120, 40));
+        exitButton.setBackground(Color.decode("#000000"));
+        exitButton.setForeground(Color.WHITE);
+        exitButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        exitButton.setFocusPainted(false);
+        exitButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                exitButton.setBackground(Color.decode("#7e7f80"));
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                exitButton.setBackground(Color.decode("#000000"));
+            }
+        });
+        exitButton.addActionListener(e -> {
+            int pane = JOptionPane.showConfirmDialog(null, "Bạn có chắc chắn muốn đăng xuất?", "Xác nhận đăng xuất", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (pane == JOptionPane.YES_OPTION) {
+                frame.dispose(); // Đóng frame hiện tại
+                DangNhapGUI dangnhap = new DangNhapGUI();
+                dangnhap.showDangNhapGUI();
+            }
+        });
+        exitPanel.add(exitButton);
+        buttonPanel.add(exitPanel,BorderLayout.SOUTH);
         // Thêm buttonPanel vào vùng CENTER của menuPanel
         menuPanel.add(buttonPanel, BorderLayout.CENTER);
 
@@ -79,7 +160,10 @@ public class TrangChuGUI extends JPanel {
         helloPanel.setPreferredSize(new Dimension(0, 70));
         
         // Label "Hello" ở bên trái
-        JLabel helloLabel = new JLabel("Hello");
+        TaiKhoanBUS tk = new TaiKhoanBUS();
+        tk.transferdata(taiKhoanDTO, taikhoan);
+        String a = (tk.timNV(taikhoan.getTenDangNhap())).getTenNV();
+        JLabel helloLabel = new JLabel("Hello "+ a);
         helloLabel.setFont(new Font("Arial", Font.BOLD, 20));
         helloLabel.setForeground(Color.BLACK);
         // Thêm khoảng cách (padding) bên trái
@@ -154,7 +238,7 @@ public class TrangChuGUI extends JPanel {
             }
             // Bạn có thể xử lý ActionListener cho các nút khác ở đây
             if (buttonText.equals("Quản lí tài khoản")){
-                showQuanLiTaiKhoan();
+                showQuanLiTaiKhoan(taiKhoanDTO);
             }
             if (buttonText.equals("Quản lí ca - lịch làm")){
                 showQuanLiCaLam();
@@ -183,9 +267,9 @@ public class TrangChuGUI extends JPanel {
         dynamicContentPanel.repaint();
     }
 
-    private void showQuanLiTaiKhoan(){
+    private void showQuanLiTaiKhoan(TaiKhoanDTO taiKhoanDTO){
         dynamicContentPanel.removeAll();
-        dynamicContentPanel.add(new QuanLiTaiKhoanGUI(), BorderLayout.CENTER);
+        dynamicContentPanel.add(new QuanLiTaiKhoanGUI(taiKhoanDTO), BorderLayout.CENTER);
         dynamicContentPanel.revalidate();
         dynamicContentPanel.repaint();
     }
@@ -222,7 +306,8 @@ public class TrangChuGUI extends JPanel {
         JFrame frame = new JFrame("Trang Chủ");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1200, 650);
-        TrangChuGUI dashboard = new TrangChuGUI();
+        TaiKhoanDTO tk = new TaiKhoanDTO();
+        TrangChuGUI dashboard = new TrangChuGUI(tk,frame);
         frame.add(dashboard);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);

@@ -137,7 +137,13 @@ public class TaiKhoanBUS {
             return new ArrayList<>();
         }
     }
-    
+    public void transferdata(TaiKhoanDTO tk ,TaiKhoanDTO data){
+        tk.setTenDangNhap(data.getTenDangNhap());
+        tk.setMatKhau(data.getMatKhau());
+        tk.setNgayTao(data.getNgayTao());
+        tk.setTrangThai(data.getTrangThai());
+        tk.setVaiTro(data.getVaiTro());
+    }
     // public static void main(String[] args) {
     //     TaiKhoanDAO dao = new TaiKhoanDAO();
     //     ArrayList<NhanVienDTO> ds = dao.getdatanv();
