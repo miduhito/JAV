@@ -6,15 +6,19 @@ public class ThucAnDTO {
     private String moTa;
     private String loaiMonAn;
     private Double gia;
+    private int soLuong;
+    private String anhThucAn;
     private String maCongThuc;
 
     public ThucAnDTO() {}
-    public ThucAnDTO(String maThucAn, String tenThucAn, String moTa, String loaiMonAn, Double gia, String maCongThuc) {
+    public ThucAnDTO(String maThucAn, String tenThucAn, String moTa, String loaiMonAn, Double gia, int soLuong, String anhThucAn, String maCongThuc) {
         this.maThucAn = maThucAn;
         this.tenThucAn = tenThucAn;
         this.moTa = moTa;
         this.loaiMonAn = loaiMonAn;
         this.gia = gia;
+        this.soLuong = soLuong;
+        this.anhThucAn = anhThucAn;
         this.maCongThuc = maCongThuc;
     }
 
@@ -57,6 +61,22 @@ public class ThucAnDTO {
     public void setGia(Double gia) {
         this.gia = gia;
     }    
+
+    public int getSoLuong() {
+        return this.soLuong;
+    }
+
+    public void setSoLuong(int soLuong) {
+        this.soLuong = soLuong;
+    }
+
+    public String getAnhThucAn() {
+        return this.anhThucAn;
+    }
+
+    public void setAnhThucAn(String anhThucAn) {
+        this.anhThucAn = anhThucAn;
+    }
 
     public String getMaCongThuc() {
         return this.maCongThuc;

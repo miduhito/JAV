@@ -8,9 +8,10 @@ public class NguyenLieuDTO {
     private String ngayHetHan;
     private Double soLuong;
     private String donViDo;
+    private Double gia;
 
     public NguyenLieuDTO() {}
-    public NguyenLieuDTO(String maNguyenLieu, String tenNguyenLieu, String loaiNguyenLieu, String ngayNhap, String ngayHetHan, Double soLuong, String donViDo) {
+    public NguyenLieuDTO(String maNguyenLieu, String tenNguyenLieu, String loaiNguyenLieu, String ngayNhap, String ngayHetHan, Double soLuong, String donViDo, Double gia) {
         this.maNguyenLieu = maNguyenLieu;
         this.tenNguyenLieu = tenNguyenLieu;
         this.loaiNguyenLieu = loaiNguyenLieu;
@@ -18,6 +19,7 @@ public class NguyenLieuDTO {
         this.ngayHetHan = ngayHetHan;
         this.soLuong = soLuong;
         this.donViDo = donViDo;
+        this.gia = gia;
     }
 
     public String getMaNguyenLieu() {
@@ -75,4 +77,12 @@ public class NguyenLieuDTO {
     public void setDonViDo(String donViDo) {
         this.donViDo = donViDo;
     }    
+
+    public Double getGia() {
+        return this.gia;
+    }
+
+    public void setGia(Double gia) {
+        this.gia = gia;
+    }
 }

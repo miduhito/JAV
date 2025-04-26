@@ -3,6 +3,34 @@
     "configurations": [
         {
             "type": "java",
+            "name": "DangNhapGUI",
+            "request": "launch",
+            "mainClass": "GUI.DangNhapGUI",
+            "projectName": "java - Copy_402441d9"
+        },
+        {
+            "type": "java",
+            "name": "ChamCongGUI",
+            "request": "launch",
+            "mainClass": "GUI.ChamCongGUI",
+            "projectName": "java - Copy_402441d9"
+        },
+        {
+            "type": "java",
+            "name": "QuanLyNhapHangGUI",
+            "request": "launch",
+            "mainClass": "GUI.QuanLyNhapHangGUI",
+            "projectName": "java - Copy_402441d9"
+        },
+        {
+            "type": "java",
+            "name": "TrangChuGUI",
+            "request": "launch",
+            "mainClass": "GUI.TrangChuGUI",
+            "projectName": "java - Copy_402441d9"
+        },
+        {
+            "type": "java",
             "name": "TrangChuGUI",
             "request": "launch",
             "mainClass": "GUI.TrangChuGUI",

@@ -1,46 +1,54 @@
 package DTO;
 
 public class KhachHangDTO {
-    private String maKH;
-    private String tenKH;
-    private int SDT;
+    private String maKhachHang;
+    private String tenKhachHang;
+    private String gioiTinh;
+    private String SDT;
     private String email;
     private String diaChi;
     private int soDiem;
-    private String tenDangNhap;
 
     public KhachHangDTO() {}
-    public KhachHangDTO(String maKH, String tenKH, int SDT, String email, String diacChi, int soDiem, String tenDangNhap) {
-        this.maKH = maKH;
-        this.tenKH = tenKH;
+    public KhachHangDTO(String maKhachHang, String tenKhachHang, String gioiTinh, String SDT, String email, String diaChi, int soDiem) {
+        this.maKhachHang = maKhachHang;
+        this.tenKhachHang = tenKhachHang;
+        this.gioiTinh = gioiTinh;
         this.SDT = SDT;
         this.email = email;
-        this.diaChi = diacChi;
+        this.diaChi = diaChi;
         this.soDiem = soDiem;
-        this.tenDangNhap = tenDangNhap;
     }
 
-    public String getMaKH() {
-        return this.maKH;
+    public String getMaKhachHang() {
+        return this.maKhachHang;
     }
     
-    public void setMaKH(String maKH) {
-        this.maKH = maKH;
+    public void setMaKH(String maKhachHang) {
+        this.maKhachHang = maKhachHang;
     }
     
-    public String getTenKH() {
-        return this.tenKH;
+    public String getTenKhachHang() {
+        return this.tenKhachHang;
     }
     
-    public void setTenKH(String tenKH) {
-        this.tenKH = tenKH;
+    public void setTenKH(String tenKhachHang) {
+        this.tenKhachHang = tenKhachHang;
+    }
+
+    public String getGioiTinh() {
+        return this.gioiTinh;
+    }
+
+    public void setGioiTinh(String gioiTinh) {
+        this.gioiTinh = gioiTinh;
     }
     
-    public int getSDT() {
+    public String getSDT() {
         return this.SDT;
     }
     
-    public void setSDT(int SDT) {
+    public void setSDT(String SDT) {
         this.SDT = SDT;
     }
     
@@ -66,13 +74,5 @@ public class KhachHangDTO {
     
     public void setSoDiem(int soDiem) {
         this.soDiem = soDiem;
-    }
-
-    public String getTenDangNhap() {
-        return this.tenDangNhap;
-    }
-
-    public void setTenDangNhap(String tenDangNhap) {
-        this.tenDangNhap = tenDangNhap;
     }
 }

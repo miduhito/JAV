@@ -4,16 +4,18 @@ public class NhaCungCapDTO {
     private String maNhaCungCap;
     private String tenNhaCungCap;
     private String email;
-    private int SDT;
+    private String SDT;
     private String diaChi;
+    private boolean trangThai;
 
     public NhaCungCapDTO() {}
-    public NhaCungCapDTO(String maNhaCungCap, String tenNhaCungCap, String email, int SDT, String diaChi) {
+    public NhaCungCapDTO(String maNhaCungCap, String tenNhaCungCap, String email, String SDT, String diaChi, boolean trangThai) {
         this.maNhaCungCap = maNhaCungCap;
         this.tenNhaCungCap = tenNhaCungCap;
         this.email = email;
         this.SDT = SDT;
         this.diaChi = diaChi;
+        this.trangThai = trangThai;
     }
 
     public String getMaNhaCungCap() {
@@ -40,11 +42,11 @@ public class NhaCungCapDTO {
         this.email = email;
     }
     
-    public int getSDT() {
+    public String getSDT() {
         return this.SDT;
     }
     
-    public void setSDT(int SDT) {
+    public void setSDT(String SDT) {
         this.SDT = SDT;
     }
     
@@ -54,5 +56,13 @@ public class NhaCungCapDTO {
     
     public void setDiaChi(String diaChi) {
         this.diaChi = diaChi;
-    }    
+    }
+
+    public boolean isTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(boolean trangThai) {
+        this.trangThai = trangThai;
+    }
 }

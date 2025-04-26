@@ -3,22 +3,22 @@ package DTO;
 public class ChucVuDTO {
     private String maChucVu;
     private String tenChucVu;
-    private String trangThai;
+    private boolean trangThai;
     private double luongTheoGio;
 
     public ChucVuDTO() {}
-    public ChucVuDTO(String maChucVu, String tenChucVu, String trangThai, double luongTheoGio) {
+    public ChucVuDTO(String maChucVu, String tenChucVu, Boolean trangThai, double luongTheoGio) {
         this.maChucVu = maChucVu;
         this.tenChucVu = tenChucVu;
         this.trangThai = trangThai;
         this.luongTheoGio = luongTheoGio;
     }
 
-    public String getMaChuVu() {
+    public String getMaChucVu() {
         return this.maChucVu;
     }
     
-    public void setMaChuVu(String maChucVu) {
+    public void setMaChucVu(String maChucVu) {
         this.maChucVu = maChucVu;
     }
     
@@ -30,11 +30,11 @@ public class ChucVuDTO {
         this.tenChucVu = tenChucVu;
     }
     
-    public String getTrangThai() {
+    public Boolean getTrangThai() {
         return this.trangThai;
     }
     
-    public void setTrangThai(String trangThai) {
+    public void setTrangThai(Boolean trangThai) {
         this.trangThai = trangThai;
     }
     

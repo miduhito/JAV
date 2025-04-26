@@ -2,18 +2,22 @@ package DTO;
 
 public class ChiTietPhieuNhapDTO {
     private String maPhieuNhap;
-    private int soLuongNhap;
     private String maNguyenLieu;
     private Double giaNhap;
+    private Double soLuongNhap;
     private Double thanhTien;
+    private String ghiChu;
+    private boolean trangThai;
 
     public ChiTietPhieuNhapDTO() {}
-    public ChiTietPhieuNhapDTO(String maPhieuNhap, int soLuongNhap, String maNguyenLieu, Double giaNhap, Double thanhTien) {
+    public ChiTietPhieuNhapDTO(String maPhieuNhap, Double soLuongNhap, String maNguyenLieu, Double giaNhap, Double thanhTien, String ghiChu, boolean trangThai) {
         this.maPhieuNhap = maPhieuNhap;
         this.soLuongNhap = soLuongNhap;
         this.maNguyenLieu = maNguyenLieu;
         this.giaNhap = giaNhap;
         this.thanhTien = thanhTien;
+        this.ghiChu = ghiChu;
+        this.trangThai = trangThai;
     }
 
     public String getMaPhieuNhap() {
@@ -24,11 +28,11 @@ public class ChiTietPhieuNhapDTO {
         this.maPhieuNhap = maPhieuNhap;
     }
     
-    public int getSoLuongNhap() {
+    public Double getSoLuongNhap() {
         return this.soLuongNhap;
     }
     
-    public void setSoLuongNhap(int soLuongNhap) {
+    public void setSoLuongNhap(Double soLuongNhap) {
         this.soLuongNhap = soLuongNhap;
     }
     
@@ -54,5 +58,21 @@ public class ChiTietPhieuNhapDTO {
     
     public void setThanhTien(Double thanhTien) {
         this.thanhTien = thanhTien;
+    }
+
+    public boolean isTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(boolean trangThai) {
+        this.trangThai = trangThai;
+    }
+
+    public String getGhiChu() {
+        return ghiChu;
+    }
+
+    public void setGhiChu(String ghiChu) {
+        this.ghiChu = ghiChu;
     }
 }
