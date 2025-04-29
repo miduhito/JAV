@@ -1,3 +1,8 @@
 {
-    "java.debug.settings.onBuildFailureProceed": true
+    "java.debug.settings.onBuildFailureProceed": true,
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "c:\\Users\\phulo\\Downloads\\mysql-connector-j-9.2.0\\mysql-connector-j-9.2.0\\mysql-connector-j-9.2.0.jar",
+        "c:\\Users\\phulo\\Downloads\\jcalendar-1.4.jar"
+    ]
 }

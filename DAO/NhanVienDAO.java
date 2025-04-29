@@ -16,7 +16,7 @@ public class NhanVienDAO {
     private Connection getConnection() throws SQLException {
         return DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/fastfood?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
-                "root", "3182004Lam_");
+                "root", "root");
     }
 
     // Lấy tất cả nhân viên
@@ -103,7 +103,7 @@ public class NhanVienDAO {
     }
 
     // Xóa nhân viên 
-    public void deleteNhanVien(String maNhanVien) throws SQLException {
+    public String deleteNhanVien(String maNhanVien) {
         String sqlCheckStatus = "SELECT trangThai FROM NhanVien WHERE maNhanVien = ?";
         String sqlDelete = "DELETE FROM NhanVien WHERE maNhanVien = ?";
 
@@ -117,12 +117,10 @@ public class NhanVienDAO {
                 if (rs.next()) {
                     String trangThai = rs.getString("trangThai");
                     if ("Đang làm việc".equals(trangThai)) {
-                        System.out.println("Không thể xóa nhân viên đang làm việc.");
-                        return; // Thoát phương thức nếu trạng thái là "Đang làm việc"
+                        return "Không thể xóa nhân viên đang làm việc."; // Thoát phương thức nếu trạng thái là "Đang làm việc"
                     }
                 } else {
-                    System.out.println("Không tìm thấy nhân viên với mã nhân viên: " + maNhanVien);
-                    return; // Thoát phương thức nếu không tìm thấy nhân viên
+                    return "Không tìm thấy nhân viên với mã nhân viên: " + maNhanVien; // Thoát phương thức nếu không tìm thấy nhân viên
                 }
             }
 
@@ -130,7 +128,10 @@ public class NhanVienDAO {
             pstmtDelete.setString(1, maNhanVien);
             pstmtDelete.executeUpdate();
             System.out.println("Xóa nhân viên thành công.");
+        } catch(SQLException ex) {
+            ex.printStackTrace();
         }
+        return "";
     }
 
     // Lấy thông tin nhân viên theo mã

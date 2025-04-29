@@ -15,7 +15,7 @@ public class ThucAnDAO {
     private Connection getConnection() throws SQLException {
         return DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/fastfood?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
-                "root", "3182004Lam_");
+                "root", "root");
     }
     
 
@@ -93,7 +93,7 @@ public class ThucAnDAO {
         }
     }
 
-    public void deleteThucAn(String maThucAn) throws SQLException {
+    public String deleteThucAn(String maThucAn) {
         String sqlCheck = "SELECT soLuong FROM ThucAn WHERE maThucAn = ?";
         try (Connection conn = getConnection();
             PreparedStatement stmtCheck = conn.prepareStatement(sqlCheck)) {
@@ -102,12 +102,10 @@ public class ThucAnDAO {
                 if (rs.next()) {
                     int soLuong = rs.getInt("soLuong");
                     if (soLuong > 0) {
-                        System.err.println("Không thể xóa thức ăn vì số lượng lớn hơn 0!");
-                        return;
+                        return "Không thể xóa thức ăn vì số lượng lớn hơn 0!";
                     }
                 } else {
-                    System.err.println("Không tìm thấy thức ăn để xóa!");
-                    return;
+                    return "Không tìm thấy thức ăn để xóa!";
                 }
             }
 
@@ -116,13 +114,14 @@ public class ThucAnDAO {
                 stmtDelete.setString(1, maThucAn);
                 int rowsAffected = stmtDelete.executeUpdate();
                 if (rowsAffected == 0) {
-                    System.err.println("Không tìm thấy thức ăn để xóa!");
+                    return "Không tìm thấy thức ăn để xóa!";
                 }
             }
         } catch (SQLException e) {
             System.err.println("Lỗi khi xóa thức ăn: " + e.getMessage());
             e.printStackTrace();
         }
+        return "";
     }
 
     public List<String> getAllCongThuc() throws SQLException {

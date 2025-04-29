@@ -9,7 +9,7 @@ import DTO.ThongKeDTO;
 
 public class ChiTietHoaDonDAO {
     private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:mysql://localhost:3306/fastfood?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC", "root", "3182004Lam_");
+        return DriverManager.getConnection("jdbc:mysql://localhost:3306/fastfood?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC", "root", "root");
     }
 
     public List<ChiTietHoaDonDTO> getAllChiTietHoaDon() {

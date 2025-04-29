@@ -83,14 +83,8 @@ public class NhanVienBUS {
     }
 
     // Xóa nhân viên
-    public void deleteNhanVien(String maNhanVien) {
-        try {
-            nhanVienDAO.deleteNhanVien(maNhanVien);
-            JOptionPane.showMessageDialog(null, "Đã xóa nhân viên thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Lỗi khi xóa nhân viên!", "Thông báo", JOptionPane.ERROR_MESSAGE);
-        }
+    public String deleteNhanVien(String maNhanVien) {
+        return nhanVienDAO.deleteNhanVien(maNhanVien);
     }
 
     // Lấy thông tin nhân viên theo mã và trả về dưới dạng Map

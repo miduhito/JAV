@@ -15,7 +15,7 @@ public class CongThucDAO {
         conn = DriverManager.getConnection(
             "jdbc:mysql://localhost:3306/fastfood?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC", 
             "root", 
-            "3182004Lam_"
+            "root"
         );
     }
 
@@ -35,7 +35,7 @@ public class CongThucDAO {
         return list;
     }
 
-    public void insertCongThuc(CongThucDTO ct) throws SQLException {
+    public void insertCongThuc(CongThucDTO ct) {
         String sqlInsert = "INSERT INTO CongThuc (maCongThuc, tenCongThuc, moTa) VALUES (?, ?, ?)";
         String sqlCheck = "SELECT COUNT(*) FROM CongThuc WHERE maCongThuc = ?";
 
@@ -52,6 +52,8 @@ public class CongThucDAO {
             stmtInsert.setString(2, ct.getTenCongThuc());
             stmtInsert.setString(3, ct.getMoTa());
             stmtInsert.executeUpdate();
+        } catch(SQLException ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -123,7 +125,7 @@ public class CongThucDAO {
         return list;
     }
 
-    public void insertChiTietCongThuc(ChiTietCongThucDTO ct) throws SQLException {
+    public void insertChiTietCongThuc(ChiTietCongThucDTO ct) {
         String sql = "INSERT INTO ChiTietCongThuc (maCongThuc, maNguyenLieu, soLuong, donViTinh) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, ct.getMaCongThuc());
@@ -131,6 +133,8 @@ public class CongThucDAO {
             stmt.setDouble(3, ct.getSoLuong());
             stmt.setString(4, ct.getDonViTinh());
             stmt.executeUpdate();
+        } catch(SQLException ex) {
+            ex.printStackTrace();
         }
     }
 

@@ -242,7 +242,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
             if (mode.equals("CaLam")) {
                 JComboBox<String> gioBatDauBox = (JComboBox<String>) field2Component;
 
-                gioBatDauBox.addActionListener(_ -> {
+                gioBatDauBox.addActionListener(e -> {
                     String selectedGioBD = (String) gioBatDauBox.getSelectedItem();
                     String selectedGioKT = (String) field3Box.getSelectedItem();
                     if (selectedGioBD != null && selectedGioKT != null) {
@@ -258,7 +258,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
                     }
                 });
 
-                field3Box.addActionListener(_ -> {
+                field3Box.addActionListener(e -> {
                     String selectedGioBD = (String) gioBatDauBox.getSelectedItem();
                     String selectedGioKT = (String) field3Box.getSelectedItem();
                     if (selectedGioBD != null && selectedGioKT != null) {
@@ -275,7 +275,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
                 });
 
                 // Sự kiện nút Lưu cho Thêm Ca Làm
-                saveButton.addActionListener(_ -> {
+                saveButton.addActionListener(e -> {
 
 
                     CaLamDTO newCaLam = new CaLamDTO();
@@ -293,7 +293,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
                 });
             } else {
                 JComponent finalField2Component = field2Component;
-                saveButton.addActionListener(_ -> {
+                saveButton.addActionListener(e -> {
                     try {
                         LichLamDTO newLichLam = new LichLamDTO();
 
@@ -316,9 +316,9 @@ public class QuanLiCaLamGUI extends RoundedPanel {
                             formThem.dispose();
                         }
                         addButton.setEnabled(true);
-                    } catch (Exception e) {
-                        System.out.print("Lỗi: " + e.getMessage());
-                        JOptionPane.showMessageDialog(null, "Lỗi: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    } catch (Exception ex) {
+                        System.out.print("Lỗi: " + ex.getMessage());
+                        JOptionPane.showMessageDialog(null, "Lỗi: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 });
             }
@@ -481,7 +481,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
         if (mode.equals("CaLam")) {
             JComboBox<String> gioBatDauBox = (JComboBox<String>) field2Component;
 
-            gioBatDauBox.addActionListener(_ -> {
+            gioBatDauBox.addActionListener(e -> {
                 String selectedGioBD = (String) gioBatDauBox.getSelectedItem();
                 String selectedGioKT = (String) field3Box.getSelectedItem();
                 if (selectedGioBD != null && selectedGioKT != null) {
@@ -497,7 +497,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
                 }
             });
 
-            field3Box.addActionListener(_ -> {
+            field3Box.addActionListener(e -> {
                 String selectedGioBD = (String) gioBatDauBox.getSelectedItem();
                 String selectedGioKT = (String) field3Box.getSelectedItem();
                 if (selectedGioBD != null && selectedGioKT != null) {
@@ -514,7 +514,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
             });
 
             // Sự kiện nút Lưu cho Sửa Ca Làm
-            saveButton.addActionListener(_ -> {
+            saveButton.addActionListener(e -> {
                 CaLamDTO newCaLam = new CaLamDTO();
                 newCaLam.setMaCa(maField.getText());
                 newCaLam.setMoTa(field1Box.getSelectedItem() + "");
@@ -530,7 +530,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
             });
         } else {
             JComponent finalField2Component = field2Component;
-            saveButton.addActionListener(_ -> {
+            saveButton.addActionListener(e -> {
                 try {
                     LichLamDTO newLichLam = new LichLamDTO();
 
@@ -553,9 +553,9 @@ public class QuanLiCaLamGUI extends RoundedPanel {
                         formSua.dispose();
                     }
                     editButton.setEnabled(true);
-                } catch (Exception e) {
-                    System.out.print("Lỗi: " + e.getMessage());
-                    JOptionPane.showMessageDialog(null, "Lỗi: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                } catch (Exception ex) {
+                    System.out.print("Lỗi: " + ex.getMessage());
+                    JOptionPane.showMessageDialog(null, "Lỗi: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             });
         }
@@ -653,7 +653,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
         scrollPane.getViewport().setBackground(Color.WHITE);
         schedulingPanel.add(scrollPane, BorderLayout.CENTER);
 
-        dateNgayLam.getDateEditor().addPropertyChangeListener("date", _ -> {
+        dateNgayLam.getDateEditor().addPropertyChangeListener("date", e -> {
             Date selectedDate = dateNgayLam.getDate();
             if (selectedDate != null) {
                 ArrayList<LichLamDTO> lichLamList = llBUS.getDataByDate(selectedDate);
@@ -677,7 +677,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
         schedulingIcon = new ImageIcon(newSchedulingImg);
         shiftIcon = new ImageIcon(newShiftImg);
 
-        addButton.addActionListener(_ -> {
+        addButton.addActionListener(e -> {
             if (addButton.getText().equals("Thêm ca làm")) {
                 ShowFormThem(addButton, "CaLam");
             } else if (addButton.getText().equals("Thêm lịch làm")) {
@@ -686,7 +686,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
             addButton.setEnabled(false);
         });
 
-        editButton.addActionListener(_ -> {
+        editButton.addActionListener(e -> {
             if (editButton.getText().equals("Sửa thông tin ca làm")) {
                 editButton.setEnabled(false);
                 JTable tableCL = (JTable) ((JScrollPane) shiftPanel.getComponent(0)).getViewport().getView();
@@ -698,7 +698,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
             }
         });
 
-        deleteButton.addActionListener(_ -> {
+        deleteButton.addActionListener(e -> {
             if (deleteButton.getText().equals("Xóa ca làm")) {
                 JTable tableCL = (JTable) ((JScrollPane) shiftPanel.getComponent(0)).getViewport().getView();
                 int selectedRow = tableCL.getSelectedRow();
@@ -742,7 +742,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
             }
         });
 
-        hideButton.addActionListener(_ ->{
+        hideButton.addActionListener(e ->{
             if (hideButton.getText().equals("Ẩn ca làm")){
                 JTable tableCL = (JTable) ((JScrollPane) shiftPanel.getComponent(0)).getViewport().getView();
                 int selectedRow = tableCL.getSelectedRow();
@@ -789,7 +789,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
 
         ImageIcon finalShiftIcon = shiftIcon;
         ImageIcon finalSchedulingIcon = schedulingIcon;
-        schedulingButton.addActionListener(_ -> {
+        schedulingButton.addActionListener(e -> {
             if (schedulingButton.getText().equals("Xếp lịch làm")) {
                 title.setText("Lịch làm việc");
                 addButton.setText("Thêm lịch làm");

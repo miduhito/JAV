@@ -191,9 +191,13 @@ public class QuanLiThucAnGUI extends RoundedPanel {
 
             String maThucAn = tableModel.getValueAt(selectedRow, 0).toString();
             try {
-                thucAnBUS.deleteThucAn(maThucAn);
-                thucAnBUS.refreshTableData(tableModel);
-                JOptionPane.showMessageDialog(null, "Xóa thức ăn thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                String success = thucAnBUS.deleteThucAn(maThucAn);
+                if(success == "") {
+                    thucAnBUS.refreshTableData(tableModel);
+                    JOptionPane.showMessageDialog(null, "Xóa thức ăn thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, success, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                }
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(null, "Lỗi khi xóa thức ăn: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
@@ -223,6 +227,18 @@ public class QuanLiThucAnGUI extends RoundedPanel {
         table.setShowGrid(false);
         table.setIntercellSpacing(new Dimension(0, 0));
         table.setFocusable(false);
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(e.getClickCount() == 2) {
+                    int row = table.getSelectedRow();
+                    if(row != -1) {
+                        String maThucAn = table.getValueAt(row, 0).toString();
+                        FormXemChiTietThucAn(maThucAn);
+                    }
+                }
+            }
+        });
 
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -470,12 +486,6 @@ public class QuanLiThucAnGUI extends RoundedPanel {
                     foodImageErrorLabel.setToolTipText("Ảnh thức ăn không được trống");
                     foodImageErrorLabel.setVisible(true);
                 }
-                // String foodImage = anhThucAnField.getText().trim();
-                // if(foodImage.isEmpty()) {
-                //     isValid = false;
-                //     foodImageErrorLabel.setToolTipText("Ảnh thức ăn không được trống");
-                //     foodImageErrorLabel.setVisible(true);
-                // }
         
                 // Xử lý khi dữ liệu hợp lệ
                 if (isValid) {
@@ -535,7 +545,7 @@ public class QuanLiThucAnGUI extends RoundedPanel {
 
         // Center panel for form inputs
         RoundedPanel suaTACenter = new RoundedPanel(30, 30, Color.WHITE);
-        suaTACenter.setLayout(new GridLayout(4, 3, 10, 10));
+        suaTACenter.setLayout(new GridLayout(6, 3, 10, 10));
         suaTACenter.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         String maThucAn = tableModel.getValueAt(selectedRow, 0).toString();
@@ -629,18 +639,70 @@ public class QuanLiThucAnGUI extends RoundedPanel {
         saveButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
         saveButton.addActionListener(e -> {
             try {
-                ThucAnDTO ta = new ThucAnDTO();
-                ta.setMaThucAn(maTAField.getText());
-                ta.setTenThucAn(tenTAField.getText());
-                ta.setMoTa(moTaField.getText());
-                ta.setLoaiMonAn((String) loaiMonAnCombo.getSelectedItem());
-                ta.setGia(Double.parseDouble(giaMonAnField.getText()));
-                ta.setAnhThucAn(anhMonAnField.getText());
+                // Ẩn thông báo lỗi ban đầu
+                foodNameErrorLabel.setVisible(false);
+                foodPriceErrorLabel.setVisible(false);
+        
+                boolean isValid = true;
+        
+                // Validate tên thức ăn
+                String foodName = tenTAField.getText().trim();
+                if (foodName.isEmpty()) {
+                    isValid = false;
+                    foodNameErrorLabel.setToolTipText("Tên thức ăn không được để trống.");
+                    foodNameErrorLabel.setVisible(true);
+                }
+        
+                // Validate giá
+                String foodPrice = giaMonAnField.getText().trim();
+                List<String> foodPriceErrors = new ArrayList<>();
+                if (foodPrice.isEmpty()) {
+                    foodPriceErrors.add("Giá thức ăn không được để trống.");
+                } else if (!foodPrice.matches("\\d+")) {
+                    foodPriceErrors.add("Giá thức ăn phải là số.");
+                } else {
+                    try {
+                        if (Integer.parseInt(foodPrice) <= 0) {
+                            foodPriceErrors.add("Giá thức ăn phải lớn hơn 0.");
+                        }
+                    } catch (NumberFormatException ex) {
+                        foodPriceErrors.add("Giá thức ăn không hợp lệ.");
+                    }
+                }
+                if (!foodPriceErrors.isEmpty()) {
+                    isValid = false;
+                    StringBuilder priceTooltip = new StringBuilder("<html><ul style='margin:0;padding-left:16px;'>");
+                    for (String err : foodPriceErrors) {
+                        priceTooltip.append("<li>").append(err).append("</li>");
+                    }
+                    priceTooltip.append("</ul></html>");
+                    foodPriceErrorLabel.setToolTipText(priceTooltip.toString());
+                    foodPriceErrorLabel.setVisible(true);
+                }
 
-                thucAnBUS.updateThucAn(ta);
-                thucAnBUS.refreshTableData(tableModel);
-                JOptionPane.showMessageDialog(formSuaTA, "Sửa thức ăn thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                formSuaTA.dispose();
+                // Validate ảnh thức ăn
+                String imageResult = anhMonAnField.getText();
+                if(imageResult.isEmpty()) {
+                    isValid = false;
+                    foodImageErrorLabel.setToolTipText("Ảnh thức ăn không được trống");
+                    foodImageErrorLabel.setVisible(true);
+                }
+        
+                // Xử lý khi dữ liệu hợp lệ
+                if(isValid) {
+                ThucAnDTO ta = new ThucAnDTO();
+                    ta.setMaThucAn(maTAField.getText());
+                    ta.setTenThucAn(tenTAField.getText());
+                    ta.setMoTa(moTaField.getText());
+                    ta.setLoaiMonAn((String) loaiMonAnCombo.getSelectedItem());
+                    ta.setGia(Double.parseDouble(giaMonAnField.getText()));
+                    ta.setAnhThucAn(anhMonAnField.getText());
+
+                    thucAnBUS.updateThucAn(ta);
+                    thucAnBUS.refreshTableData(tableModel);
+                    JOptionPane.showMessageDialog(formSuaTA, "Sửa thức ăn thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                    formSuaTA.dispose();
+                }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(formSuaTA, "Lỗi khi sửa thức ăn: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
@@ -659,5 +721,90 @@ public class QuanLiThucAnGUI extends RoundedPanel {
         formSuaTA.setVisible(true);
     }
 
+    private void FormXemChiTietThucAn(String maThucAn) {
+        JFrame formXemChiTietTA = new JFrame("Chi Tiết Thức Ăn");
+        formXemChiTietTA.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        formXemChiTietTA.setSize(800, 600);
+        formXemChiTietTA.setLayout(new BorderLayout());
 
+        // Gọi BUS lấy thông tin nhân viên qua mã (trả về Map<String,String>)
+        ThucAnDTO empData = thucAnBUS.getThucAnById(maThucAn);
+        if (empData == null) {
+            JOptionPane.showMessageDialog(null, "Không tìm thấy thức ăn!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String tenThucAn = empData.getTenThucAn();
+        String moTa = empData.getMoTa();
+        String loai = empData.getLoaiMonAn();
+        Double gia = empData.getGia();
+        int soLuong = empData.getSoLuong();
+        String anhThucAn = empData.getAnhThucAn();
+        System.out.println(anhThucAn);
+        ImageIcon icon = new ImageIcon(anhThucAn); // anhThucAn là đường dẫn ảnh hoặc mảng byte[]
+        Image scaledImage = icon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledImage); // Bọc ảnh đã scale vào ImageIcon
+        String maCongThuc = empData.getMaCongThuc();
+        
+
+        // Header
+        RoundedPanel chiTietTAHeader = new RoundedPanel(30, 30, Color.WHITE);
+        chiTietTAHeader.setLayout(new BorderLayout());
+        JLabel chiTietTATitle = new JLabel("Chi Tiết Thức Ăn", SwingConstants.CENTER);
+        chiTietTATitle.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        chiTietTATitle.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        chiTietTAHeader.add(chiTietTATitle, BorderLayout.CENTER);
+        formXemChiTietTA.add(chiTietTAHeader, BorderLayout.NORTH);
+
+        RoundedPanel chiTietTACenter = new RoundedPanel(30, 30, Color.WHITE);
+        chiTietTACenter.setLayout(new BorderLayout());
+
+        // Center panel các input
+        JPanel chiTietTA = new JPanel();
+        chiTietTA.setLayout(new GridLayout(7, 2, 10, 10));
+        chiTietTA.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JPanel anhThucAnPanel = new JPanel();
+        anhThucAnPanel.setLayout(new BorderLayout());
+
+        JLabel anhThucAnLabel = new JLabel(scaledIcon);
+        // JLabel emptyLabel = new JLabel();
+
+        JLabel maTALabel = new JLabel("Mã thức ăn:");
+        JLabel maTAField = new JLabel(maThucAn);
+
+        JLabel tenTALabel = new JLabel("Tên thức ăn:");
+        JLabel tenTAField = new JLabel(tenThucAn);
+
+        JLabel moTaLabel = new JLabel("Mô tả:");
+        JLabel moTaField = new JLabel(moTa);
+
+        JLabel loaiLabel = new JLabel("Loại:");
+        JLabel loaiField = new JLabel(loai);
+
+        JLabel giaLabel = new JLabel("Giá:");
+        JLabel giaField = new JLabel(String.valueOf(gia));
+
+        JLabel soLuongLabel = new JLabel("Số lượng:");
+        JLabel soLuongField = new JLabel(String.valueOf(soLuong));
+
+        JLabel maCongThucLabel = new JLabel("Mã công thức:");
+        JLabel maCongThucField = new JLabel(maCongThuc);
+
+        anhThucAnPanel.add(anhThucAnLabel, BorderLayout.CENTER);
+
+        chiTietTA.add(maTALabel);       chiTietTA.add(maTAField);
+        chiTietTA.add(tenTALabel);        chiTietTA.add(tenTAField);
+        chiTietTA.add(moTaLabel);          chiTietTA.add(moTaField);
+        chiTietTA.add(loaiLabel);        chiTietTA.add(loaiField);
+        chiTietTA.add(giaLabel);     chiTietTA.add(giaField);
+        chiTietTA.add(soLuongLabel);     chiTietTA.add(soLuongField);
+        chiTietTA.add(maCongThucLabel);       chiTietTA.add(maCongThucField);
+        
+        chiTietTACenter.add(anhThucAnPanel, BorderLayout.NORTH);
+        chiTietTACenter.add(chiTietTA, BorderLayout.SOUTH);
+
+        formXemChiTietTA.add(chiTietTACenter, BorderLayout.CENTER);
+
+        formXemChiTietTA.setVisible(true);
+    }
 }

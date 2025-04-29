@@ -40,7 +40,7 @@ public class CongThucBUS {
         return "gram";
     }
 
-    public void addCongThuc(CongThucDTO ct, List<ChiTietCongThucDTO> chiTietList) throws SQLException {
+    public void addCongThuc(CongThucDTO ct, List<ChiTietCongThucDTO> chiTietList) {
         congThucDAO.insertCongThuc(ct);
         for (ChiTietCongThucDTO chiTiet : chiTietList) {
             chiTiet.setMaCongThuc(ct.getMaCongThuc());

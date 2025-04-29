@@ -66,19 +66,19 @@ public class ChiTietKhuyenMaiGUI extends JFrame{
 
         MyButton themButton = new MyButton("Thêm", addIcon);
         themButton.setPreferredSize(new Dimension(130, 40));
-        themButton.addActionListener(_ -> formThemChiTietKhuyenMai());
+        themButton.addActionListener(e -> formThemChiTietKhuyenMai());
 
         MyButton suaButton = new MyButton("Sửa", editIcon);
         suaButton.setPreferredSize(new Dimension(130, 40));
-        suaButton.addActionListener(_ -> formSuaChiTietKhuyenMai(chiTietTable));
+        suaButton.addActionListener(e -> formSuaChiTietKhuyenMai(chiTietTable));
 
         MyButton xoaButton = new MyButton("Xóa", deleteIcon);
         xoaButton.setPreferredSize(new Dimension(130, 40));
-        xoaButton.addActionListener(_ -> handleXoaChiTiet());
+        xoaButton.addActionListener(e -> handleXoaChiTiet());
 
         MyButton anButton = new MyButton("Ẩn", hideIcon);
         anButton.setPreferredSize(new Dimension(130, 40));
-        anButton.addActionListener(_ -> handleAnChiTiet());
+        anButton.addActionListener(e -> handleAnChiTiet());
 
         buttonPanel.add(themButton);
         buttonPanel.add(suaButton);
@@ -139,7 +139,7 @@ public class ChiTietKhuyenMaiGUI extends JFrame{
 
         MyButton themButton = new MyButton("Thêm");
         themButton.setPreferredSize(new Dimension(130, 40));
-        themButton.addActionListener(_ -> handleThemChiTiet(formThemChiTietKhuyenMai));
+        themButton.addActionListener(e -> handleThemChiTiet(formThemChiTietKhuyenMai));
 
         JPanel formContent = new JPanel(new GridLayout(3, 2, 10, 10));
         formContent.setBackground(Color.WHITE);
@@ -195,7 +195,7 @@ public class ChiTietKhuyenMaiGUI extends JFrame{
 
         MyButton luuButton = new MyButton("Lưu");
         luuButton.setPreferredSize(new Dimension(130, 40));
-        luuButton.addActionListener(_ -> handleSuaChiTiet());
+        luuButton.addActionListener(e -> handleSuaChiTiet());
 
         JPanel formContent = new JPanel(new GridLayout(3, 2, 10, 10));
         formContent.setBackground(Color.WHITE);

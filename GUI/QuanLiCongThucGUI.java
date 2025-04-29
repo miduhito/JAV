@@ -442,9 +442,6 @@ public class QuanLiCongThucGUI extends RoundedPanel {
                     JOptionPane.showMessageDialog(formThemCT, "Thêm công thức thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
                     formThemCT.dispose();
                 }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(formThemCT, "Lỗi cơ sở dữ liệu: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             } catch (IllegalArgumentException ex) {
                 JOptionPane.showMessageDialog(formThemCT, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             }

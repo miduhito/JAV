@@ -43,8 +43,8 @@ public class ThucAnBUS {
         thucAnDAO.updateThucAn(ta);
     }
 
-    public void deleteThucAn(String maThucAn) throws SQLException {
-        thucAnDAO.deleteThucAn(maThucAn);
+    public String deleteThucAn(String maThucAn) throws SQLException {
+        return thucAnDAO.deleteThucAn(maThucAn);
     }
 
     public List<String> getAllCongThuc() throws SQLException {
@@ -176,7 +176,7 @@ public class ThucAnBUS {
     public class DatabaseUtil {
         private static final String URL = "jdbc:mysql://localhost:3306/fastfood?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
         private static final String USER = "root";
-        private static final String PASSWORD = "3182004Lam_";
+        private static final String PASSWORD = "root";
     
         public static Connection getConnection() throws SQLException {
             return DriverManager.getConnection(URL, USER, PASSWORD);

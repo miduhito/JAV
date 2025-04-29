@@ -664,7 +664,7 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
 
         // ----- Dòng 6: Vai trò -----
         JLabel vaiTroLabel = new JLabel("Vai trò:");
-        JComboBox<String> vaiTroBox = new JComboBox<>(new String[]{"Admin","Quản lí","Quản lí kho","Thu ngân","Kế toán"});
+        JComboBox<String> vaiTroBox = new JComboBox<>(new String[]{"Admin","Manager","StorageManager","Cashier","Accountant"});
         vaiTroBox.setSelectedItem(acc.getVaiTro());
         JLabel emptyLabel5 = new JLabel();
         emptyLabel5.setPreferredSize(new Dimension(60, 60));

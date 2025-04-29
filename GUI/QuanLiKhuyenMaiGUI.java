@@ -161,12 +161,12 @@ public class QuanLiKhuyenMaiGUI extends RoundedPanel {
             }
         });
 
-        advancedSearchButton.addActionListener(_-> showAdvancedSearchDialog());
-        addButton.addActionListener(_ -> FormThemKhuyenMai());
-        updateButton.addActionListener(_ -> FormSuaKhuyenMai(tableModel));
-        deleteButton.addActionListener(_ -> handleXoaKhuyenMai());
-        hideButton.addActionListener(_ -> handleAnKhuyenMai());
-        detailButton.addActionListener(_ -> handleXemChiTietKhuyenMai());
+        advancedSearchButton.addActionListener(e -> showAdvancedSearchDialog());
+        addButton.addActionListener(e -> FormThemKhuyenMai());
+        updateButton.addActionListener(e -> FormSuaKhuyenMai(tableModel));
+        deleteButton.addActionListener(e -> handleXoaKhuyenMai());
+        hideButton.addActionListener(e -> handleAnKhuyenMai());
+        detailButton.addActionListener(e -> handleXemChiTietKhuyenMai());
     }
 
     private void FormThemKhuyenMai(){
@@ -225,7 +225,7 @@ public class QuanLiKhuyenMaiGUI extends RoundedPanel {
 
         MyButton themButton = new MyButton("Thêm");
         themButton.setPreferredSize(new Dimension(130, 40));
-        themButton.addActionListener(_ -> handleThemKhuyenMai(formThemKhuyenMai));
+        themButton.addActionListener(e -> handleThemKhuyenMai(formThemKhuyenMai));
 
         // Thêm các thành phần vào formThemKhuyenMai
         JPanel formContent = new JPanel(new GridLayout(7, 3, 10, 10));
@@ -340,7 +340,7 @@ public class QuanLiKhuyenMaiGUI extends RoundedPanel {
 
         MyButton luuButton = new MyButton("Lưu");
         luuButton.setPreferredSize(new Dimension(130, 40));
-        luuButton.addActionListener(_ -> handleSuaKhuyenMai(formSuaKhuyenMai));
+        luuButton.addActionListener(e -> handleSuaKhuyenMai(formSuaKhuyenMai));
 
         JPanel formContent = new JPanel(new GridLayout(7, 3, 10, 10));
         formContent.setBackground(Color.WHITE);
@@ -645,7 +645,7 @@ public class QuanLiKhuyenMaiGUI extends RoundedPanel {
         dialog.add(fieldsPanel, BorderLayout.CENTER);
         dialog.add(searchButtonPanel, BorderLayout.SOUTH);
 
-        searchButton.addActionListener(_ -> {
+        searchButton.addActionListener(e -> {
             String maKhuyenMai = maKhuyenMaiField.getText().trim();
             String tenKhuyenMai = tenKhuyenMaiField.getText().trim();
             String donVi = String.valueOf(donviCombo.getSelectedItem());

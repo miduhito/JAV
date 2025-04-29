@@ -342,17 +342,17 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
 
     public void loadButtonActionListener(){
         // nút nhập hàng
-        nhapHangButton.addActionListener(_ -> showNhapHangGUI());
+        nhapHangButton.addActionListener(e -> showNhapHangGUI());
 
         // nút danh sách phiếu nhập
-        phieuNhapButton.addActionListener(_ -> showPhieuNhapGUI());
+        phieuNhapButton.addActionListener(e -> showPhieuNhapGUI());
 
         // comboBox nhà cung cấp
-        nhaCungCapComboBox.addActionListener(_ -> lockInProvider());
+        nhaCungCapComboBox.addActionListener(e -> lockInProvider());
 
 
         // nút thêm
-        addButton.addActionListener(_ -> {
+        addButton.addActionListener(e -> {
             String maNguyenLieu = maNguyenLieuField.getText().trim();
             String tenNguyenLieu = tenNguyenLieuField.getText().trim();
             String giaNhap = giaNhapField.getText().trim();
@@ -397,7 +397,7 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
 
 
         // nút cập nhật
-        editButton.addActionListener(_ -> {
+        editButton.addActionListener(e -> {
             int selectedRow = cartTable.getSelectedRow();
 
             if (selectedRow == -1) {
@@ -440,7 +440,7 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
         });
 
         // nút xóa
-        deleteButton.addActionListener(_ -> {
+        deleteButton.addActionListener(e -> {
             int selectedRow = cartTable.getSelectedRow();
 
             if (selectedRow == -1) {
@@ -466,7 +466,7 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
 
 
         // nút xác nhận
-        confirmButton.addActionListener(_ -> {
+        confirmButton.addActionListener(e -> {
             int response = JOptionPane.showConfirmDialog(null,
                     "Bạn có chắc chắn muốn tạo phiếu nhập mới?",
                     "Xác nhận tạo phiếu nhập",
@@ -686,7 +686,7 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
 
         advancedSearchButton.addActionListener(e -> showAdvancedSearchDialog());
 
-        viewDetailButton.addActionListener(_ ->{
+        viewDetailButton.addActionListener(e ->{
             int selectedRow = phieuNhapTable.getSelectedRow();
             if (selectedRow == -1 ){
                 JOptionPane.showMessageDialog(null, "Error", "Vui lòng chọn phiếu nhập cần ẩn !", JOptionPane.ERROR_MESSAGE);
@@ -695,7 +695,7 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
             showDetailForm((String) phieuNhapTable.getValueAt(selectedRow, 0));
         });
 
-        hideButton.addActionListener(_ ->{
+        hideButton.addActionListener(e ->{
             int selectedRow = phieuNhapTable.getSelectedRow();
             if (selectedRow == -1 ){
                 JOptionPane.showMessageDialog(null, "Error", "Vui lòng chọn phiếu nhập cần ẩn !", JOptionPane.ERROR_MESSAGE);
@@ -828,7 +828,7 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
         JPanel footerPanel = new JPanel();
         footerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         MyButton closeButton = new MyButton("Đóng");
-        closeButton.addActionListener(_-> detailForm.dispose());
+        closeButton.addActionListener(e -> detailForm.dispose());
         footerPanel.add(closeButton);
 
         // add components

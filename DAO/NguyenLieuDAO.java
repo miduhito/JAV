@@ -16,7 +16,7 @@ public class NguyenLieuDAO {
             conn = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/fastfood?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC", 
                 "root", 
-                "3182004Lam_"
+                "root"
             );
         } catch(SQLException ex) {
             ex.printStackTrace();
@@ -46,7 +46,7 @@ public class NguyenLieuDAO {
         return list;
     }
 
-    public void insertNguyenLieu(NguyenLieuDTO nl) throws SQLException {
+    public String insertNguyenLieu(NguyenLieuDTO nl) {
         String sqlInsert = "INSERT INTO NguyenLieu (maNguyenLieu, tenNguyenLieu, loaiNguyenLieu, ngayNhap, ngayHetHan, soLuong, donViDo, gia) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         String sqlCheck = "SELECT COUNT(*) FROM NguyenLieu WHERE maNguyenLieu = ?";
     
@@ -56,7 +56,7 @@ public class NguyenLieuDAO {
             stmtCheck.setString(1, nl.getMaNguyenLieu());
             try (ResultSet rs = stmtCheck.executeQuery()) {
                 if (rs.next() && rs.getInt(1) > 0) {
-                    throw new SQLException("Mã nguyên liệu " + nl.getMaNguyenLieu() + " đã tồn tại!");
+                    return "Mã nguyên liệu " + nl.getMaNguyenLieu() + " đã tồn tại!";
                 }
             }
     
@@ -73,6 +73,7 @@ public class NguyenLieuDAO {
         } catch(Exception ex) {
             ex.printStackTrace();
         }
+        return "";
     }
     
     public void updateNguyenLieu(NguyenLieuDTO nl) throws SQLException {

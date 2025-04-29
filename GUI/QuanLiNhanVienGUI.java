@@ -782,8 +782,13 @@ public class QuanLiNhanVienGUI extends RoundedPanel {
             // Xác nhận xóa
             int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa nhân viên có mã " + maNhanVien + "?", "Thông báo", JOptionPane.YES_NO_OPTION);
             if(confirm == JOptionPane.YES_OPTION) {
-                nvBUS.deleteNhanVien(maNhanVien);
-                nvBUS.refreshTableData(tableModel);
+                String success = nvBUS.deleteNhanVien(maNhanVien);
+                if(success == "") {
+                    JOptionPane.showMessageDialog(null, "Đã xóa nhân viên thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                    nvBUS.refreshTableData(tableModel);
+                } else {
+                    JOptionPane.showMessageDialog(null, success, "Thông báo", JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
         else {
