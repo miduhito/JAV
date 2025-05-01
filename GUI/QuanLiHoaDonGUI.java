@@ -305,6 +305,7 @@ public class QuanLiHoaDonGUI extends RoundedPanel{
             JDateChooser ngayLapField = new JDateChooser();
             ngayLapField.setDateFormatString("yyyy-MM-dd");
             ngayLapField.setDate(ngayLap);
+            ((JTextField) ngayLapField.getDateEditor().getUiComponent()).setEditable(false);
             JLabel createdDateErrorLabel = new JLabel();
             createdDateErrorLabel.setPreferredSize(new Dimension(60, 60));
             createdDateErrorLabel.setIcon(new ImageIcon(scaledImage));

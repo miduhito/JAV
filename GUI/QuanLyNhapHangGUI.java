@@ -907,6 +907,8 @@ public class QuanLyNhapHangGUI extends RoundedPanel {
         startDate.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         endDate.setPreferredSize(new Dimension(180,30));
         endDate.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        ((JTextField) startDate.getDateEditor().getUiComponent()).setEditable(false);
+        ((JTextField) endDate.getDateEditor().getUiComponent()).setEditable(false);
 
         ngayNhapPanel.add(new MyLabel("Từ ngày: ", 14f, "Bold"));
         ngayNhapPanel.add(startDate);

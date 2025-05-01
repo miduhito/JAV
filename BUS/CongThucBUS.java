@@ -40,29 +40,20 @@ public class CongThucBUS {
         return "gram";
     }
 
-    public void addCongThuc(CongThucDTO ct, List<ChiTietCongThucDTO> chiTietList) {
-        congThucDAO.insertCongThuc(ct);
-        for (ChiTietCongThucDTO chiTiet : chiTietList) {
-            chiTiet.setMaCongThuc(ct.getMaCongThuc());
-            congThucDAO.insertChiTietCongThuc(chiTiet);
-        }
+    public String addCongThuc(CongThucDTO ct, List<ChiTietCongThucDTO> chiTietList) {
+        return congThucDAO.insertCongThuc(ct, chiTietList);
     }
 
-    public void updateCongThuc(CongThucDTO ct, List<ChiTietCongThucDTO> chiTietList) throws SQLException {
-        congThucDAO.updateCongThuc(ct);
-        congThucDAO.deleteChiTietCongThuc(ct.getMaCongThuc());
-        for (ChiTietCongThucDTO chiTiet : chiTietList) {
-            chiTiet.setMaCongThuc(ct.getMaCongThuc());
-            congThucDAO.insertChiTietCongThuc(chiTiet);
-        }
+    public String updateCongThuc(CongThucDTO ct, List<ChiTietCongThucDTO> chiTietList) {
+        return congThucDAO.updateCongThuc(ct, chiTietList);
     }
 
     public List<ChiTietCongThucDTO> getChiTietCongThuc(String maCongThuc) throws SQLException {
         return congThucDAO.getChiTietCongThuc(maCongThuc);
     }
 
-    public void deleteCongThuc(String maCongThuc) throws SQLException {
-        congThucDAO.deleteCongThuc(maCongThuc); // Sau đó xóa công thức
+    public String deleteCongThuc(String maCongThuc) {
+        return congThucDAO.deleteCongThuc(maCongThuc); // Sau đó xóa công thức
     }
 
     public String generateMaCongThuc() throws SQLException {

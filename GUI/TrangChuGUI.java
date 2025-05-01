@@ -4,31 +4,35 @@ import Custom.MyButton;
 import Custom.RoundedButton;
 import Custom.RoundedPanel;
 import DTO.TaiKhoanDTO;
+import BUS.TaiKhoanBUS;
+import BUS.HoaDonBUS;
+import BUS.ChiTietHoaDonBUS;
+import BUS.ThucAnBUS;
+import DAO.HoaDonDAO;
+import DAO.ChiTietHoaDonDAO;
+import DTO.ThongKeDTO;
+import DTO.ThucAnDTO;
 
 import javax.swing.*;
-
-import BUS.TaiKhoanBUS;
-import Custom.Utilities;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class TrangChuGUI extends JPanel {
-    // dynamicContentPanel - vùng chứa giao diện động (như QuanLiNhanVienGUI)
-    private final JPanel dynamicContentPanel = new JPanel(new BorderLayout());
+    private final JPanel dynamicContentPanel = new JPanel();
     private TaiKhoanDTO taiKhoanDTO = new TaiKhoanDTO();
-    public TrangChuGUI(TaiKhoanDTO taikhoan,JFrame frame) {
-        // Sử dụng BorderLayout cho TrangChuGUI
+
+    public TrangChuGUI(TaiKhoanDTO taikhoan, JFrame frame) {
         this.setLayout(new BorderLayout());
 
-        // Tạo menu bên trái (RoundedPanel)
         RoundedPanel menuPanel = new RoundedPanel(50, 50, Color.decode("#F5ECE0"));
         menuPanel.setLayout(new BorderLayout());
         menuPanel.setPreferredSize(new Dimension(250, 0));
 
-        // Header Panel - chứa icon và tiêu đề ở trên cùng của menuPanel
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         headerPanel.setBackground(Color.WHITE);
 
@@ -42,26 +46,12 @@ public class TrangChuGUI extends JPanel {
         headerLabel.setFont(new Font("Arial", Font.BOLD, 20));
         headerLabel.setForeground(Color.BLACK);
         headerPanel.add(headerLabel);
-        // Thêm headerPanel vào vùng NORTH của menuPanel
         menuPanel.add(headerPanel, BorderLayout.NORTH);
 
-        // Button Panel - chứa các nút chức năng
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         buttonPanel.setBackground(Color.WHITE);
-        // Thêm các nút chức năng vào buttonPanel
-        //     addButtonToPanel(buttonPanel, "Quản lí nhân viên", "Resources\\Image\\EmployeeIcon.png");
-        //     addButtonToPanel(buttonPanel, "Quản lí khách hàng", "Resources\\Image\\CustomerIcon.png");
-        //     addButtonToPanel(buttonPanel, "Quản lí thức ăn", "Resources\\Image\\ThucAn.png");
-        //     addButtonToPanel(buttonPanel, "Quản lí công thức", "Resources\\Image\\CongThuc.png");
-        //     addButtonToPanel(buttonPanel, "Quản lí nguyên liệu", "Resources\\Image\\NguyenLieu.png");
-        //     addButtonToPanel(buttonPanel, "Quản lí tài khoản", "Resources\\Image\\AccountIcon.png");
-        //     addButtonToPanel(buttonPanel, "Quản lí ca - lịch làm", "Resources\\Image\\Shift.png");
-        //     addButtonToPanel(buttonPanel, "Chấm công", "Resources\\Image\\Timekeeping.png");
-        //     addButtonToPanel(buttonPanel, "Quản lí nhập hàng", "Resources\\Image\\EntryProduct.png");
-        //     addButtonToPanel(buttonPanel, "Quản lí khuyến mãi", "Resources\\Image\\Promotion.png");
-        //     addButtonToPanel(buttonPanel, "Thanh toán", "Resources\\Image\\Payment.png");
-        //     addButtonToPanel(buttonPanel, "Thống kê", "Resources\\Image\\Statistic.png");
+
         System.out.println(taikhoan.getVaiTro());
         switch (taikhoan.getVaiTro()) {
             case "Admin":
@@ -107,14 +97,10 @@ public class TrangChuGUI extends JPanel {
             default:
                 break;
         }
-        
-        // Thêm các nút khác nếu cần:
-        // addButtonToPanel(buttonPanel, "Quản lí thức ăn", Color.WHITE);
-        // addButtonToPanel(buttonPanel, "Thanh toán", Color.WHITE);
-        // addButtonToPanel(buttonPanel, "Thống kê", Color.WHITE);
+
         JPanel exitPanel = new JPanel();
         exitPanel.setLayout(new FlowLayout());
-        RoundedButton exitButton = new RoundedButton("Đăng xuất", 10,10);
+        RoundedButton exitButton = new RoundedButton("Đăng xuất", 10, 10);
         exitButton.setPreferredSize(new Dimension(120, 40));
         exitButton.setBackground(Color.decode("#000000"));
         exitButton.setForeground(Color.WHITE);
@@ -133,80 +119,175 @@ public class TrangChuGUI extends JPanel {
         exitButton.addActionListener(e -> {
             int pane = JOptionPane.showConfirmDialog(null, "Bạn có chắc chắn muốn đăng xuất?", "Xác nhận đăng xuất", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (pane == JOptionPane.YES_OPTION) {
-                frame.dispose(); // Đóng frame hiện tại
+                frame.dispose();
                 DangNhapGUI dangnhap = new DangNhapGUI();
                 dangnhap.showDangNhapGUI();
             }
         });
         exitPanel.add(exitButton);
-        buttonPanel.add(exitPanel,BorderLayout.SOUTH);
-        // Thêm buttonPanel vào vùng CENTER của menuPanel
+        buttonPanel.add(exitPanel, BorderLayout.SOUTH);
         menuPanel.add(buttonPanel, BorderLayout.CENTER);
 
-        // Thêm menuPanel vào vùng WEST của TrangChuGUI
         this.add(menuPanel, BorderLayout.WEST);
 
-        // -----------------------
-        // Tạo contentPanel bao quanh hai vùng:
-        // 1. helloPanel ở NORTH (hiển thị "Hello" và thời gian)
-        // 2. dynamicContentPanel ở CENTER (hiển thị giao diện động)
-        // -----------------------
-        // contentPanel - vùng bao ngoài có bo tròn
         RoundedPanel contentPanel = new RoundedPanel(40, 40, Color.decode("#F5ECE0"));
         contentPanel.setLayout(new BorderLayout());
-        
-        // Tạo helloPanel sử dụng BorderLayout để tách vị trí trái – phải
+
         RoundedPanel helloPanel = new RoundedPanel(30, 30, Color.WHITE);
         helloPanel.setLayout(new BorderLayout());
         helloPanel.setBackground(Color.WHITE);
         helloPanel.setPreferredSize(new Dimension(0, 70));
-        
-        // Label "Hello" ở bên trái
+
         TaiKhoanBUS tk = new TaiKhoanBUS();
         tk.transferdata(taiKhoanDTO, taikhoan);
         String a = (tk.timNV(taikhoan.getTenDangNhap())).getTenNhanVien();
-        JLabel helloLabel = new JLabel("Hello "+ a);
+        JLabel helloLabel = new JLabel("Hello " + a);
         helloLabel.setFont(new Font("Arial", Font.BOLD, 20));
         helloLabel.setForeground(Color.BLACK);
-        // Thêm khoảng cách (padding) bên trái
         helloLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
         helloPanel.add(helloLabel, BorderLayout.WEST);
-        
-        // Label hiển thị thời gian ở bên phải
+
         JLabel clockLabel = new JLabel();
         clockLabel.setFont(new Font("Arial", Font.BOLD, 20));
         clockLabel.setForeground(Color.BLACK);
-        // Thêm khoảng cách (padding) bên phải
         clockLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
         clockLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         helloPanel.add(clockLabel, BorderLayout.EAST);
-        
-        // Định dạng giờ theo mẫu HH:mm:ss
+
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         Timer timer = new Timer(1000, e -> clockLabel.setText(LocalTime.now().format(timeFormatter)));
         timer.start();
-        
-        // Thêm helloPanel vào vùng NORTH của contentPanel
+
         contentPanel.add(helloPanel, BorderLayout.NORTH);
 
-        // dynamicContentPanel dành cho giao diện động, để chèn QuanLiNhanVienGUI hay GUI khác
+        dynamicContentPanel.setLayout(new BoxLayout(dynamicContentPanel, BoxLayout.Y_AXIS));
         dynamicContentPanel.setOpaque(false);
+        dynamicContentPanel.add(createWelcomePanel(a, taikhoan.getVaiTro()));
         contentPanel.add(dynamicContentPanel, BorderLayout.CENTER);
 
-        // Thêm contentPanel vào vùng CENTER của TrangChuGUI
         this.add(contentPanel, BorderLayout.CENTER);
     }
 
-    // Phương thức tạo nút với hiệu ứng hover và ActionListener
+    private JPanel createWelcomePanel(String tenNhanVien, String vaiTro) {
+        JPanel welcomePanel = new JPanel();
+        welcomePanel.setLayout(new BoxLayout(welcomePanel, BoxLayout.Y_AXIS));
+        welcomePanel.setOpaque(false);
+        welcomePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        // Panel chứa ảnh
+        RoundedPanel imagePanel = new RoundedPanel(20, 20, Color.WHITE);
+        imagePanel.setLayout(new BorderLayout());
+        imagePanel.setBackground(Color.WHITE);
+        imagePanel.setPreferredSize(new Dimension(0, 200));
+        imagePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
+
+        JLabel imageLabel = new JLabel();
+        ImageIcon imageIcon = new ImageIcon("Resources\\Image\\FastFoodIcon.png");
+        Image scaledImage = imageIcon.getImage().getScaledInstance(300, 200, Image.SCALE_SMOOTH);
+        imageLabel.setIcon(new ImageIcon(scaledImage));
+        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        imagePanel.add(imageLabel, BorderLayout.CENTER);
+        welcomePanel.add(imagePanel);
+        welcomePanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        // Panel chứa 3 panel thống kê
+        JPanel statsContainer = new JPanel();
+        statsContainer.setLayout(new GridLayout(1, 3, 10, 0));
+        statsContainer.setOpaque(false);
+        statsContainer.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
+
+        // Lấy ngày hiện tại
+        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        HoaDonDAO hoaDonDAO = new HoaDonDAO();
+        ChiTietHoaDonDAO chiTietHoaDonDAO = new ChiTietHoaDonDAO();
+        ThucAnBUS thucAnBUS = new ThucAnBUS();
+
+        // Panel thống kê số hóa đơn
+        RoundedPanel hoaDonPanel = new RoundedPanel(20, 20, Color.decode("#D1E7DD"));
+        hoaDonPanel.setLayout(new BoxLayout(hoaDonPanel, BoxLayout.Y_AXIS));
+        hoaDonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel hoaDonTitle = new JLabel("Tổng hóa đơn hôm nay");
+        hoaDonTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        hoaDonTitle.setForeground(Color.BLACK);
+        hoaDonTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        hoaDonPanel.add(hoaDonTitle);
+
+        int soHoaDon = 0;
+        List<ThongKeDTO> hoaDonList = hoaDonDAO.getHoaDonTheoNgay(currentDate, currentDate);
+        if (!hoaDonList.isEmpty()) {
+            soHoaDon = (int) hoaDonList.get(0).getValue();
+        }
+        JLabel hoaDonValue = new JLabel(String.valueOf(soHoaDon));
+        hoaDonValue.setFont(new Font("Segoe UI", Font.PLAIN, 24));
+        hoaDonValue.setForeground(Color.BLACK);
+        hoaDonValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+        hoaDonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        hoaDonPanel.add(hoaDonValue);
+        statsContainer.add(hoaDonPanel);
+
+        // Panel thống kê số khách hàng
+        RoundedPanel khachHangPanel = new RoundedPanel(20, 20, Color.decode("#FFF3CD"));
+        khachHangPanel.setLayout(new BoxLayout(khachHangPanel, BoxLayout.Y_AXIS));
+        khachHangPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel khachHangTitle = new JLabel("Tổng khách hàng hôm nay");
+        khachHangTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        khachHangTitle.setForeground(Color.BLACK);
+        khachHangTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        khachHangPanel.add(khachHangTitle);
+
+        int soKhachHang = 0;
+        List<ThongKeDTO> khachHangList = hoaDonDAO.getKhachHangTheoNgay(currentDate, currentDate);
+        if (!khachHangList.isEmpty()) {
+            soKhachHang = (int) khachHangList.get(0).getValue();
+        }
+        JLabel khachHangValue = new JLabel(String.valueOf(soKhachHang));
+        khachHangValue.setFont(new Font("Segoe UI", Font.PLAIN, 24));
+        khachHangValue.setForeground(Color.BLACK);
+        khachHangValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+        khachHangPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        khachHangPanel.add(khachHangValue);
+        statsContainer.add(khachHangPanel);
+
+        // Panel thống kê món ăn bán chạy
+        RoundedPanel monAnPanel = new RoundedPanel(20, 20, Color.decode("#F8D7DA"));
+        monAnPanel.setLayout(new BoxLayout(monAnPanel, BoxLayout.Y_AXIS));
+        monAnPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel monAnTitle = new JLabel("Món ăn bán chạy");
+        monAnTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        monAnTitle.setForeground(Color.BLACK);
+        monAnTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        monAnPanel.add(monAnTitle);
+
+        String tenMonAn = "Chưa có dữ liệu";
+        List<ThongKeDTO> sanPhamBanChay = chiTietHoaDonDAO.getSanPhamBanChay(currentDate, currentDate);
+        if (!sanPhamBanChay.isEmpty()) {
+            String maThucAn = sanPhamBanChay.get(0).getLabel();
+            ThucAnDTO thucAn = thucAnBUS.getThucAnById(maThucAn);
+            if (thucAn != null && thucAn.getTenThucAn() != null) {
+                tenMonAn = thucAn.getTenThucAn();
+            }
+        }
+        JLabel monAnValue = new JLabel(tenMonAn);
+        monAnValue.setFont(new Font("Segoe UI", Font.PLAIN, 24));
+        monAnValue.setForeground(Color.BLACK);
+        monAnValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+        monAnPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        monAnPanel.add(monAnValue);
+        statsContainer.add(monAnPanel);
+
+        welcomePanel.add(statsContainer);
+
+        return welcomePanel;
+    }
+
     private void addButtonToPanel(JPanel buttonPanel, String buttonText, String iconPath) {
         JButton button = new JButton(buttonText);
-        
-        // Đặt icon cho nút
         ImageIcon icon = new ImageIcon(iconPath);
-        Image scaledIcon = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH); // Thay đổi kích thước icon nếu cần
-        button.setIcon(new ImageIcon(scaledIcon)); // Đặt icon vào nút
-        
-        // Căn chữ nút về bên trái
+        Image scaledIcon = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+        button.setIcon(new ImageIcon(scaledIcon));
         button.setFont(new Font("Segoe UI", Font.BOLD, 16));
         button.setHorizontalAlignment(SwingConstants.LEFT);
         button.setBackground(Color.WHITE);
@@ -214,42 +295,36 @@ public class TrangChuGUI extends JPanel {
         button.setBorderPainted(false);
         button.setOpaque(true);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
-    
-        // Ép kích thước của nút (200x40)
         button.setMaximumSize(new Dimension(250, 40));
         button.setPreferredSize(new Dimension(250, 40));
         button.setMinimumSize(new Dimension(250, 40));
-    
-        // Hiệu ứng hover để đổi màu
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
                 button.setBackground(Color.decode("#F5ECE0"));
             }
-    
             @Override
             public void mouseExited(MouseEvent e) {
                 button.setBackground(Color.WHITE);
             }
         });
-    
         button.addActionListener(e -> {
             if (buttonText.equals("Quản lí nhân viên")) {
                 showQuanLiNhanVien();
             }
-            if (buttonText.equals("Quản lí tài khoản")){
+            if (buttonText.equals("Quản lí tài khoản")) {
                 showQuanLiTaiKhoan(taiKhoanDTO);
             }
-            if (buttonText.equals("Quản lí ca - lịch làm")){
+            if (buttonText.equals("Quản lí ca - lịch làm")) {
                 showQuanLiCaLam();
             }
-            if (buttonText.equals("Chấm công")){
+            if (buttonText.equals("Chấm công")) {
                 showChamCong();
             }
-            if (buttonText.equals("Quản lí nhập hàng")){
+            if (buttonText.equals("Quản lí nhập hàng")) {
                 showQuanLiNhapHang();
             }
-            if (buttonText.equals("Quản lí khuyến mãi")){
+            if (buttonText.equals("Quản lí khuyến mãi")) {
                 showQuanLiKhuyenMai();
             }
             if (buttonText.equals("Quản lí thức ăn")) {
@@ -277,12 +352,10 @@ public class TrangChuGUI extends JPanel {
                 showQuanLiNhaCungCap();
             }
         });
-    
         buttonPanel.add(button);
         buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
     }
 
-    // Phương thức hiển thị giao diện QuanLiNhanVienGUI bên trong dynamicContentPanel
     private void showQuanLiNhanVien() {
         dynamicContentPanel.removeAll();
         dynamicContentPanel.add(new QuanLiNhanVienGUI(), BorderLayout.CENTER);
@@ -290,21 +363,21 @@ public class TrangChuGUI extends JPanel {
         dynamicContentPanel.repaint();
     }
 
-    private void showQuanLiTaiKhoan(TaiKhoanDTO taiKhoanDTO){
+    private void showQuanLiTaiKhoan(TaiKhoanDTO taiKhoanDTO) {
         dynamicContentPanel.removeAll();
         dynamicContentPanel.add(new QuanLiTaiKhoanGUI(taiKhoanDTO), BorderLayout.CENTER);
         dynamicContentPanel.revalidate();
         dynamicContentPanel.repaint();
     }
 
-    private void showQuanLiCaLam(){
+    private void showQuanLiCaLam() {
         dynamicContentPanel.removeAll();
         dynamicContentPanel.add(new QuanLiCaLamGUI(), BorderLayout.CENTER);
         dynamicContentPanel.revalidate();
         dynamicContentPanel.repaint();
     }
 
-    private void showChamCong(){
+    private void showChamCong() {
         dynamicContentPanel.removeAll();
         dynamicContentPanel.add(new ChamCongGUI(), BorderLayout.CENTER);
         dynamicContentPanel.revalidate();
@@ -318,7 +391,7 @@ public class TrangChuGUI extends JPanel {
         dynamicContentPanel.repaint();
     }
 
-    private void showQuanLiKhuyenMai(){
+    private void showQuanLiKhuyenMai() {
         dynamicContentPanel.removeAll();
         dynamicContentPanel.add(new QuanLiKhuyenMaiGUI(), BorderLayout.CENTER);
         dynamicContentPanel.revalidate();

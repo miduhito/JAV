@@ -41,7 +41,7 @@ public class DangNhapGUI {
         JPasswordField passwordText = new JPasswordField("",15);
         // Tạo các thành phần
         userText.setText("user1");
-        passwordText.setText("password1");
+        passwordText.setText("pass1");
         //Chinh sua
         LoginPanel.setOpaque(false) ;
         LoginPanel.setLayout(new GridBagLayout());

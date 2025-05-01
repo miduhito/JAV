@@ -199,6 +199,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
                 field2Label.setText("Ngày làm việc:");
                 field2Component = new JDateChooser();
                 ((JDateChooser) field2Component).setDate(new Date());
+                ((JTextField) ((JDateChooser)field2Component).getDateEditor().getUiComponent()).setEditable(false);
 
                 ArrayList<String> danhSachNhanVien = new ArrayList<>();
                 NhanVienBUS nvBUS = new NhanVienBUS();
@@ -442,6 +443,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
                 field2Label.setText("Ngày làm việc:");
                 field2Component = new JDateChooser();
                 ((JDateChooser) field2Component).setDate(date);
+                ((JTextField) ((JDateChooser)field2Component).getDateEditor().getUiComponent()).setEditable(false);
             } catch (ParseException e) {
                 JOptionPane.showMessageDialog(null, "Lỗi: " + e.getMessage());
             }
@@ -620,6 +622,7 @@ public class QuanLiCaLamGUI extends RoundedPanel {
         JDateChooser dateNgayLam = new JDateChooser();
         dateNgayLam.setPreferredSize(new Dimension(220, 40));
         dateNgayLam.setDate(new Date());
+        ((JTextField) dateNgayLam.getDateEditor().getUiComponent()).setEditable(false);
         datePanel.add(dateNgayLam);
         schedulingPanel.add(datePanel, BorderLayout.NORTH);
 

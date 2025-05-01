@@ -185,12 +185,12 @@ public class QuanLiNguyenLieuGUI extends RoundedPanel {
             }
 
             String maNguyenLieu = tableModel.getValueAt(selectedRow, 0).toString();
-            try {
-                nguyenLieuBUS.deleteNguyenLieu(maNguyenLieu);
+            String success = nguyenLieuBUS.deleteNguyenLieu(maNguyenLieu);
+            if(success == "") {
                 nguyenLieuBUS.refreshTableData(tableModel);
                 JOptionPane.showMessageDialog(null, "Xóa nguyên liệu thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, "Lỗi khi xóa nguyên liệu: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, success, "Thông báo", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -287,6 +287,7 @@ public class QuanLiNguyenLieuGUI extends RoundedPanel {
         JLabel ngayNhapLabel = new JLabel("Ngày nhập:");
         JDateChooser ngayNhapField = new JDateChooser();
         ngayNhapField.setDateFormatString("yyyy-MM-dd");
+        ((JTextField) ngayNhapField.getDateEditor().getUiComponent()).setEditable(false);
         JLabel importDateErrorLabel = new JLabel();
         importDateErrorLabel.setPreferredSize(new Dimension(60, 60));
         importDateErrorLabel.setIcon(new ImageIcon(scaledImage));
@@ -298,6 +299,7 @@ public class QuanLiNguyenLieuGUI extends RoundedPanel {
         JLabel ngayHetHanLabel = new JLabel("Ngày hết hạn:");
         JDateChooser ngayHetHanField = new JDateChooser();
         ngayHetHanField.setDateFormatString("yyyy-MM-dd");
+        ((JTextField) ngayHetHanField.getDateEditor().getUiComponent()).setEditable(false);
         JLabel expDateErrorLabel = new JLabel();
         expDateErrorLabel.setPreferredSize(new Dimension(60, 60));
         expDateErrorLabel.setIcon(new ImageIcon(scaledImage));
@@ -361,99 +363,108 @@ public class QuanLiNguyenLieuGUI extends RoundedPanel {
         saveButton.setForeground(Color.WHITE);
         saveButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
         saveButton.addActionListener(e -> {
-            try {
-                ingredientNameErrorLabel.setVisible(false);
-                importDateErrorLabel.setVisible(false);
-                expDateErrorLabel.setVisible(false);
-                ingredientPriceErrorLabel.setVisible(false);
+            ingredientNameErrorLabel.setVisible(false);
+            importDateErrorLabel.setVisible(false);
+            expDateErrorLabel.setVisible(false);
+            ingredientPriceErrorLabel.setVisible(false);
 
-                boolean isValid = true;
+            boolean isValid = true;
 
-                // Validate tên nguyên liệu
-                String ingredientName = tenNLField.getText().trim();
-                if(ingredientName.isEmpty()) {
-                    isValid = false;
-                    ingredientNameErrorLabel.setToolTipText("Tên nguyên liệu không được trống.");
-                    ingredientNameErrorLabel.setVisible(true);
+            // Validate tên nguyên liệu
+            String ingredientName = tenNLField.getText().trim();
+            if(ingredientName.isEmpty()) {
+                isValid = false;
+                ingredientNameErrorLabel.setToolTipText("Tên nguyên liệu không được trống.");
+                ingredientNameErrorLabel.setVisible(true);
+            }
+
+            // Validate ngày nhập nguyên liệu
+            Date importDate = ngayNhapField.getDate();
+            List<String> importDateErrors = new ArrayList<>();
+            if(importDate == null) {
+                importDateErrors.add("Ngày nhập không được để trống.");
+            }                
+            if(!importDateErrors.isEmpty()) {
+                isValid = false;
+                StringBuilder importDateToolTip = new StringBuilder("<html><ul style='margin:0;padding-left:16px;'>");
+                for(String err: importDateErrors) {
+                    importDateToolTip.append("<li>").append(err).append("</li>");
                 }
+                importDateToolTip.append("</ul></html>");
+                importDateErrorLabel.setToolTipText(importDateToolTip.toString());
+                importDateErrorLabel.setVisible(true);
+            }
 
-                // Validate ngày nhập nguyên liệu
-                Date importDate = ngayNhapField.getDate();
-                List<String> importDateErrors = new ArrayList<>();
-                if(importDate == null) {
-                    importDateErrors.add("Ngày nhập không được để trống.");
-                }                
-                if(!importDateErrors.isEmpty()) {
+            // Validate ngày hết hạn
+            Date expDate = ngayHetHanField.getDate();
+            List<String> expDateErrors = new ArrayList<>();
+            if(expDate == null) {
+                expDateErrors.add("Ngày hết hạn không được để trống.");
+            }
+            if(!expDateErrors.isEmpty()) {
+                isValid = false;
+                StringBuilder expDateToolTip = new StringBuilder("<html><ul style='margin:0;padding-left:16px;'>");
+                for(String err: expDateErrors) {
+                    expDateToolTip.append("<li>").append(err).append("</li>");
+                }
+                expDateToolTip.append("</ul></html>");
+                expDateErrorLabel.setToolTipText(expDateToolTip.toString());
+                expDateErrorLabel.setVisible(true);
+            }
+
+            // Vailidate ngày hết hạn phải lớn hơn ngày nhập nguyên liệu
+            importDate = ngayNhapField.getDate();
+            expDate = ngayHetHanField.getDate();
+            if(importDateErrors.isEmpty() && expDateErrors.isEmpty()) {
+                if(importDate.after(expDate)) {
                     isValid = false;
-                    StringBuilder importDateToolTip = new StringBuilder("<html><ul style='margin:0;padding-left:16px;'>");
-                    for(String err: importDateErrors) {
-                        importDateToolTip.append("<li>").append(err).append("</li>");
-                    }
-                    importDateToolTip.append("</ul></html>");
-                    importDateErrorLabel.setToolTipText(importDateToolTip.toString());
+                    importDateErrorLabel.setToolTipText("Ngày nhập phải nhỏ hơn ngày hết hạn.");
                     importDateErrorLabel.setVisible(true);
                 }
+            }
 
-                // Validate ngày hết hạn
-                Date expDate = ngayHetHanField.getDate();
-                List<String> expDateErrors = new ArrayList<>();
-                if(expDate == null) {
-                    expDateErrors.add("Ngày hết hạn không được để trống.");
+            // Validate giá nguyên liệu
+            String ingredientPrice = giaField.getText().trim();
+            List<String> ingredientPriceErrors = new ArrayList<>();
+            if(ingredientPrice.isEmpty()) {
+                ingredientPriceErrors.add("Giá nguyên liệu không được để trống.");
+            } else if(!ingredientPrice.matches("\\d+")) {
+                ingredientPriceErrors.add("Giá nguyên liệu phải là số");
+            } else if(Integer.parseInt(ingredientPrice) <= 0) {
+                ingredientPriceErrors.add("Giá nguyên liệu phải lớn hơn 0");
+            }
+            if(!ingredientPriceErrors.isEmpty()) {
+                isValid = false;
+                StringBuilder ingredientPriceToolTip = new StringBuilder("<html><ul style='margin:0;padding-left:16px;'>");
+                for(String err: ingredientPriceErrors) {
+                    ingredientPriceToolTip.append("<li>").append(err).append("</li>");
                 }
-                if(!expDateErrors.isEmpty()) {
-                    isValid = false;
-                    StringBuilder expDateToolTip = new StringBuilder("<html><ul style='margin:0;padding-left:16px;'>");
-                    for(String err: expDateErrors) {
-                        expDateToolTip.append("<li>").append(err).append("</li>");
-                    }
-                    expDateToolTip.append("</ul></html>");
-                    expDateErrorLabel.setToolTipText(expDateToolTip.toString());
-                    expDateErrorLabel.setVisible(true);
-                }
+                ingredientPriceToolTip.append("</ul></html>");
+                ingredientPriceErrorLabel.setToolTipText(ingredientPriceToolTip.toString());
+                ingredientPriceErrorLabel.setVisible(true);
+            }
 
-                // Validate giá nguyên liệu
-                String ingredientPrice = giaField.getText().trim();
-                List<String> ingredientPriceErrors = new ArrayList<>();
-                if(ingredientPrice.isEmpty()) {
-                    ingredientPriceErrors.add("Giá nguyên liệu không được để trống.");
-                }
-                if(!ingredientPrice.matches("\\d+")) {
-                    ingredientPriceErrors.add("Giá nguyên liệu phải là số");
-                }
-                if(Integer.parseInt(ingredientPrice) <= 0) {
-                    ingredientPriceErrors.add("Giá nguyên liệu phải lớn hơn 0");
-                }
-                if(!ingredientPriceErrors.isEmpty()) {
-                    isValid = false;
-                    StringBuilder ingredientPriceToolTip = new StringBuilder("<html><ul style='margin:0;padding-left:16px;'>");
-                    for(String err: ingredientPriceErrors) {
-                        ingredientPriceToolTip.append("<li>").append(err).append("</li>");
-                    }
-                    ingredientPriceToolTip.append("</ul></html>");
-                    ingredientPriceErrorLabel.setToolTipText(ingredientPriceToolTip.toString());
-                    ingredientPriceErrorLabel.setVisible(true);
-                }
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            if(isValid) {
+                NguyenLieuDTO nl = new NguyenLieuDTO();
+                nl.setMaNguyenLieu(maNLField.getText());
+                nl.setTenNguyenLieu(tenNLField.getText());
+                nl.setLoaiNguyenLieu(loaiNLBox.getSelectedItem().toString());
+                nl.setNgayNhap(sdf.format(ngayNhapField.getDate()));
+                nl.setNgayHetHan(sdf.format(ngayHetHanField.getDate()));
+                nl.setSoLuong(0.0);
+                nl.setDonViDo(donViDoBox.getSelectedItem().toString());
+                nl.setGia(Double.parseDouble(giaField.getText()));
 
-                if(isValid) {
-                    NguyenLieuDTO nl = new NguyenLieuDTO();
-                    nl.setMaNguyenLieu(maNLField.getText());
-                    nl.setTenNguyenLieu(tenNLField.getText());
-                    nl.setLoaiNguyenLieu(loaiNLBox.getSelectedItem().toString());
-                    nl.setNgayNhap(sdf.format(ngayNhapField.getDate()));
-                    nl.setNgayHetHan(sdf.format(ngayHetHanField.getDate()));
-                    nl.setSoLuong(0.0);
-                    nl.setDonViDo(donViDoBox.getSelectedItem().toString());
-                    nl.setGia(Double.parseDouble(giaField.getText()));
-
-                    nguyenLieuBUS.addNguyenLieu(nl);
+                String success = nguyenLieuBUS.addNguyenLieu(nl);
+                if(success == "") {
                     nguyenLieuBUS.refreshTableData(tableModel);
                     JOptionPane.showMessageDialog(formThemNL, "Thêm nguyên liệu thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
                     formThemNL.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(null, success, "Thông báo", JOptionPane.ERROR_MESSAGE);
                 }
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(formThemNL, "Lỗi cơ sở dữ liệu: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         });
         themNLFooter.add(saveButton);
@@ -549,6 +560,7 @@ public class QuanLiNguyenLieuGUI extends RoundedPanel {
             JDateChooser ngayNhapField = new JDateChooser();
             ngayNhapField.setDateFormatString("yyyy-MM-dd");
             ngayNhapField.setDate(formattedNgayNhap);
+            ((JTextField) ngayNhapField.getDateEditor().getUiComponent()).setEditable(false);
             JLabel importDateErrorLabel = new JLabel();
             importDateErrorLabel.setPreferredSize(new Dimension(60, 60));
             importDateErrorLabel.setIcon(new ImageIcon(scaledImage));
@@ -561,6 +573,7 @@ public class QuanLiNguyenLieuGUI extends RoundedPanel {
             JDateChooser ngayHetHanField = new JDateChooser();
             ngayHetHanField.setDateFormatString("yyyy-MM-dd");
             ngayHetHanField.setDate(formattedNgayHetHan);
+            ((JTextField) ngayHetHanField.getDateEditor().getUiComponent()).setEditable(false);
             JLabel expDateErrorLabel = new JLabel();
             expDateErrorLabel.setPreferredSize(new Dimension(60, 60));
             expDateErrorLabel.setIcon(new ImageIcon(scaledImage));
@@ -674,16 +687,23 @@ public class QuanLiNguyenLieuGUI extends RoundedPanel {
                         expDateErrorLabel.setVisible(true);
                     }
 
+                    // Validate ngày nhập phải nhỏ hơn ngày hết hạn
+                    if(importDateErrors.isEmpty() && expDateErrors.isEmpty()) {
+                        if(importDate.after(expDate)) {
+                            isValid = false;
+                            importDateErrorLabel.setToolTipText("Ngày nhập không được lớn hơn ngày hết hạn");
+                            importDateErrorLabel.setVisible(true);
+                        }
+                    }
+
                     // Validate giá nguyên liệu
                     String ingredientPrice = giaField.getText().trim();
                     List<String> ingredientPriceErrors = new ArrayList<>();
                     if(ingredientPrice.isEmpty()) {
                         ingredientPriceErrors.add("Giá nguyên liệu không được để trống.");
-                    }
-                    if(!ingredientPrice.matches("\\d+")) {
+                    } else if(!ingredientPrice.matches("\\d+")) {
                         ingredientPriceErrors.add("Giá nguyên liệu phải là số");
-                    }
-                    if(Integer.parseInt(ingredientPrice) <= 0) {
+                    } else if(Integer.parseInt(ingredientPrice) <= 0) {
                         ingredientPriceErrors.add("Giá nguyên liệu phải lớn hơn 0");
                     }
                     if(!ingredientPriceErrors.isEmpty()) {
@@ -708,13 +728,15 @@ public class QuanLiNguyenLieuGUI extends RoundedPanel {
                         nl.setDonViDo(donViDoBox.getSelectedItem().toString());
                         nl.setGia(Double.parseDouble(giaField.getText()));
 
-                        nguyenLieuBUS.updateNguyenLieu(nl);
-                        nguyenLieuBUS.refreshTableData(tableModel);
-                        JOptionPane.showMessageDialog(formSuaNL, "Cập nhật nguyên liệu thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                        formSuaNL.dispose();
+                        String success = nguyenLieuBUS.updateNguyenLieu(nl);
+                        if(success == "") {
+                            nguyenLieuBUS.refreshTableData(tableModel);
+                            JOptionPane.showMessageDialog(formSuaNL, "Cập nhật nguyên liệu thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                            formSuaNL.dispose();
+                        } else {
+                            JOptionPane.showMessageDialog(null, success, "Thông báo", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(formSuaNL, "Lỗi cơ sở dữ liệu: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
                 } catch (IllegalArgumentException ex) {
                     JOptionPane.showMessageDialog(formSuaNL, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }

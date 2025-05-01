@@ -4,6 +4,9 @@ import DAO.HoaDonDAO;
 import DAO.ChiTietHoaDonDAO;
 import DAO.ThucAnDAO;
 import DTO.ChiTietHoaDonDTO;
+import DTO.ChiTietKhuyenMaiDTO;
+import DTO.KhuyenMaiDTO;
+import DTO.NhanVienDTO;
 import DTO.ThucAnDTO;
 
 import java.text.SimpleDateFormat;
@@ -13,18 +16,26 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.swing.JComboBox;
+import javax.swing.table.DefaultTableModel;
 
 public class ThanhToanBUS {
     private HoaDonDAO hoaDonDAO;
     private ChiTietHoaDonDAO chiTietHoaDonDAO;
     private ThucAnDAO thucAnDAO;
+    private ChiTietKhuyenMaiBUS chiTietKhuyenMaiBUS;
+    private KhuyenMaiBUS khuyenMaiBUS;
+    private NhanVienBUS nhanVienBUS;
 
     public ThanhToanBUS() {
         hoaDonDAO = new HoaDonDAO();
         chiTietHoaDonDAO = new ChiTietHoaDonDAO();
         thucAnDAO = new ThucAnDAO();
+        chiTietKhuyenMaiBUS = new ChiTietKhuyenMaiBUS();
+        khuyenMaiBUS = new KhuyenMaiBUS();
+        nhanVienBUS = new NhanVienBUS();
     }
 
     // Hàm khởi tạo mã hóa đơn tự động
@@ -80,13 +91,13 @@ public class ThanhToanBUS {
     }
 
     // Lưu thông tin hóa đơn và chi tiết hóa đơn vào cơ sở dữ liệu
-    public void luuHoaDon(String maHoaDon, String maNhanVien, String sdtKhachHang, String ngayLap, double tongTien, List<ChiTietHoaDonDTO> danhSachChiTietHoaDon) {
+    public void luuHoaDon(String maHoaDon, String maNhanVien, String sdtKhachHang, String ngayLap, double tongTien, List<ChiTietHoaDonDTO> danhSachChiTietHoaDon, String pttt) {
         try {
             // Lưu hóa đơn
             SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
             SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd");
             String formattedDate = dbFormat.format(inputFormat.parse(ngayLap));
-            hoaDonDAO.insertHoaDon(maHoaDon, formattedDate, maNhanVien, sdtKhachHang, tongTien);
+            hoaDonDAO.insertHoaDon(maHoaDon, formattedDate, maNhanVien, sdtKhachHang, tongTien,pttt);
 
             // Lưu từng chi tiết hóa đơn
             for (ChiTietHoaDonDTO chiTiet : danhSachChiTietHoaDon) {
@@ -123,8 +134,35 @@ public class ThanhToanBUS {
     }
 
     public void loadMaNhanVienToBox(JComboBox<String> box) {
-        for (String maNhanVien : getNhanVien()) {
-            box.addItem(maNhanVien);
+        for (NhanVienDTO nv : nhanVienBUS.getAllNhanVien()) {
+            if(nv.getTenChucVu().equals("Cashier")) {
+                box.addItem(nv.getMaNhanVien());
+            }
+        }
+    }
+
+    public void loadKhuyenMaiTable(DefaultTableModel promotionsModel, List<String> selectedFoodList) {
+        promotionsModel.setRowCount(0);
+        List<KhuyenMaiDTO> danhSachKhuyenMai = khuyenMaiBUS.getData();
+
+        if(danhSachKhuyenMai != null && !selectedFoodList.isEmpty()) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            for(KhuyenMaiDTO km: danhSachKhuyenMai) {
+                for(ChiTietKhuyenMaiDTO item: chiTietKhuyenMaiBUS.getDataById(km.getMaKhuyenMai())) {
+                    if(selectedFoodList.contains(item.getMaThucAn())) {
+                        Object[] row = {
+                            km.getMaKhuyenMai(),
+                            km.getTenKhuyenMai(),
+                            dateFormat.format(km.getNgayBatDau()),
+                            dateFormat.format(km.getNgayKetThuc()),
+                            Objects.equals(km.getDonViKhuyenMai(), "Phần trăm") ? "%" : "VNĐ" ,
+                            km.getDieuKienApDung()
+                        };
+                        promotionsModel.addRow(row);
+                        break;
+                    }
+                }
+            }
         }
     }
 }

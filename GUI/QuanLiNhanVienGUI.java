@@ -298,6 +298,8 @@ public class QuanLiNhanVienGUI extends RoundedPanel {
         JLabel ngaySinhLabel = new JLabel("Ngày sinh:");
         JDateChooser ngaySinhField = new JDateChooser();
         ngaySinhField.setDateFormatString("yyyy-MM-dd");
+        ((JTextField) ngaySinhField.getDateEditor().getUiComponent()).setEditable(false);
+
         JLabel birthErrorLabel = new JLabel();
         birthErrorLabel.setPreferredSize(new Dimension(60, 60));
         birthErrorLabel.setIcon(new ImageIcon(scaledImage));
@@ -586,6 +588,8 @@ public class QuanLiNhanVienGUI extends RoundedPanel {
                 JLabel ngaySinhLabel = new JLabel("Ngày sinh:");
                 JDateChooser ngaySinhField = new JDateChooser();
                 ngaySinhField.setDateFormatString("yyyy-MM-dd");
+                ((JTextField) ngaySinhField.getDateEditor().getUiComponent()).setEditable(false);
+
                 ngaySinhField.setDate(formattedNgaySinh);
                 JLabel employeeBirthErrorLabel = new JLabel();
                 employeeBirthErrorLabel.setPreferredSize(new Dimension(60, 60));

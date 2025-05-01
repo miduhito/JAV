@@ -207,10 +207,12 @@ public class QuanLiKhuyenMaiGUI extends RoundedPanel {
         MyLabel ngayBatDauLabel = new  MyLabel("Ngày bắt đầu:", 14f, "Regular");
         ngayBatDauChooser = new JDateChooser();
         ngayBatDauChooser.setDateFormatString("yyyy-MM-dd");
+        ((JTextField) ngayBatDauChooser.getDateEditor().getUiComponent()).setEditable(false);
        
         MyLabel ngayKetThucLabel = new  MyLabel("Ngày kết thúc:", 14f, "Regular");
         ngayKetThucChooser = new JDateChooser();
         ngayKetThucChooser.setDateFormatString("yyyy-MM-dd");
+        ((JTextField) ngayKetThucChooser.getDateEditor().getUiComponent()).setEditable(false);
         
         MyLabel donViKhuyenMaiLabel = new MyLabel("Đơn vị khuyến mãi:", 14f, "Regular");
         String[] donViOptions = {"%", "Số tiền"};
@@ -320,11 +322,13 @@ public class QuanLiKhuyenMaiGUI extends RoundedPanel {
         ngayBatDauChooser = new JDateChooser();
         ngayBatDauChooser.setDateFormatString("yyyy-MM-dd");
         ngayBatDauChooser.setDate(khuyenMai.getNgayBatDau());
+        ((JTextField) ngayBatDauChooser.getDateEditor().getUiComponent()).setEditable(false);
 
         MyLabel ngayKetThucLabel = new MyLabel("Ngày kết thúc:", 14f, "Regular");
         ngayKetThucChooser = new JDateChooser();
         ngayKetThucChooser.setDateFormatString("yyyy-MM-dd");
         ngayKetThucChooser.setDate(khuyenMai.getNgayKetThuc());
+        ((JTextField) ngayKetThucChooser.getDateEditor().getUiComponent()).setEditable(false);
 
         MyLabel donViKhuyenMaiLabel = new MyLabel("Đơn vị khuyến mãi:", 14f, "Regular");
         String[] donViOptions = {"%", "Số tiền"};
@@ -624,6 +628,8 @@ public class QuanLiKhuyenMaiGUI extends RoundedPanel {
         startDate.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         endDate.setPreferredSize(new Dimension(180,30));
         endDate.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        ((JTextField) startDate.getDateEditor().getUiComponent()).setEditable(false);
+        ((JTextField) endDate.getDateEditor().getUiComponent()).setEditable(false);
 
         ngayBatDauPanel.add(new MyLabel("Ngày bắt đầu sau: ", 14f, "Bold"));
         ngayBatDauPanel.add(startDate);

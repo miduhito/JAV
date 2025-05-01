@@ -16,7 +16,7 @@ public class NguyenLieuDAO {
             conn = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/fastfood?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC", 
                 "root", 
-                "root"
+                "3182004Lam_"
             );
         } catch(SQLException ex) {
             ex.printStackTrace();
@@ -76,7 +76,7 @@ public class NguyenLieuDAO {
         return "";
     }
     
-    public void updateNguyenLieu(NguyenLieuDTO nl) throws SQLException {
+    public String updateNguyenLieu(NguyenLieuDTO nl) {
         String sqlUpdate = "UPDATE NguyenLieu SET tenNguyenLieu = ?, loaiNguyenLieu = ?, ngayNhap = ?, ngayHetHan = ?, donViDo = ?, gia = ? WHERE maNguyenLieu = ?";
     
         try (PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdate)) {
@@ -89,14 +89,16 @@ public class NguyenLieuDAO {
             stmtUpdate.setString(7, nl.getMaNguyenLieu());
             int rowsAffected = stmtUpdate.executeUpdate();
             if (rowsAffected == 0) {
-                throw new SQLException("Không tìm thấy nguyên liệu để cập nhật!");
+                return "Không tìm thấy nguyên liệu để cập nhật!";
             }
         } catch(Exception ex) {
             ex.printStackTrace();
         }
+
+        return "";
     }
 
-    public void deleteNguyenLieu(String maNguyenLieu) throws SQLException {
+    public String deleteNguyenLieu(String maNguyenLieu) {
         // Kiểm tra số lượng
         String sqlCheckSoLuong = "SELECT soLuong FROM NguyenLieu WHERE maNguyenLieu = ?";
         try (PreparedStatement stmtCheckSoLuong = conn.prepareStatement(sqlCheckSoLuong)) {
@@ -105,24 +107,28 @@ public class NguyenLieuDAO {
                 if (rs.next()) {
                     int soLuong = rs.getInt("soLuong");
                     if (soLuong > 0) {
-                        throw new SQLException("Không thể xóa nguyên liệu vì số lượng lớn hơn 0!");
+                        return "Không thể xóa nguyên liệu vì số lượng lớn hơn 0!";
                     }
                 } else {
-                    throw new SQLException("Không tìm thấy nguyên liệu để xóa!");
+                    return "Không tìm thấy nguyên liệu để xóa!";
                 }
             }
+        } catch(SQLException ex) {
+            ex.printStackTrace();
         }
 
         // Kiểm tra xem nguyên liệu có nằm trong công thức nào không
-        // String sqlCheckCongThuc = "SELECT COUNT(*) FROM ChiTietCongThuc WHERE maNguyenLieu = ?";
-        // try (PreparedStatement stmtCheckCongThuc = conn.prepareStatement(sqlCheckCongThuc)) {
-        //     stmtCheckCongThuc.setString(1, maNguyenLieu);
-        //     try (ResultSet rs = stmtCheckCongThuc.executeQuery()) {
-        //         if (rs.next() && rs.getInt(1) > 0) {
-        //             throw new SQLException("Không thể xóa nguyên liệu vì nó đang được sử dụng trong một công thức!");
-        //         }
-        //     }
-        // }
+        String sqlCheckCongThuc = "SELECT COUNT(*) FROM ChiTietCongThuc WHERE maNguyenLieu = ?";
+        try (PreparedStatement stmtCheckCongThuc = conn.prepareStatement(sqlCheckCongThuc)) {
+            stmtCheckCongThuc.setString(1, maNguyenLieu);
+            try (ResultSet rs = stmtCheckCongThuc.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    return "Không thể xóa nguyên liệu vì nó đang được sử dụng trong một công thức!";
+                }
+            }
+        } catch(SQLException ex) {
+            ex.printStackTrace();
+        }
 
         // Xóa nguyên liệu
         String sqlDelete = "DELETE FROM NguyenLieu WHERE maNguyenLieu = ?";
@@ -130,9 +136,13 @@ public class NguyenLieuDAO {
             stmtDelete.setString(1, maNguyenLieu);
             int rowsAffected = stmtDelete.executeUpdate();
             if (rowsAffected == 0) {
-                throw new SQLException("Không tìm thấy nguyên liệu để xóa!");
+                return "Không tìm thấy nguyên liệu để xóa!";
             }
+        } catch(SQLException ex) {
+            ex.printStackTrace();
         }
+
+        return "";
     }
 
     // Lấy thông tin nguyên liệu theo mã

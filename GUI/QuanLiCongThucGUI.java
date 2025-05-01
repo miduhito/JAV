@@ -205,12 +205,12 @@ public class QuanLiCongThucGUI extends RoundedPanel {
             }
 
             String maCongThuc = tableModel.getValueAt(selectedRow, 0).toString();
-            try {
-                congThucBUS.deleteCongThuc(maCongThuc);
+            String success = congThucBUS.deleteCongThuc(maCongThuc);
+            if(success == "") {
                 congThucBUS.refreshTableData(tableModel);
                 JOptionPane.showMessageDialog(null, "Xóa công thức thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, "Lỗi khi xóa công thức: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, success, "Thông báo", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -418,8 +418,14 @@ public class QuanLiCongThucGUI extends RoundedPanel {
                 String recipeDescripe = moTaField.getText().trim();
                 if(recipeDescripe.isEmpty()) {
                     isValid = false;
-                    recipeDescripeErrorLabel.setToolTipText("Mô tả công thức không được để trống");
+                    recipeDescripeErrorLabel.setToolTipText("Mô tả công thức không được để trống.");
                     recipeDescripeErrorLabel.setVisible(true);
+                }
+
+                // Validate kiểm tra danh sách nguyên liệu có rỗng không
+                if(ingredientTableModel.getRowCount() == 0) {
+                    isValid = false;
+                    JOptionPane.showMessageDialog(null, "Danh sách nguyên liệu của công thức không được trống.", "Thông báo", JOptionPane.ERROR_MESSAGE);
                 }
 
                 if(isValid) {
@@ -642,6 +648,12 @@ public class QuanLiCongThucGUI extends RoundedPanel {
                     recipeDescripeErrorLabel.setVisible(true);
                 }
 
+                // Validate kiểm tra xem danh sách nguyên liệu có bị trống
+                if(ingredientTableModel.getRowCount() == 0) {
+                    isValid = false;
+                    JOptionPane.showMessageDialog(null, "Danh sách nguyên liệu của công thức không được trống.");
+                }
+
                 if(isValid) {
                     CongThucDTO ct = new CongThucDTO();
                     ct.setMaCongThuc(maCTField.getText());
@@ -662,9 +674,6 @@ public class QuanLiCongThucGUI extends RoundedPanel {
                     JOptionPane.showMessageDialog(formSuaCT, "Cập nhật công thức thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
                     formSuaCT.dispose();
                 }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(formSuaCT, "Lỗi cơ sở dữ liệu: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             } catch (IllegalArgumentException ex) {
                 JOptionPane.showMessageDialog(formSuaCT, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             }

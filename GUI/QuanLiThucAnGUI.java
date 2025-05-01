@@ -8,6 +8,7 @@ import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -341,15 +342,26 @@ public class QuanLiThucAnGUI extends RoundedPanel {
 
         // Ảnh thức ăn
         JLabel anhThucAnLabel = new JLabel("Đường dẫn file ảnh:");
-        JTextField anhThucAnField = new JTextField(20);
-        anhThucAnField.setEditable(false); // Không cho phép nhập thủ công
+        JTextField anhThucAnField = new JTextField();
+        anhThucAnField.setEditable(false);
+
+        // Tạo nút browse và đặt kích thước cố định (hình vuông)
         JButton browseButton = new JButton("Chọn file");
+        // Kích thước cố định
+        Dimension buttonSize = new Dimension(40, 80); 
+        browseButton.setPreferredSize(buttonSize);
+        browseButton.setMinimumSize(buttonSize);
+        browseButton.setMaximumSize(buttonSize);
+
 
         browseButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             int returnValue = fileChooser.showOpenDialog(null);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
-                anhThucAnField.setText(fileChooser.getSelectedFile().getAbsolutePath());
+                File selectedFile = fileChooser.getSelectedFile();
+                File currentDir = new File(System.getProperty("user.dir"));
+                String relativePath = currentDir.toURI().relativize(selectedFile.toURI()).getPath();
+                anhThucAnField.setText(relativePath);
             }
         });
 
@@ -360,10 +372,10 @@ public class QuanLiThucAnGUI extends RoundedPanel {
         foodImageErrorLabel.setVisible(false);
         foodImageErrorLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        JPanel chooseFilePanel = new JPanel();
-        chooseFilePanel.setLayout(new BorderLayout());
-        chooseFilePanel.add(anhThucAnField, BorderLayout.WEST);
+        JPanel chooseFilePanel = new JPanel(new BorderLayout(5, 5));
+        chooseFilePanel.add(anhThucAnField, BorderLayout.CENTER);
         chooseFilePanel.add(browseButton, BorderLayout.EAST);
+
 
         themTACenter.add(maTALabel);
         themTACenter.add(maTAField);
@@ -594,8 +606,35 @@ public class QuanLiThucAnGUI extends RoundedPanel {
         foodPriceErrorLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         // Ảnh thức ăn
-        JLabel anhMonAnLabel = new JLabel("Ảnh thức ăn:");
-        JTextField anhMonAnField = new JTextField(thucAn.getAnhThucAn());
+        JLabel anhThucAnLabel = new JLabel("Đường dẫn file ảnh:");
+        JTextField anhThucAnField = new JTextField();
+        anhThucAnField.setText(thucAn.getAnhThucAn());
+        anhThucAnField.setEditable(false);
+
+        // Tạo nút browse và đặt kích thước cố định (hình vuông)
+        JButton browseButton = new JButton("Chọn file");
+        // Kích thước cố định
+        Dimension buttonSize = new Dimension(40, 80); 
+        browseButton.setPreferredSize(buttonSize);
+        browseButton.setMinimumSize(buttonSize);
+        browseButton.setMaximumSize(buttonSize);
+
+
+        browseButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            int returnValue = fileChooser.showOpenDialog(null);
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                File currentDir = new File(System.getProperty("user.dir"));
+                String relativePath = currentDir.toURI().relativize(selectedFile.toURI()).getPath();
+                anhThucAnField.setText(relativePath);
+            }
+        });
+
+        JPanel chooseFilePanel = new JPanel(new BorderLayout(5, 5));
+        chooseFilePanel.add(anhThucAnField, BorderLayout.CENTER);
+        chooseFilePanel.add(browseButton, BorderLayout.EAST);
+
         JLabel foodImageErrorLabel = new JLabel();
         foodImageErrorLabel.setPreferredSize(new Dimension(60, 60));
         foodImageErrorLabel.setIcon(new ImageIcon(scaledImage));
@@ -623,8 +662,8 @@ public class QuanLiThucAnGUI extends RoundedPanel {
         suaTACenter.add(giaMonAnField);
         suaTACenter.add(foodPriceErrorLabel);
 
-        suaTACenter.add(anhMonAnLabel);
-        suaTACenter.add(anhMonAnField);
+        suaTACenter.add(anhThucAnLabel);
+        suaTACenter.add(chooseFilePanel);
         suaTACenter.add(foodImageErrorLabel);
 
         formSuaTA.add(suaTACenter, BorderLayout.CENTER);
@@ -681,7 +720,7 @@ public class QuanLiThucAnGUI extends RoundedPanel {
                 }
 
                 // Validate ảnh thức ăn
-                String imageResult = anhMonAnField.getText();
+                String imageResult = anhThucAnField.getText();
                 if(imageResult.isEmpty()) {
                     isValid = false;
                     foodImageErrorLabel.setToolTipText("Ảnh thức ăn không được trống");
@@ -696,7 +735,7 @@ public class QuanLiThucAnGUI extends RoundedPanel {
                     ta.setMoTa(moTaField.getText());
                     ta.setLoaiMonAn((String) loaiMonAnCombo.getSelectedItem());
                     ta.setGia(Double.parseDouble(giaMonAnField.getText()));
-                    ta.setAnhThucAn(anhMonAnField.getText());
+                    ta.setAnhThucAn(anhThucAnField.getText());
 
                     thucAnBUS.updateThucAn(ta);
                     thucAnBUS.refreshTableData(tableModel);

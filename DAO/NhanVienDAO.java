@@ -16,7 +16,7 @@ public class NhanVienDAO {
     private Connection getConnection() throws SQLException {
         return DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/fastfood?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
-                "root", "root");
+                "root", "3182004Lam_");
     }
 
     // Lấy tất cả nhân viên

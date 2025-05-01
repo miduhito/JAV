@@ -22,17 +22,16 @@ public class NguyenLieuBUS {
         return nguyenLieuDAO.getAllNguyenLieu();
     }
 
-    public void addNguyenLieu(NguyenLieuDTO nl) throws SQLException {
-        // Gọi DAO để thêm nguyên liệu
-        nguyenLieuDAO.insertNguyenLieu(nl);
+    public String addNguyenLieu(NguyenLieuDTO nl) {
+        return nguyenLieuDAO.insertNguyenLieu(nl);
     }
 
-    public void updateNguyenLieu(NguyenLieuDTO nl) throws SQLException {
-        nguyenLieuDAO.updateNguyenLieu(nl);
+    public String updateNguyenLieu(NguyenLieuDTO nl) {
+        return nguyenLieuDAO.updateNguyenLieu(nl);
     }
 
-    public void deleteNguyenLieu(String maNguyenLieu) throws SQLException {
-        nguyenLieuDAO.deleteNguyenLieu(maNguyenLieu);
+    public String deleteNguyenLieu(String maNguyenLieu) {
+        return nguyenLieuDAO.deleteNguyenLieu(maNguyenLieu);
     }
 
     public String generateMaNguyenLieu() {

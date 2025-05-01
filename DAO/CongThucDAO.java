@@ -15,7 +15,7 @@ public class CongThucDAO {
         conn = DriverManager.getConnection(
             "jdbc:mysql://localhost:3306/fastfood?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC", 
             "root", 
-            "root"
+            "3182004Lam_"
         );
     }
 
@@ -35,7 +35,7 @@ public class CongThucDAO {
         return list;
     }
 
-    public void insertCongThuc(CongThucDTO ct) {
+    public String insertCongThuc(CongThucDTO ct, List<ChiTietCongThucDTO> chiTietList) {
         String sqlInsert = "INSERT INTO CongThuc (maCongThuc, tenCongThuc, moTa) VALUES (?, ?, ?)";
         String sqlCheck = "SELECT COUNT(*) FROM CongThuc WHERE maCongThuc = ?";
 
@@ -44,7 +44,7 @@ public class CongThucDAO {
             stmtCheck.setString(1, ct.getMaCongThuc());
             try (ResultSet rs = stmtCheck.executeQuery()) {
                 if (rs.next() && rs.getInt(1) > 0) {
-                    throw new SQLException("Mã công thức " + ct.getMaCongThuc() + " đã tồn tại!");
+                    return "Mã công thức " + ct.getMaCongThuc() + " đã tồn tại!";
                 }
             }
 
@@ -55,9 +55,15 @@ public class CongThucDAO {
         } catch(SQLException ex) {
             ex.printStackTrace();
         }
+
+        for (ChiTietCongThucDTO chiTiet : chiTietList) {
+            chiTiet.setMaCongThuc(ct.getMaCongThuc());
+            insertChiTietCongThuc(chiTiet);
+        }
+        return "";
     }
 
-    public void updateCongThuc(CongThucDTO ct) throws SQLException {
+    public String updateCongThuc(CongThucDTO ct, List<ChiTietCongThucDTO> chiTietList) {
         String sqlUpdate = "UPDATE CongThuc SET tenCongThuc = ?, moTa = ? WHERE maCongThuc = ?";
 
         try (PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdate)) {
@@ -66,21 +72,32 @@ public class CongThucDAO {
             stmtUpdate.setString(3, ct.getMaCongThuc());
             int rowsAffected = stmtUpdate.executeUpdate();
             if (rowsAffected == 0) {
-                throw new SQLException("Không tìm thấy công thức để cập nhật!");
+                return "Không tìm thấy công thức để cập nhật!";
             }
+        } catch(SQLException ex) {
+            ex.printStackTrace();
         }
+
+        deleteChiTietCongThuc(ct.getMaCongThuc());
+        for (ChiTietCongThucDTO chiTiet : chiTietList) {
+            chiTiet.setMaCongThuc(ct.getMaCongThuc());
+            insertChiTietCongThuc(chiTiet);
+        }
+        return "";
     }
 
-    public void deleteCongThuc(String maCongThuc) throws SQLException {
+    public String deleteCongThuc(String maCongThuc) {
         // Kiểm tra xem công thức có nằm trong thức ăn nào không
         String sqlCheckThucAn = "SELECT COUNT(*) FROM ThucAn WHERE maCongThuc = ?";
         try (PreparedStatement stmtCheckThucAn = conn.prepareStatement(sqlCheckThucAn)) {
             stmtCheckThucAn.setString(1, maCongThuc);
             try (ResultSet rs = stmtCheckThucAn.executeQuery()) {
                 if (rs.next() && rs.getInt(1) > 0) {
-                    throw new SQLException("Không thể xóa công thức vì nó đang được sử dụng trong một thức ăn!");
+                    return "Không thể xóa công thức vì nó đang được sử dụng trong một thức ăn!";
                 }
             }
+        } catch(SQLException ex) {
+            ex.printStackTrace();
         }
 
         // Xóa chi tiết công thức
@@ -88,6 +105,8 @@ public class CongThucDAO {
         try (PreparedStatement stmtDeleteChiTiet = conn.prepareStatement(sqlDeleteChiTiet)) {
             stmtDeleteChiTiet.setString(1, maCongThuc);
             stmtDeleteChiTiet.executeUpdate();
+        } catch(SQLException ex) {
+            ex.printStackTrace();
         }
 
         // Xóa công thức
@@ -96,9 +115,12 @@ public class CongThucDAO {
             stmtDeleteCongThuc.setString(1, maCongThuc);
             int rowsAffected = stmtDeleteCongThuc.executeUpdate();
             if (rowsAffected == 0) {
-                throw new SQLException("Không tìm thấy công thức để xóa!");
+                return "Không tìm thấy công thức để xóa!";
             }
+        } catch(SQLException ex) {
+            ex.printStackTrace();
         }
+        return "";
     }
 
     // Các phương thức khác (getAllCongThuc, insertCongThuc, updateCongThuc, v.v.) nếu có
@@ -138,11 +160,13 @@ public class CongThucDAO {
         }
     }
 
-    public void deleteChiTietCongThuc(String maCongThuc) throws SQLException {
+    public void deleteChiTietCongThuc(String maCongThuc) {
         String sqlDelete = "DELETE FROM ChiTietCongThuc WHERE maCongThuc = ?";
         try (PreparedStatement stmtDelete = conn.prepareStatement(sqlDelete)) {
             stmtDelete.setString(1, maCongThuc);
             stmtDelete.executeUpdate();
+        } catch(SQLException ex) {
+            ex.printStackTrace();
         }
     }
 
