@@ -384,14 +384,14 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
         themNVCenter.add(trangThaiBox);
         themNVCenter.add(emptyLabel4);
 
-        // ----- Dòng 6: Vai trò -----
-        // JLabel vaiTroLabel = new JLabel("Vai trò:");
-        // JComboBox<String> vaiTroBox = new JComboBox<>(new String[]{"Admin","Quản lí","Quản lí kho","Thu ngân","Kế toán"});
-        // JLabel emptyLabel5 = new JLabel();
-        // emptyLabel5.setPreferredSize(new Dimension(60, 60));
-        // themNVCenter.add(vaiTroLabel);
-        // themNVCenter.add(vaiTroBox);
-        // themNVCenter.add(emptyLabel5);
+        //----- Dòng 6: Vai trò -----
+        JLabel vaiTroLabel = new JLabel("Vai trò:");
+        JComboBox<String> vaiTroBox = new JComboBox<>(new String[]{"Admin","Manager","StorageManager","Cashier","Accountant"});
+        JLabel emptyLabel5 = new JLabel();
+        emptyLabel5.setPreferredSize(new Dimension(60, 60));
+        themNVCenter.add(vaiTroLabel);
+        themNVCenter.add(vaiTroBox);
+        themNVCenter.add(emptyLabel5);
 
         formThemTK.add(themNVCenter, BorderLayout.CENTER);
 
@@ -462,7 +462,7 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
                             passwordField.getText(),
                             sqlDate,
                             trangThaiBox.getSelectedItem().toString(),
-                            nhanVienBUS.getNhanVienById(maNVField.getText()).getTenChucVu(),
+                            vaiTroBox.getSelectedItem().toString(),
                             maNVField.getText()
                     );
                     tk.refreshTableData(tableModel);
