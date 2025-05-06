@@ -63,7 +63,7 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
         // Search field
         JTextField searchField = new JTextField();
         searchField.setPreferredSize(new Dimension(200, 30));
-        searchField.setToolTipText("Nhập tên nhân viên để tìm kiếm...");
+        searchField.setToolTipText("Nhập tên tài khoản để tìm kiếm...");
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         searchField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -260,7 +260,7 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
         
         
     private void FormThemTaiKhoan(JButton addAccountButton) {
-        JFrame formThemTK = new JFrame("Thêm Nhân Viên");
+        JFrame formThemTK = new JFrame("Thêm Tài Khoản");
         formThemTK.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE); // Set the close operation correctly
         formThemTK.setSize(800, 600); // Set the window size
         formThemTK.setLayout(new BorderLayout()); // Set the layout
@@ -268,7 +268,7 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
         // Header
         RoundedPanel themNVHeader = new RoundedPanel(30, 30, Color.WHITE);
         themNVHeader.setLayout(new BorderLayout());
-        JLabel themNVTitle = new JLabel("Thêm Nhân Viên", SwingConstants.CENTER);
+        JLabel themNVTitle = new JLabel("Thêm Tài Khoản", SwingConstants.CENTER);
         themNVTitle.setFont(new Font("Segoe UI", Font.BOLD, 24));
         themNVTitle.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
         themNVHeader.add(themNVTitle, BorderLayout.CENTER);
@@ -329,7 +329,7 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
         // ----- Dòng 2: Tên đăng nhập -----
         JLabel tenDNLabel = new JLabel("Tên đăng nhập:");
         JTextField tenDNField = new JTextField();
-        // Tạo icon lỗi cho tên nhân viên
+        // Tạo icon lỗi cho tên tài khoản
         JLabel nameErrorLabel = new JLabel();
         nameErrorLabel.setPreferredSize(new Dimension(60, 60));
         nameErrorLabel.setIcon(new ImageIcon(scaledImage));
@@ -432,12 +432,12 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
             String name = tenDNField.getText().trim();
             if(name.isEmpty()){
                 isValid = false;
-                nameErrorLabel.setToolTipText("Tên nhân viên không được để trống.");
+                nameErrorLabel.setToolTipText("Tên tài khoản không được để trống.");
                 nameErrorLabel.setVisible(true);
             }
             else if (!name.matches("[a-zA-Z0-9]+")) { // Kiểm tra không chứa ký tự đặc biệt
                 isValid = false;
-                nameErrorLabel.setToolTipText("Tên nhân viên không được chứa ký tự đặc biệt.");
+                nameErrorLabel.setToolTipText("Tên tài khoản không được chứa ký tự đặc biệt.");
                 nameErrorLabel.setVisible(true);
             }
 
@@ -608,7 +608,7 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
         JLabel tenDNLabel = new JLabel("Tên đăng nhập:");
         JTextField tenDNField = new JTextField();
         tenDNField.setText(acc.getTenDangNhap());
-        // Tạo icon lỗi cho tên nhân viên
+        // Tạo icon lỗi cho tên tài khoản
         JLabel nameErrorLabel = new JLabel();
         nameErrorLabel.setPreferredSize(new Dimension(60, 60));
         nameErrorLabel.setIcon(new ImageIcon(scaledImage));
@@ -703,12 +703,12 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
             String name = tenDNField.getText().trim();
             if(name.isEmpty()){
                 isValid = false;
-                nameErrorLabel.setToolTipText("Tên nhân viên không được để trống.");
+                nameErrorLabel.setToolTipText("Tên đăng nhập không được để trống.");
                 nameErrorLabel.setVisible(true);
             }
             else if (!name.matches("[a-zA-Z0-9]+")) { // Kiểm tra không chứa ký tự đặc biệt
                 isValid = false;
-                nameErrorLabel.setToolTipText("Tên nhân viên không được chứa ký tự đặc biệt.");
+                nameErrorLabel.setToolTipText("Tên đăng nhập không được chứa ký tự đặc biệt.");
                 nameErrorLabel.setVisible(true);
             }
 
@@ -744,7 +744,9 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
                                 formsuaTK.dispose();
                             }}
                         else{
-                            JOptionPane.showMessageDialog(null, "Tên đăng nhập này đã tồn tại vui lòng chọn tên đăng nhập khác", "Cảnh báobáo", JOptionPane.WARNING_MESSAGE);
+                            isValid = false;
+                                nameErrorLabel.setToolTipText("Tên đăng nhập bị trùng");
+                                nameErrorLabel.setVisible(true);
                         }
                 }else{      
                             //Check vai tro
