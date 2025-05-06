@@ -7,6 +7,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.text.Document;
 
 import BUS.ChiTietKhuyenMaiBUS;
+import BUS.KhachHangBUS;
 import BUS.KhuyenMaiBUS;
 import BUS.ThanhToanBUS;
 import BUS.ThucAnBUS;
@@ -40,6 +41,7 @@ public class ThanhToanGUI extends RoundedPanel {
     private List<String> selectedPromotions;
     private List<Integer> quantitySelectedPromotion;
     private ChiTietKhuyenMaiBUS chiTietKhuyenMaiBUS;
+    private KhachHangBUS khachHangBUS;
 
     public ThanhToanGUI() {
         super(50, 50, Color.decode("#F5ECE0")); // RoundedPanel với góc bo 50px
@@ -55,6 +57,7 @@ public class ThanhToanGUI extends RoundedPanel {
         quantitySelectedPromotion = new ArrayList<>();
         chiTietKhuyenMaiBUS = new ChiTietKhuyenMaiBUS();
         khuyenMaiBUS = new KhuyenMaiBUS();
+        khachHangBUS = new KhachHangBUS();
 
         // Tiêu đề
         JLabel title = new JLabel("Thanh Toán", SwingConstants.LEFT);
@@ -218,11 +221,13 @@ public class ThanhToanGUI extends RoundedPanel {
                     ptttBox.getSelectedItem().toString()
                 );
 
+
                 for (HashMap<String, Integer> item : chiTietHD) {
                     for (HashMap.Entry<String, Integer> ta : item.entrySet()) {
                         String key = ta.getKey();
                         Integer value = ta.getValue();
                         thucAnBUS.updateSoLuongThucAn(key, value);
+                        khachHangBUS.updateSoDiem(sdtKhachHangField.getText(), value*10);
                     }
                 }
 

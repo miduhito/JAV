@@ -98,7 +98,7 @@ public class ThanhToanBUS {
             SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd");
             String formattedDate = dbFormat.format(inputFormat.parse(ngayLap));
             hoaDonDAO.insertHoaDon(maHoaDon, formattedDate, maNhanVien, sdtKhachHang, tongTien,pttt);
-
+            
             // Lưu từng chi tiết hóa đơn
             for (ChiTietHoaDonDTO chiTiet : danhSachChiTietHoaDon) {
                 chiTiet.setMaHoaDon(maHoaDon); // Gắn mã hóa đơn cho chi tiết

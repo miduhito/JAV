@@ -139,4 +139,8 @@ public class KhachHangBUS {
     public List<KhachHangDTO> getAllKhachHang() {
         return khachHangDAO.getAllKhachHang();
     }
+
+    public void updateSoDiem(String sdt, int soDiem) {
+        khachHangDAO.updateSoDiem(sdt, soDiem);
+    }
 }

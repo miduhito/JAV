@@ -136,4 +136,17 @@ public class KhachHangDAO {
         }
         return newMaKhachHang; // Trả về mã mới
     }
+
+    public void updateSoDiem(String sdt, int soDiem) {
+        String sql = "UPDATE khachhang SET soDiem = soDiem + ? WHERE sdt = ?";
+        try(Connection conn = getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, String.valueOf(soDiem));
+            pstmt.setString(2, sdt);
+
+            pstmt.executeUpdate();
+        } catch(SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
 }

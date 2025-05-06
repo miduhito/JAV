@@ -56,7 +56,7 @@ public class ThongKeGUI extends RoundedPanel {
         ((JTextField) endDateChooser.getDateEditor().getUiComponent()).setEditable(false);
         searchPanel.add(endDateChooser);
 
-        JButton searchButton = new JButton("Tìm kiếm");
+        JButton searchButton = new JButton("Thống kê");
         searchButton.addActionListener(e -> {
             // Lấy giá trị ngày từ JDateChooser
             Date startDate = startDateChooser.getDate();
