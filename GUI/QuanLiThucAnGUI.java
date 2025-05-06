@@ -512,10 +512,10 @@ public class QuanLiThucAnGUI extends RoundedPanel {
                     ta.setSoLuong(Integer.parseInt(foodQuantity));
                     ta.setAnhThucAn(anhThucAnField.getText());
         
-                    thucAnBUS.addThucAn(ta);
+                    boolean success = thucAnBUS.addThucAn(ta);
                     thucAnBUS.refreshTableData(tableModel);
-                    JOptionPane.showMessageDialog(formThemTA, "Thêm thức ăn thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-                    formThemTA.dispose();
+                    if(success)
+                        formThemTA.dispose();
                 }
             } catch (Exception ex) {
                 String errorMsg = "Lỗi cơ sở dữ liệu: " + ex.getMessage();

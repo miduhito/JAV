@@ -3,7 +3,9 @@ package DAO;
 import DTO.ThucAnDTO;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 
@@ -44,7 +46,7 @@ public class ThucAnDAO {
         return list;
     }
 
-    public void insertThucAn(ThucAnDTO ta) throws SQLException {
+    public boolean insertThucAn(ThucAnDTO ta) throws SQLException {
         String sqlCheck = "SELECT COUNT(*) FROM ThucAn WHERE maThucAn = ?";
         String sqlInsert = "INSERT INTO ThucAn (maThucAn, tenThucAn, moTa, loaiMonAn, gia, maCongThuc, soLuong, anhThucAn) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConnection();
@@ -54,8 +56,12 @@ public class ThucAnDAO {
             try (ResultSet rs = stmtCheck.executeQuery()) {
                 if (rs.next() && rs.getInt(1) > 0) {
                     System.err.println("Mã thức ăn " + ta.getMaThucAn() + " đã tồn tại!");
-                    return;
+                    return false;
                 }
+            }
+            boolean fail = updateNguyenLieuTheoCongThuc(ta.getMaCongThuc(), ta.getSoLuong());
+            if(fail) {
+                return false;
             }
 
             stmtInsert.setString(1, ta.getMaThucAn());
@@ -67,10 +73,12 @@ public class ThucAnDAO {
             stmtInsert.setInt(7, ta.getSoLuong());
             stmtInsert.setString(8, ta.getAnhThucAn());
             stmtInsert.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Thêm thức ăn thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
         } catch (SQLException e) {
             System.err.println("Lỗi khi thêm thức ăn: " + e.getMessage());
             e.printStackTrace();
         }
+        return true;
     }
 
     public void updateThucAn(ThucAnDTO ta) throws SQLException {
@@ -191,7 +199,38 @@ public class ThucAnDAO {
         return newMaThucAn; // Trả về mã mới
     }
 
-    public void updateNguyenLieu(String maNguyenLieu, Double soLuongSuDung) throws SQLException {
+    private boolean updateNguyenLieuTheoCongThuc(String maCongThuc, int soLuongThucAn) throws SQLException {
+        String sqlSelect = "SELECT maNguyenLieu, soLuong FROM ChiTietCongThuc WHERE maCongThuc = ?";
+        List<Map<String, Object>> nguyenLieuList = new ArrayList<>();
+
+        
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement stmtSelect = conn.prepareStatement(sqlSelect)) {
+            stmtSelect.setString(1, maCongThuc);
+            try (ResultSet rs = stmtSelect.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> nguyenLieu = new HashMap<>();
+                    nguyenLieu.put("maNguyenLieu", rs.getString("maNguyenLieu"));
+                    nguyenLieu.put("soLuong", rs.getDouble("soLuong"));
+                    nguyenLieuList.add(nguyenLieu);
+                }
+            }
+        }
+
+        for (Map<String, Object> nguyenLieu : nguyenLieuList) {
+            String maNguyenLieu = (String) nguyenLieu.get("maNguyenLieu");
+            Double soLuongMotPhan = (Double) nguyenLieu.get("soLuong");
+            System.out.println(maNguyenLieu);
+            System.out.println(soLuongMotPhan);
+            Double soLuongCanTru = soLuongMotPhan * soLuongThucAn;
+            if(updateNguyenLieu(maNguyenLieu, soLuongCanTru)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean updateNguyenLieu(String maNguyenLieu, Double soLuongSuDung) throws SQLException {
         String sqlCheck = "SELECT soLuong FROM nguyenlieu WHERE maNguyenLieu = ?";
         String sqlUpdate = "UPDATE nguyenlieu SET soLuong = soLuong - ? WHERE maNguyenLieu = ?";
 
@@ -203,7 +242,8 @@ public class ThucAnDAO {
                 if (rs.next()) {
                     soLuongHienCo = rs.getDouble("soLuong");
                     if (soLuongHienCo < soLuongSuDung) {
-                        throw new SQLException("Không đủ số lượng nguyên liệu " + maNguyenLieu + "!");
+                        JOptionPane.showMessageDialog(null, "Không đủ số lượng nguyên liệu", "Thông báo", JOptionPane.ERROR_MESSAGE);
+                        return true;
                     }
                 } else {
                     throw new SQLException("Không tìm thấy nguyên liệu " + maNguyenLieu + "!");
@@ -217,6 +257,7 @@ public class ThucAnDAO {
             stmtUpdate.setString(2, maNguyenLieu);
             stmtUpdate.executeUpdate();
         }
+        return false;
     }
 
     public void updateSoLuongThucAn(String maThucAn, int soLuong) {

@@ -217,7 +217,8 @@ public class QuanLiHoaDonGUI extends RoundedPanel{
             }
             Date ngayLap = new Date();
             String maKhachHang = empData.getMaKhachHang();
-            String sdtKhachHang = khBUS.getKhachHangById(maKhachHang).getSDT();
+            KhachHangDTO khachHangDTO = khBUS.getKhachHangById(maKhachHang);
+            String sdtKhachHang = (khachHangDTO != null && khachHangDTO.getSDT() != null) ? khachHangDTO.getSDT() : "";
             String maNhanVien = empData.getMaNhanVien();
             try {
                 ngayLap = dbFormat.parse(empData.getNgayLap());

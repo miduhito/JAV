@@ -31,12 +31,9 @@ public class ThucAnBUS {
         return thucAnDAO.getAllThucAn();
     }
 
-    public void addThucAn(ThucAnDTO ta) throws SQLException {
+    public boolean addThucAn(ThucAnDTO ta) throws SQLException {
         // Thêm thức ăn
-        thucAnDAO.insertThucAn(ta);
-
-        // Trừ nguyên liệu dựa trên công thức và số lượng
-        updateNguyenLieuTheoCongThuc(ta.getMaCongThuc(), ta.getSoLuong());
+        return thucAnDAO.insertThucAn(ta);
     }
 
     public void updateThucAn(ThucAnDTO ta) throws SQLException {
@@ -59,34 +56,7 @@ public class ThucAnBUS {
         thucAnDAO.updateSoLuongThucAn(maThucAn, soLuong);
     }
 
-    private void updateNguyenLieuTheoCongThuc(String maCongThuc, int soLuongThucAn) throws SQLException {
-        String sqlSelect = "SELECT maNguyenLieu, soLuong FROM ChiTietCongThuc WHERE maCongThuc = ?";
-        List<Map<String, Object>> nguyenLieuList = new ArrayList<>();
-
-        System.out.println(maCongThuc);
-        System.out.println(soLuongThucAn);
-        try (Connection conn = DatabaseUtil.getConnection();
-             PreparedStatement stmtSelect = conn.prepareStatement(sqlSelect)) {
-            stmtSelect.setString(1, maCongThuc);
-            try (ResultSet rs = stmtSelect.executeQuery()) {
-                while (rs.next()) {
-                    Map<String, Object> nguyenLieu = new HashMap<>();
-                    nguyenLieu.put("maNguyenLieu", rs.getString("maNguyenLieu"));
-                    nguyenLieu.put("soLuong", rs.getDouble("soLuong"));
-                    nguyenLieuList.add(nguyenLieu);
-                }
-            }
-        }
-
-        for (Map<String, Object> nguyenLieu : nguyenLieuList) {
-            String maNguyenLieu = (String) nguyenLieu.get("maNguyenLieu");
-            Double soLuongMotPhan = (Double) nguyenLieu.get("soLuong");
-            System.out.println(maNguyenLieu);
-            System.out.println(soLuongMotPhan);
-            Double soLuongCanTru = soLuongMotPhan * soLuongThucAn;
-            updateNguyenLieu(maNguyenLieu, soLuongCanTru);
-        }
-    }
+    
 
     // Lấy thông tin thức ăn theo mã và trả về dưới dạng Map
     public ThucAnDTO getThucAnById(String maThucAn) {

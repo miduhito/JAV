@@ -53,7 +53,7 @@ public class DangNhapGUI {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10 , 10 , 10 , 10) ;
         gbc.gridx=0;gbc.gridy=0;
-        ImageIcon img = new ImageIcon("Resources\\Image\\meme.jpg");
+        ImageIcon img = new ImageIcon("Resources\\Image\\employeeAvatar.jpg");
         Image scaledImage = img.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
         JLabel iconLabel = new JLabel();
         iconLabel.setIcon(new ImageIcon(scaledImage));
