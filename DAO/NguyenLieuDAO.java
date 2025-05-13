@@ -16,7 +16,7 @@ public class NguyenLieuDAO {
             conn = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/fastfood?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC", 
                 "root", 
-                "root"
+                "3182004Lam_"
             );
         } catch(SQLException ex) {
             ex.printStackTrace();

@@ -731,13 +731,13 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
                         if(tk.checkduplicate(tenDNField.getText())){
                             //Check vai tro de refresh table
                             if(taiKhoanDTO.getVaiTro().equals("Admin")){
-                                tk.editTaiKhoan(tenDNField.getText(), passwordField.getText(), trangThaiBox.getSelectedItem().toString(), vaiTroBox.getSelectedItem().toString(),acc.getTenDangNhap(),maNVField.getText());
+                                tk.editTaiKhoan(tenDNField.getText(), passwordField.getText(), trangThaiBox.getSelectedItem().toString(), vaiTroBox.getSelectedItem().toString(),acc.getTenDangNhap());
                                 tk.refreshTableData(tableModel);
                                 JOptionPane.showMessageDialog(formsuaTK, "Cập nhật thành công!");
                                 formsuaTK.dispose();
                             }
                             else{
-                                tk.editTaiKhoan(tenDNField.getText(), passwordField.getText(), trangThaiBox.getSelectedItem().toString(), vaiTroBox.getSelectedItem().toString(),acc.getTenDangNhap(),maNVField.getText());
+                                tk.editTaiKhoan(tenDNField.getText(), passwordField.getText(), trangThaiBox.getSelectedItem().toString(), vaiTroBox.getSelectedItem().toString(),acc.getTenDangNhap());
                                 tableModel.setRowCount(0);
                                 tableModel.addRow(new Object[]{tenDNField.getText(),passwordField.getText(),vaiTroBox.getSelectedItem(),trangThaiBox.getSelectedItem(),ngayTaoField.getText()});
                                 JOptionPane.showMessageDialog(formsuaTK, "Cập nhật thành công!");
@@ -749,13 +749,13 @@ public class QuanLiTaiKhoanGUI extends RoundedPanel {
                 }else{      
                             //Check vai tro
                             if(taiKhoanDTO.getVaiTro().equals("Admin")){
-                                tk.editTaiKhoan(tenDNField.getText(), passwordField.getText(), trangThaiBox.getSelectedItem().toString(), vaiTroBox.getSelectedItem().toString(),acc.getTenDangNhap(),maNVField.getText());
+                                tk.editTaiKhoan(tenDNField.getText(), passwordField.getText(), trangThaiBox.getSelectedItem().toString(), vaiTroBox.getSelectedItem().toString(),acc.getTenDangNhap());
                                 tk.refreshTableData(tableModel);
                                 JOptionPane.showMessageDialog(formsuaTK, "Cập nhật thành công!");
                                 formsuaTK.dispose();
                             }
                             else{
-                                tk.editTaiKhoan(tenDNField.getText(), passwordField.getText(), trangThaiBox.getSelectedItem().toString(), vaiTroBox.getSelectedItem().toString(),acc.getTenDangNhap(),maNVField.getText());
+                                tk.editTaiKhoan(tenDNField.getText(), passwordField.getText(), trangThaiBox.getSelectedItem().toString(), vaiTroBox.getSelectedItem().toString(),acc.getTenDangNhap());
                                 tableModel.setRowCount(0);
                                 tableModel.addRow(new Object[]{tenDNField.getText(),passwordField.getText(),vaiTroBox.getSelectedItem(),trangThaiBox.getSelectedItem(),ngayTaoField.getText()});
                                 JOptionPane.showMessageDialog(formsuaTK, "Cập nhật thành công!");
