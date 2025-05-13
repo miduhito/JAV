@@ -74,38 +74,38 @@ public class TaiKhoanDAO {
         catch (Exception e){
             JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+    return account;
+    }
+public ArrayList<NhanVienDTO> getdatanv(){
+        ArrayList<NhanVienDTO> account = new ArrayList<>();
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            if(con.openConnectDB()){
+                String query = "SELECT * FROM nhanvien WHERE tenDangNhap IS NULL";
+                Statement s = con.conn.createStatement();
+                ResultSet r = s.executeQuery(query);
+                while (r.next()) {
+                    NhanVienDTO acc = new NhanVienDTO();
+                    acc.setTenNhanVien(r.getString("tenNhanVien"));
+                    acc.setMaNhanVien(r.getString("maNhanVien"));
+                    account.add(acc);
+                }
+                r.close();
+                s.close();
+                con.closeConnectDB();
+
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Lỗi kết nối cơ sở dữ liệu!" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        catch (ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Không tìm thấy class driver " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        catch (Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
         return account;
         }
-        public ArrayList<NhanVienDTO> getdatanv(){
-            ArrayList<NhanVienDTO> account = new ArrayList<>();
-            try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                if(con.openConnectDB()){
-                    String query = "SELECT * FROM nhanvien WHERE tenDangNhap IS NULL";
-                    Statement s = con.conn.createStatement();
-                    ResultSet r = s.executeQuery(query);
-                    while (r.next()) {
-                        NhanVienDTO acc = new NhanVienDTO();
-                        acc.setTenNhanVien(r.getString("tenNhanVien"));
-                        acc.setMaNhanVien(r.getString("maNhanVien"));
-                        account.add(acc);
-                    }
-                    r.close();
-                    s.close();
-                    con.closeConnectDB();
-    
-                }
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, "Lỗi kết nối cơ sở dữ liệu!" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
-            catch (ClassNotFoundException e) {
-                JOptionPane.showMessageDialog(null, "Không tìm thấy class driver " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
-            catch (Exception e){
-                JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
-            return account;
-            }
             public void insertTaiKhoan(String tenDangNhap, String matKhau, Date ngayTao, String trangThai, String vaiTro, String maNV) {
                 try {
                     Class.forName("com.mysql.cj.jdbc.Driver");
@@ -168,17 +168,17 @@ public class TaiKhoanDAO {
             return null;
             
         }
-        public void editTaiKhoan(String tenDangNhap, String matKhau, String trangThai, String vaiTro, String tenDangNhapCu) {
+        public void editTaiKhoan(String tenDangNhap, String matKhau, String trangThai, String vaiTro, String tenDangNhapCu,String maNV) {
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 if (con.openConnectDB()) {
-                    CallableStatement cs = con.conn.prepareCall("{CALL editTaiKhoan(?, ?, ?, ?, ?)}");
+                    CallableStatement cs = con.conn.prepareCall("{CALL editTaiKhoan(?, ?, ?, ?, ?,?)}");
                     cs.setString(1, tenDangNhap);       // new username
                     cs.setString(2, matKhau);           // new password
                     cs.setString(3, trangThai);         // new status
                     cs.setString(4, vaiTro);            // new role
                     cs.setString(5, tenDangNhapCu);     // old username
-        
+                    cs.setString(6, maNV);
                     cs.execute();
                     cs.close();
                     con.closeConnectDB();
