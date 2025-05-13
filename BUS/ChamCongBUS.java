@@ -37,9 +37,9 @@ public class ChamCongBUS {
             String tenNhanVien = nhanVienBUS.getNhanVienById(lich.getMaNhanVien()).getTenNhanVien();
             CaLamDTO caLam = caLamBUS.getDataById(lich.getMaCaLam());
 
-            System.out.println(nhanVienBUS.getNhanVienById(lich.getMaNhanVien()).getTenChucVu());
-            ChucVuDTO chucVu = chucVuBUS.getDataById(nhanVienBUS.getNhanVienById(lich.getMaNhanVien()).getTenChucVu());
-            String tenChucVu = chucVu.getTenChucVu();
+            
+            String tenChucVu = nhanVienBUS.getNhanVienById(lich.getMaNhanVien()).getTenChucVu();
+            ChucVuDTO chucVu = chucVuBUS.getDataByTenChucVu(tenChucVu);
             double luongTheoGio = chucVu.getLuongTheoGio();
 
             int gioBD = Integer.parseInt(caLam.getGioBD().split(":")[0]);

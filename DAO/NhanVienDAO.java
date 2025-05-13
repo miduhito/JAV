@@ -206,4 +206,31 @@ public class NhanVienDAO {
         }
         return newMaNhanVien; // Trả về mã mới
     }
+
+    public NhanVienDTO getNhanVienByTenChucVu(String tenChucVu) {
+        String sql = "SELECT * FROM NhanVien WHERE tenChucVu = ?";
+        NhanVienDTO nhanVien = null;
+        try(Connection conn = getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);){
+                pstmt.setString(1, tenChucVu);
+
+                ResultSet rs = pstmt.executeQuery();
+                while(rs.next()) {
+                    nhanVien = new NhanVienDTO();
+                    nhanVien.setMaNhanVien(rs.getString("maNhanVien"));
+                    nhanVien.setTenNhanVien(rs.getString("tenNhanVien"));
+                    nhanVien.setSDT(rs.getString("SDT"));
+                    nhanVien.setEmail(rs.getString("email"));
+                    nhanVien.setNgaySinh(rs.getString("ngaySinh"));
+                    nhanVien.setGioiTinh(rs.getString("gioiTinh"));
+                    nhanVien.setDiaChi(rs.getString("diaChi"));
+                    nhanVien.setTrangThai(rs.getString("trangThai"));
+                    nhanVien.setTenChucVu(rs.getString("tenChucVu"));
+                    nhanVien.setTenDangNhap(rs.getString("tenDangNhap"));
+                }
+        } catch(SQLException ex) {
+            ex.printStackTrace();
+        }
+        return nhanVien;
+    }
 }

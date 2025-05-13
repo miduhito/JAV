@@ -62,4 +62,8 @@ public class ChucVuBUS implements BUS_Interface<ChucVuDTO> {
         return true;
         // Regex Input chức vụ tự sửa sau
     }
+
+    public ChucVuDTO getDataByTenChucVu(String tenChucVu) {
+        return chucVuDAO.getDataByTenChucVu(tenChucVu);
+    }
 }

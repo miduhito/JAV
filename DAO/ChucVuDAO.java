@@ -265,4 +265,26 @@ public class ChucVuDAO implements DAO_Interface<ChucVuDTO> {
         }
         return newMaChucVu;
     }
+
+    public ChucVuDTO getDataByTenChucVu(String tenChucVu) {
+        String sql = "SELECT * FROM ChucVu WHERE tenChucVu = ?";
+        ChucVuDTO chucVu = null;
+        try{
+            if(connDB.openConnectDB()) {
+                PreparedStatement pstmt = connDB.conn.prepareStatement(sql);
+                pstmt.setString(1, tenChucVu);
+                ResultSet rs = pstmt.executeQuery();
+                if(rs.next()) {
+                    chucVu = new ChucVuDTO();
+                    chucVu.setMaChucVu(rs.getString("maChucVu"));
+                    chucVu.setTenChucVu(tenChucVu);
+                    chucVu.setLuongTheoGio(rs.getDouble("luongTheoGio"));
+                    chucVu.setTrangThai(rs.getBoolean("trangThai"));
+                }
+            }
+        } catch(SQLException ex) {
+            ex.printStackTrace();
+        }
+        return chucVu;
+    }
 }

@@ -6,6 +6,13 @@
             "name": "DangNhapGUI",
             "request": "launch",
             "mainClass": "GUI.DangNhapGUI",
+            "projectName": "java - Copy_90d0de08"
+        },
+        {
+            "type": "java",
+            "name": "DangNhapGUI",
+            "request": "launch",
+            "mainClass": "GUI.DangNhapGUI",
             "projectName": "java_2d95560"
         },
         {
