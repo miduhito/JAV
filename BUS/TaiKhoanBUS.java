@@ -23,13 +23,16 @@ public class TaiKhoanBUS {
         return 0;
     }
     public ArrayList<NhanVienDTO> Kotendangnhap(){
-        ArrayList<NhanVienDTO> ds=tk.getdatanv();
+        ArrayList<NhanVienDTO> ds = new ArrayList<NhanVienDTO>();
+        TaiKhoanDAO tk = new TaiKhoanDAO();
+        ds=tk.getdatanv();
         return ds;
     }
     public void refreshTableData(DefaultTableModel tableModel) {
         tableModel.setRowCount(0); // Xóa dữ liệu bảng cũ
+        TaiKhoanDAO taikhoan = new TaiKhoanDAO();
         try {
-            for (TaiKhoanDTO emp : tk.getdata()) {
+            for (TaiKhoanDTO emp : taikhoan.getdata()) {
                 tableModel.addRow(new Object[]{
                         emp.getTenDangNhap(),
                         emp.getMatKhau(),
@@ -51,6 +54,7 @@ public class TaiKhoanBUS {
 
     }
     public boolean checkduplicate(String tenDangNhap){
+        TaiKhoanDAO tk = new TaiKhoanDAO();
         for(TaiKhoanDTO t : tk.getdata()){
             if(t.getTenDangNhap().equals(tenDangNhap)){
                 return false;
@@ -59,12 +63,14 @@ public class TaiKhoanBUS {
         return true;
     }
     public void deleteTaiKhoan(String tendDangNhap){    
+        TaiKhoanDAO tk = new TaiKhoanDAO();
         //System.out.println(tendDangNhap);
         tk.deleteTaiKhoan(tendDangNhap);
 
     }
     public NhanVienDTO timNV(String tenDangNhap){
         return tk.timNV(tenDangNhap);
+        
     }
     public TaiKhoanDTO timTK(String tenDangNhap){
         TaiKhoanDTO acc = new TaiKhoanDTO();
@@ -81,8 +87,8 @@ public class TaiKhoanBUS {
         }
         return acc;
     }
-    public void editTaiKhoan(String tenDangNhap,String matKhau,String trangThai,String vaiTro,String tenDangNhapCu,String maNV){
-        tk.editTaiKhoan(tenDangNhap, matKhau, trangThai, vaiTro,tenDangNhapCu,maNV);
+    public void editTaiKhoan(String tenDangNhap,String matKhau,String trangThai,String vaiTro,String tenDangNhapCu){
+        tk.editTaiKhoan(tenDangNhap, matKhau, trangThai, vaiTro,tenDangNhapCu);
     }
     public void searchTableData(DefaultTableModel table, String searchText) {
         table.setRowCount(0);
