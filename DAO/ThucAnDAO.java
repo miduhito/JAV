@@ -59,10 +59,17 @@ public class ThucAnDAO {
                     return false;
                 }
             }
-            boolean fail = updateNguyenLieuTheoCongThuc(ta.getMaCongThuc(), ta.getSoLuong());
-            if(fail) {
-                return false;
+
+            // [FIX-2 START] Logic kiểm tra kho trước khi trừ
+            boolean duNguyenLieu = checkNguyenLieuDu(ta.getMaCongThuc(), ta.getSoLuong());
+            if(!duNguyenLieu) {
+                // checkNguyenLieuDu đã hiển thị lỗi
+                return false; 
             }
+            // [FIX-2 END]
+
+            // Nếu đủ nguyên liệu, tiến hành trừ kho
+            updateNguyenLieuTheoCongThuc(ta.getMaCongThuc(), ta.getSoLuong());
 
             stmtInsert.setString(1, ta.getMaThucAn());
             stmtInsert.setString(2, ta.getTenThucAn());
@@ -199,7 +206,62 @@ public class ThucAnDAO {
         return newMaThucAn; // Trả về mã mới
     }
 
-    private boolean updateNguyenLieuTheoCongThuc(String maCongThuc, int soLuongThucAn) throws SQLException {
+    // [FIX-2 START] Hàm mới để kiểm tra số lượng nguyên liệu
+    private boolean checkNguyenLieuDu(String maCongThuc, int soLuongThucAn) throws SQLException {
+        String sqlSelect = "SELECT maNguyenLieu, soLuong FROM ChiTietCongThuc WHERE maCongThuc = ?";
+        List<Map<String, Object>> nguyenLieuList = new ArrayList<>();
+        
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement stmtSelect = conn.prepareStatement(sqlSelect)) {
+            stmtSelect.setString(1, maCongThuc);
+            try (ResultSet rs = stmtSelect.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> nguyenLieu = new HashMap<>();
+                    nguyenLieu.put("maNguyenLieu", rs.getString("maNguyenLieu"));
+                    nguyenLieu.put("soLuong", rs.getDouble("soLuong"));
+                    nguyenLieuList.add(nguyenLieu);
+                }
+            }
+        }
+
+        // Vòng lặp KIỂM TRA
+        for (Map<String, Object> nguyenLieu : nguyenLieuList) {
+            String maNguyenLieu = (String) nguyenLieu.get("maNguyenLieu");
+            Double soLuongMotPhan = (Double) nguyenLieu.get("soLuong");
+            Double soLuongCanTru = soLuongMotPhan * soLuongThucAn;
+            
+            // Gọi hàm kiểm tra số lượng tồn kho
+            if (!checkSoLuongNguyenLieu(maNguyenLieu, soLuongCanTru)) {
+                return false; // Không đủ, dừng lại
+            }
+        }
+        return true; // Tất cả đều đủ
+    }
+    
+    // [FIX-2 START] Hàm mới (tách ra từ updateNguyenLieu) chỉ để KIỂM TRA
+    public boolean checkSoLuongNguyenLieu(String maNguyenLieu, Double soLuongSuDung) throws SQLException {
+        String sqlCheck = "SELECT soLuong FROM nguyenlieu WHERE maNguyenLieu = ?";
+        
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement stmtCheck = conn.prepareStatement(sqlCheck)) {
+            stmtCheck.setString(1, maNguyenLieu);
+            try (ResultSet rs = stmtCheck.executeQuery()) {
+                if (rs.next()) {
+                    Double soLuongHienCo = rs.getDouble("soLuong");
+                    if (soLuongHienCo < soLuongSuDung) {
+                        JOptionPane.showMessageDialog(null, "Không đủ số lượng nguyên liệu: " + maNguyenLieu, "Thông báo", JOptionPane.ERROR_MESSAGE);
+                        return false; // Trả về false nếu không đủ
+                    }
+                } else {
+                    throw new SQLException("Không tìm thấy nguyên liệu " + maNguyenLieu + "!");
+                }
+            }
+        }
+        return true; // Trả về true nếu đủ
+    }
+    // [FIX-2 END]
+
+    private void updateNguyenLieuTheoCongThuc(String maCongThuc, int soLuongThucAn) throws SQLException {
         String sqlSelect = "SELECT maNguyenLieu, soLuong FROM ChiTietCongThuc WHERE maCongThuc = ?";
         List<Map<String, Object>> nguyenLieuList = new ArrayList<>();
 
@@ -217,39 +279,20 @@ public class ThucAnDAO {
             }
         }
 
+        // [FIX-2] Vòng lặp TRỪ KHO (đã kiểm tra ở bước trước)
         for (Map<String, Object> nguyenLieu : nguyenLieuList) {
             String maNguyenLieu = (String) nguyenLieu.get("maNguyenLieu");
             Double soLuongMotPhan = (Double) nguyenLieu.get("soLuong");
-            System.out.println(maNguyenLieu);
-            System.out.println(soLuongMotPhan);
             Double soLuongCanTru = soLuongMotPhan * soLuongThucAn;
-            if(updateNguyenLieu(maNguyenLieu, soLuongCanTru)) {
-                return true;
-            }
+            
+            // Chỉ gọi hàm trừ kho, không cần kiểm tra trả về
+            updateNguyenLieu(maNguyenLieu, soLuongCanTru); 
         }
-        return false;
     }
 
-    public boolean updateNguyenLieu(String maNguyenLieu, Double soLuongSuDung) throws SQLException {
-        String sqlCheck = "SELECT soLuong FROM nguyenlieu WHERE maNguyenLieu = ?";
+    // [FIX-2] Sửa lại hàm updateNguyenLieu thành void và chỉ làm nhiệm vụ UPDATE
+    public void updateNguyenLieu(String maNguyenLieu, Double soLuongSuDung) throws SQLException {
         String sqlUpdate = "UPDATE nguyenlieu SET soLuong = soLuong - ? WHERE maNguyenLieu = ?";
-
-        Double soLuongHienCo;
-        try (Connection conn = DatabaseUtil.getConnection();
-             PreparedStatement stmtCheck = conn.prepareStatement(sqlCheck)) {
-            stmtCheck.setString(1, maNguyenLieu);
-            try (ResultSet rs = stmtCheck.executeQuery()) {
-                if (rs.next()) {
-                    soLuongHienCo = rs.getDouble("soLuong");
-                    if (soLuongHienCo < soLuongSuDung) {
-                        JOptionPane.showMessageDialog(null, "Không đủ số lượng nguyên liệu", "Thông báo", JOptionPane.ERROR_MESSAGE);
-                        return true;
-                    }
-                } else {
-                    throw new SQLException("Không tìm thấy nguyên liệu " + maNguyenLieu + "!");
-                }
-            }
-        }
 
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement stmtUpdate = conn.prepareStatement(sqlUpdate)) {
@@ -257,7 +300,6 @@ public class ThucAnDAO {
             stmtUpdate.setString(2, maNguyenLieu);
             stmtUpdate.executeUpdate();
         }
-        return false;
     }
 
     public void updateSoLuongThucAn(String maThucAn, int soLuong) {

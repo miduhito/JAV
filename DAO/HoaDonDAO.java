@@ -177,7 +177,8 @@ public class HoaDonDAO {
             pstmt.setString(3, time);
             ResultSet rs = pstmt.executeQuery();
 
-            if(rs.next()) {
+            // [FIX-4] Sửa if thành while để lấy tất cả nhân viên
+            while(rs.next()) {
                 maNhanVienList.add(rs.getString("maNhanVien"));
             }
         } catch(SQLException ex) {
@@ -204,7 +205,8 @@ public class HoaDonDAO {
             pstmt.setString(3, time);
             ResultSet rs = pstmt.executeQuery();
 
-            if(rs.next()) {
+            // [FIX-4] Sửa if thành while để lấy tất cả nhân viên
+            while(rs.next()) {
                 maNhanVienList.add(rs.getString("maNhanVien"));
             }
         } catch(SQLException ex) {

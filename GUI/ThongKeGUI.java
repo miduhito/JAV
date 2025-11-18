@@ -16,9 +16,9 @@ import java.util.List;
 
 public class ThongKeGUI extends RoundedPanel {
     private JComboBox<String> loaiThongKeComboBox;
-    private JComboBox<String> thoiGianComboBox;
-    private JDateChooser startDateChooser;  // Thay thế JTextField bằng JDateChooser
-    private JDateChooser endDateChooser;    // Thay thế JTextField bằng JDateChooser
+    // private JComboBox<String> thoiGianComboBox; // [ĐÃ XÓA] Bỏ ComboBox "Hiển thị theo"
+    private JDateChooser startDateChooser;
+    private JDateChooser endDateChooser;
     private JPanel chartPanel;
     private ThongKeBUS thongKeBUS;
 
@@ -40,39 +40,36 @@ public class ThongKeGUI extends RoundedPanel {
         searchPanel.add(new JLabel("Loại thống kê:"));
         searchPanel.add(loaiThongKeComboBox);
 
-        thoiGianComboBox = new JComboBox<>(new String[]{"Ngày", "Tuần", "Tháng", "Năm"});
-        searchPanel.add(new JLabel("Hiển thị theo:"));
-        searchPanel.add(thoiGianComboBox);
+        // [ĐÃ XÓA] Bỏ phần "Hiển thị theo"
+        // thoiGianComboBox = new JComboBox<>(new String[]{"Ngày", "Tuần", "Tháng", "Năm"});
+        // searchPanel.add(new JLabel("Hiển thị theo:"));
+        // searchPanel.add(thoiGianComboBox);
 
         searchPanel.add(new JLabel("Từ ngày:"));
-        startDateChooser = new JDateChooser();  // Khởi tạo JDateChooser cho ngày bắt đầu
-        startDateChooser.setDateFormatString("yyyy-MM-dd");  // Định dạng ngày
+        startDateChooser = new JDateChooser();
+        startDateChooser.setDateFormatString("yyyy-MM-dd");
         ((JTextField) startDateChooser.getDateEditor().getUiComponent()).setEditable(false);
         searchPanel.add(startDateChooser);
 
         searchPanel.add(new JLabel("Đến ngày:"));
-        endDateChooser = new JDateChooser();  // Khởi tạo JDateChooser cho ngày kết thúc
-        endDateChooser.setDateFormatString("yyyy-MM-dd");  // Định dạng ngày
+        endDateChooser = new JDateChooser();
+        endDateChooser.setDateFormatString("yyyy-MM-dd");
         ((JTextField) endDateChooser.getDateEditor().getUiComponent()).setEditable(false);
         searchPanel.add(endDateChooser);
 
         JButton searchButton = new JButton("Thống kê");
         searchButton.addActionListener(e -> {
-            // Lấy giá trị ngày từ JDateChooser
             Date startDate = startDateChooser.getDate();
             Date endDate = endDateChooser.getDate();
         
-            // Kiểm tra nếu startDate hoặc endDate là null
             if (startDate == null || endDate == null) {
                 JOptionPane.showMessageDialog(null, "Vui lòng chọn ngày bắt đầu và ngày kết thúc.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         
-            // Kiểm tra nếu ngày bắt đầu lớn hơn ngày kết thúc
             if (startDate.after(endDate)) {
                 JOptionPane.showMessageDialog(null, "Ngày bắt đầu không được lớn hơn ngày kết thúc. Yêu cầu nhập lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             } else {
-                // Gọi hàm loadStatistics nếu kiểm tra hợp lệ
                 loadStatistics();
             }
         });
@@ -88,14 +85,14 @@ public class ThongKeGUI extends RoundedPanel {
 
     private void loadStatistics() {
         String loaiThongKe = (String) loaiThongKeComboBox.getSelectedItem();
-        String thoiGian = (String) thoiGianComboBox.getSelectedItem();
+        // [ĐÃ XÓA] String thoiGian = (String) thoiGianComboBox.getSelectedItem();
 
-        // Chuyển giá trị từ JDateChooser thành chuỗi
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String startDate = (startDateChooser.getDate() != null) ? dateFormat.format(startDateChooser.getDate()) : null;
         String endDate = (endDateChooser.getDate() != null) ? dateFormat.format(endDateChooser.getDate()) : null;
 
-        List<ThongKeDTO> thongKeData = thongKeBUS.getThongKeData(loaiThongKe, thoiGian, startDate, endDate);
+        // [SỬA] Chỉ truyền 3 tham số. BUS sẽ tự quyết định cách nhóm
+        List<ThongKeDTO> thongKeData = thongKeBUS.getThongKeData(loaiThongKe, startDate, endDate);
         renderChart(thongKeData, loaiThongKe);
     }
 

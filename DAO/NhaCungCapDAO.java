@@ -258,42 +258,47 @@ public class NhaCungCapDAO implements DAO_Interface<NhaCungCapDTO> {
         return success;
     }
 
+    // [FIX-6] Sửa logic check duplicate để kiểm tra tenNhaCungCap
     @Override
     public boolean checkDuplicate(NhaCungCapDTO entity, String function) {
         String sql = "";
-
-        // Phân loại kiểm tra theo thao tác
+    
+        // [FIX-6] Logic kiểm tra TÊN, không phải MÃ
         if ("add".equalsIgnoreCase(function)) {
-            // Kiểm tra nếu mã nhà cung cấp đã tồn tại
-            sql = "SELECT COUNT(*) AS count FROM NhaCungCap WHERE maNhaCungCap = ?";
+            // Kiểm tra nếu TÊN nhà cung cấp đã tồn tại
+            sql = "SELECT COUNT(*) AS count FROM NhaCungCap WHERE tenNhaCungCap = ?";
         } else if ("update".equalsIgnoreCase(function)) {
-            // Kiểm tra nếu mã nhà cung cấp đã tồn tại nhưng bỏ qua bản ghi hiện tại
-            sql = "SELECT COUNT(*) AS count FROM NhaCungCap WHERE maNhaCungCap = ? AND maNhaCungCap != ?";
+            // Kiểm tra nếu TÊN nhà cung cấp đã tồn tại (loại trừ chính nó)
+            sql = "SELECT COUNT(*) AS count FROM NhaCungCap WHERE tenNhaCungCap = ? AND maNhaCungCap != ?";
         } else {
             throw new IllegalArgumentException("Hàm không hợp lệ: " + function);
         }
+    
         try (PreparedStatement pstmt = connDB.conn.prepareStatement(sql)) {
-
-            // Gán tham số cho câu lệnh SQL
-            pstmt.setString(1, entity.getMaNhaCungCap());
-
-            // Nếu là thao tác "update", thêm tham số để bỏ qua bản ghi hiện tại
+    
+            // Gán tham số TÊN
+            pstmt.setString(1, entity.getTenNhaCungCap());
+    
+            // Nếu là "update", thêm tham số MÃ để loại trừ
             if ("update".equalsIgnoreCase(function)) {
                 pstmt.setString(2, entity.getMaNhaCungCap());
             }
-
-            // Thực thi truy vấn và kiểm tra kết quả
+    
+            // Thực thi truy vấn
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     int count = rs.getInt("count");
-                    return count > 0; // Trả về true nếu tìm thấy bản ghi trùng lặp
+                    if (count > 0) {
+                        JOptionPane.showMessageDialog(null, "Tên nhà cung cấp '" + entity.getTenNhaCungCap() + "' đã tồn tại!");
+                        return true; // Trả về true nếu tìm thấy bản ghi trùng lặp
+                    }
                 }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
-        return false; // Trả về false nếu không tìm thấy bản ghi hoặc có lỗi
+    
+        return false; // Trả về false nếu không tìm thấy
     }
 
 
@@ -358,5 +363,4 @@ public class NhaCungCapDAO implements DAO_Interface<NhaCungCapDTO> {
         }
         return nhaCungCap;
     }
-
 }

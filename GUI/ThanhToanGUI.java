@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader; // [SỬA] Thêm JTableHeader
 import javax.swing.text.Document;
 
 import BUS.ChiTietKhuyenMaiBUS;
@@ -22,9 +23,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat; // [SỬA] Thêm SimpleDateFormat
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ThanhToanGUI extends RoundedPanel {
     private JTextField tongTienField;
@@ -359,7 +362,6 @@ public class ThanhToanGUI extends RoundedPanel {
         foodPanel.repaint();
     }
 
-    // Hàm lấy số lượng thức ăn
     private int getSoLuongThucAn(String maThucAn) {
         if (maThucAn == null || chiTietHD == null || chiTietHD.isEmpty()) {
             return 0;
@@ -373,6 +375,8 @@ public class ThanhToanGUI extends RoundedPanel {
         return 0;
     }
 
+    // [BẮT ĐẦU SỬA] Thay đổi toàn bộ phương thức
+    // [BẮT ĐẦU SỬA] Thay đổi toàn bộ phương thức
     public void FormApDungKhuyenMai(List<ChiTietHoaDonDTO> danhSachChiTietHoaDon, JTextField tongTienField) {
         JFrame formApplyPromotion = new JFrame("Áp dụng khuyến mãi");
         formApplyPromotion.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -401,9 +405,29 @@ public class ThanhToanGUI extends RoundedPanel {
         searchPanel.add(searchIcon);
         searchPanel.add(searchField);
 
+        // [SỬA] Tạo nút "Thêm KM"
+        ImageIcon addIcon = Utilities.loadAndResizeIcon("Resources\\Image\\AddIcon.png", 30, 30);
+        MyButton addPromotionButton = new MyButton("Thêm KM", addIcon);
+        addPromotionButton.setPreferredSize(new Dimension(160, 40));
+        addPromotionButton.setBackground(Color.decode("#EC5228"));
+        addPromotionButton.setForeground(Color.WHITE);
+        addPromotionButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        addPromotionButton.setFocusPainted(false);
+        addPromotionButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                addPromotionButton.setBackground(Color.decode("#C14600"));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                addPromotionButton.setBackground(Color.decode("#EC5228"));
+            }
+        });
+
         ImageIcon deleteIcon = Utilities.loadAndResizeIcon("Resources\\Image\\DeleteIcon.png", 30, 30);
-        MyButton deletePromotionButton = new MyButton("Xóa", deleteIcon);
-        deletePromotionButton.setPreferredSize(new Dimension(180, 40));
+        MyButton deletePromotionButton = new MyButton("Xóa KM", deleteIcon);
+        deletePromotionButton.setPreferredSize(new Dimension(160, 40));
         deletePromotionButton.setBackground(Color.decode("#EC5228"));
         deletePromotionButton.setForeground(Color.WHITE);
         deletePromotionButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -422,6 +446,7 @@ public class ThanhToanGUI extends RoundedPanel {
 
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         headerPanel.add(searchPanel);
+        headerPanel.add(addPromotionButton); // [SỬA] Thêm nút "Thêm KM"
         headerPanel.add(deletePromotionButton);
         mainPanel.add(headerPanel, BorderLayout.NORTH);
 
@@ -430,7 +455,7 @@ public class ThanhToanGUI extends RoundedPanel {
 
         JPanel promotionsPanel = new JPanel(new BorderLayout());
         promotionsPanel.setBackground(Color.WHITE);
-        promotionsPanel.setBorder(BorderFactory.createTitledBorder("Danh sách khuyến mãi"));
+        promotionsPanel.setBorder(BorderFactory.createTitledBorder("Danh sách khuyến mãi (Nhấp đúp để xem chi tiết)"));
 
         DefaultTableModel promotionsModel = new DefaultTableModel() {
             @Override
@@ -438,7 +463,7 @@ public class ThanhToanGUI extends RoundedPanel {
                 return false;
             }
         };
-        promotionsModel.setColumnIdentifiers(new Object[]{"Mã khuyến mãi", "Tên khuyến mãi", "Ngày bắt đầu", "Ngày kết thúc", "Loại khuyến mãi", "Điều kiện"});
+        promotionsModel.setColumnIdentifiers(new Object[]{"Mã KM", "Tên KM", "Loại KM", "Điều kiện"});
 
         JTable promotionsTable = new JTable(promotionsModel);
         promotionsTable.setRowHeight(35);
@@ -454,7 +479,7 @@ public class ThanhToanGUI extends RoundedPanel {
 
         JPanel selectedPromotionsPanel = new JPanel(new BorderLayout());
         selectedPromotionsPanel.setBackground(Color.WHITE);
-        selectedPromotionsPanel.setBorder(BorderFactory.createTitledBorder("Danh sách khuyến mãi đã chọn"));
+        selectedPromotionsPanel.setBorder(BorderFactory.createTitledBorder("Danh sách khuyến mãi đã chọn (Nhấp đúp để xem chi tiết)"));
 
         DefaultTableModel selectedPromotionsModel = new DefaultTableModel() {
             @Override
@@ -462,12 +487,11 @@ public class ThanhToanGUI extends RoundedPanel {
                 return false;
             }
         };
-        selectedPromotionsModel.setColumnIdentifiers(new Object[]{"Mã khuyến mãi", "Tên khuyến mãi", "Loại khuyến mãi", "Điều kiện", "Số lượng"});
+        selectedPromotionsModel.setColumnIdentifiers(new Object[]{"Mã KM", "Tên KM", "Số lượng"});
 
         // Danh sách tạm thời để lưu khuyến mãi và giá trị giảm giá
         List<String> tempSelectedPromotions = new ArrayList<>(selectedPromotions);
         List<Integer> tempQuantitySelectedPromotion = new ArrayList<>(quantitySelectedPromotion);
-        HashMap<String, Double> discountValues = new HashMap<>(); // Lưu discountValue cho mỗi maKhuyenMai
 
         // Tải khuyến mãi đã lưu vào selectedPromotionsModel
         if (!selectedPromotions.isEmpty()) {
@@ -476,10 +500,8 @@ public class ThanhToanGUI extends RoundedPanel {
                 KhuyenMaiDTO km = khuyenMaiBUS.getDataById(makm);
                 if (km != null) {
                     String tenKM = km.getTenKhuyenMai();
-                    String loaiKM = km.getDonViKhuyenMai();
-                    String dieuKien = km.getDieuKienApDung();
                     int sl = quantitySelectedPromotion.get(i);
-                    selectedPromotionsModel.addRow(new Object[]{makm, tenKM, loaiKM, dieuKien, sl});
+                    selectedPromotionsModel.addRow(new Object[]{makm, tenKM, sl});
                 }
             }
         }
@@ -496,73 +518,16 @@ public class ThanhToanGUI extends RoundedPanel {
         selectedPromotionsPanel.add(new JScrollPane(selectedPromotionsTable), BorderLayout.CENTER);
         centerPanel.add(selectedPromotionsPanel);
 
-        // Hàm tính lại tổng tiền
-        Runnable updateTotalPrice = () -> {
-            // Reset thành tiền về giá gốc
-            for (ChiTietHoaDonDTO chiTiet : danhSachChiTietHoaDon) {
-                ThucAnDTO thucAn = thucAnBUS.getThucAnById(chiTiet.getMaThucAn());
-                if (thucAn == null) {
-                    continue;
-                }
-                int soLuong = getSoLuongThucAn(chiTiet.getMaThucAn());
-                chiTiet.setThanhTien(thucAn.getGia() * soLuong);
-            }
-
-            // Áp dụng khuyến mãi và lưu discountValue
-            discountValues.clear();
-            double totalDiscount = 0;
-            for (int i = 0; i < selectedPromotionsModel.getRowCount(); i++) {
-                String maKhuyenMai = (String) selectedPromotionsModel.getValueAt(i, 0);
-                int quantity = (int) selectedPromotionsModel.getValueAt(i, 4);
-                KhuyenMaiDTO khuyenMai = khuyenMaiBUS.getDataById(maKhuyenMai);
-                if (khuyenMai == null || !khuyenMai.getTrangThai()) {
-                    continue;
-                }
-
-                ArrayList<ChiTietKhuyenMaiDTO> danhSachChiTietKM = chiTietKhuyenMaiBUS.getDataById(maKhuyenMai);
-                double promotionDiscount = 0;
-                for (ChiTietHoaDonDTO chiTiet : danhSachChiTietHoaDon) {
-                    int soLuongThucAn = getSoLuongThucAn(chiTiet.getMaThucAn());
-                    for (ChiTietKhuyenMaiDTO chiTietKM : danhSachChiTietKM) {
-                        if (chiTiet.getMaThucAn().equals(chiTietKM.getMaThucAn())) {
-                            double discountValue = 0;
-                            if (khuyenMai.getDonViKhuyenMai().equalsIgnoreCase("Phần trăm")) {
-                                discountValue = (chiTiet.getThanhTien() / (soLuongThucAn > 0 ? soLuongThucAn : 1)) * chiTietKM.getGiaTriKhuyenMai() / 100;
-                            } else if (khuyenMai.getDonViKhuyenMai().equalsIgnoreCase("Số tiền")) {
-                                discountValue = chiTietKM.getGiaTriKhuyenMai();
-                            }
-
-                            // Áp dụng giảm giá theo số lượng khuyến mãi
-                            double appliedDiscount = discountValue * Math.min(quantity, soLuongThucAn);
-                            if (appliedDiscount > chiTiet.getThanhTien()) {
-                                appliedDiscount = chiTiet.getThanhTien();
-                            }
-                            chiTiet.setThanhTien(chiTiet.getThanhTien() - appliedDiscount);
-                            promotionDiscount += appliedDiscount;
-                        }
-                    }
-                }
-                discountValues.put(maKhuyenMai, promotionDiscount / (quantity > 0 ? quantity : 1)); // Lưu discountValue trung bình mỗi lần áp dụng
-                totalDiscount += promotionDiscount;
-            }
-
-            // Tính tổng tiền
-            double newTotal = 0;
-            for (ChiTietHoaDonDTO chiTiet : danhSachChiTietHoaDon) {
-                newTotal += chiTiet.getThanhTien();
-            }
-            tongTienField.setText(String.valueOf(Math.round(newTotal)));
-        };
 
         // Sự kiện xóa khuyến mãi
         deletePromotionButton.addActionListener(e -> {
             int selectedIndex = selectedPromotionsTable.getSelectedRow();
             if (selectedIndex != -1) {
                 String maKM = (String) selectedPromotionsModel.getValueAt(selectedIndex, 0);
-                int currentQuantity = (int) selectedPromotionsModel.getValueAt(selectedIndex, 4);
+                int currentQuantity = (int) selectedPromotionsModel.getValueAt(selectedIndex, 2); // Cột 2 là số lượng
 
                 if (currentQuantity > 1) {
-                    selectedPromotionsModel.setValueAt(currentQuantity - 1, selectedIndex, 4);
+                    selectedPromotionsModel.setValueAt(currentQuantity - 1, selectedIndex, 2); // Cập nhật cột 2
                     int index = tempSelectedPromotions.indexOf(maKM);
                     tempQuantitySelectedPromotion.set(index, currentQuantity - 1);
                 } else {
@@ -570,29 +535,44 @@ public class ThanhToanGUI extends RoundedPanel {
                     int index = tempSelectedPromotions.indexOf(maKM);
                     tempSelectedPromotions.remove(index);
                     tempQuantitySelectedPromotion.remove(index);
-                    discountValues.remove(maKM);
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "Vui lòng chọn một khuyến mãi để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             }
         });
 
+        // [SỬA] Sự kiện nút "Thêm KM"
+        addPromotionButton.addActionListener(e -> {
+            int row = promotionsTable.getSelectedRow();
+            if (row != -1) {
+                String maKM = (String) promotionsModel.getValueAt(row, 0);
+                String tenKM = (String) promotionsModel.getValueAt(row, 1);
+
+                if (tempSelectedPromotions.contains(maKM)) {
+                    for (int i = 0; i < selectedPromotionsModel.getRowCount(); i++) {
+                        if (selectedPromotionsModel.getValueAt(i, 0).equals(maKM)) {
+                            int currentQuantity = (int) selectedPromotionsModel.getValueAt(i, 2); // Cột 2 là số lượng
+                            selectedPromotionsModel.setValueAt(currentQuantity + 1, i, 2);
+                            int index = tempSelectedPromotions.indexOf(maKM);
+                            tempQuantitySelectedPromotion.set(index, currentQuantity + 1);
+                            break;
+                        }
+                    }
+                } else {
+                    selectedPromotionsModel.addRow(new Object[]{maKM, tenKM, 1}); // Cập nhật cột mới
+                    tempSelectedPromotions.add(maKM);
+                    tempQuantitySelectedPromotion.add(1);
+                }
+            } else {
+                 JOptionPane.showMessageDialog(null, "Vui lòng chọn một khuyến mãi từ bảng trên để thêm!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
         // Sự kiện thanh tìm kiếm
         searchField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                updatePromotionsTable();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                updatePromotionsTable();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                updatePromotionsTable();
-            }
+            @Override public void insertUpdate(DocumentEvent e) { updatePromotionsTable(); }
+            @Override public void removeUpdate(DocumentEvent e) { updatePromotionsTable(); }
+            @Override public void changedUpdate(DocumentEvent e) { updatePromotionsTable(); }
 
             private void updatePromotionsTable() {
                 String searchText = searchField.getText();
@@ -600,146 +580,162 @@ public class ThanhToanGUI extends RoundedPanel {
                 List<KhuyenMaiDTO> danhSachKhuyenMai = khuyenMaiBUS.findKhuyenMai(searchText);
 
                 promotionsModel.setRowCount(0);
-
+                
                 for (KhuyenMaiDTO khuyenMai : danhSachKhuyenMai) {
                     promotionsModel.addRow(new Object[]{
                         khuyenMai.getMaKhuyenMai(),
                         khuyenMai.getTenKhuyenMai(),
-                        khuyenMai.getNgayBatDau(),
-                        khuyenMai.getNgayKetThuc(),
-                        khuyenMai.getDonViKhuyenMai(),
-                        khuyenMai.getDieuKienApDung()
+                        khuyenMai.getDonViKhuyenMai(), // Loại KM
+                        khuyenMai.getDieuKienApDung()  // Điều kiện
                     });
                 }
             }
         });
 
-        // Sự kiện nhấp chuột để chọn khuyến mãi
+        // [SỬA] Loại bỏ sự kiện single-click để thêm KM
         promotionsTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int row = promotionsTable.rowAtPoint(e.getPoint());
-                if (row != -1) {
-                    String maKM = (String) promotionsModel.getValueAt(row, 0);
-                    String tenKM = (String) promotionsModel.getValueAt(row, 1);
-                    String loaiKM = (String) promotionsModel.getValueAt(row, 4);
-                    String dieuKien = (String) promotionsModel.getValueAt(row, 5);
-
-                    // Tính tổng số lượng thức ăn đã chọn
-                    int totalFoodQuantity = 0;
-                    for (HashMap<String, Integer> item : chiTietHD) {
-                        for (Integer quantity : item.values()) {
-                            totalFoodQuantity += quantity;
-                        }
-                    }
-
-                    // Tính tổng số lượng khuyến mãi hiện tại
-                    int totalPromotionQuantity = tempQuantitySelectedPromotion.stream().mapToInt(Integer::intValue).sum();
-
-                    if (totalPromotionQuantity >= totalFoodQuantity) {
-                        JOptionPane.showMessageDialog(null, "Số lượng khuyến mãi đã đạt tối đa (bằng số lượng thức ăn)!", "Lỗi", JOptionPane.WARNING_MESSAGE);
-                        return;
-                    }
-
-                    if (tempSelectedPromotions.contains(maKM)) {
-                        for (int i = 0; i < selectedPromotionsModel.getRowCount(); i++) {
-                            if (selectedPromotionsModel.getValueAt(i, 0).equals(maKM)) {
-                                int currentQuantity = (int) selectedPromotionsModel.getValueAt(i, 4);
-                                if (totalPromotionQuantity + 1 <= totalFoodQuantity) {
-                                    selectedPromotionsModel.setValueAt(currentQuantity + 1, i, 4);
-                                    int index = tempSelectedPromotions.indexOf(maKM);
-                                    tempQuantitySelectedPromotion.set(index, currentQuantity + 1);
-                                } else {
-                                    JOptionPane.showMessageDialog(null, "Số lượng khuyến mãi đã đạt tối đa!", "Lỗi", JOptionPane.WARNING_MESSAGE);
-                                }
-                                break;
-                            }
-                        }
-                    } else {
-                        selectedPromotionsModel.addRow(new Object[]{maKM, tenKM, loaiKM, dieuKien, 1});
-                        tempSelectedPromotions.add(maKM);
-                        tempQuantitySelectedPromotion.add(1);
-                    }
-                }
+                 if (e.getClickCount() == 2) {
+                     int row = promotionsTable.rowAtPoint(e.getPoint());
+                     if (row != -1) {
+                         String maKM = (String) promotionsModel.getValueAt(row, 0);
+                         String donVi = (String) promotionsModel.getValueAt(row, 2);
+                         showPromotionDetails(maKM, donVi);
+                     }
+                 }
             }
         });
 
-        // Nút "Áp dụng"
+        // [GIỮ NGUYÊN] Sự kiện nhấp đúp (double click) vào bảng dưới (Selected)
+        selectedPromotionsTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                 if (e.getClickCount() == 2) {
+                     int row = selectedPromotionsTable.rowAtPoint(e.getPoint());
+                     if (row != -1) {
+                         String maKM = (String) selectedPromotionsModel.getValueAt(row, 0);
+                         KhuyenMaiDTO kmDTO = khuyenMaiBUS.getDataById(maKM);
+                         String donVi = (kmDTO != null) ? kmDTO.getDonViKhuyenMai() : "?";
+                         showPromotionDetails(maKM, donVi);
+                     }
+                 }
+            }
+        });
+
+
+        // Nút "Áp dụng" (LOGIC TÍNH TOÁN VẪN GIỮ NGUYÊN NHƯ LẦN SỬA TRƯỚC)
         JButton applyButton = new JButton("Áp dụng");
         applyButton.setPreferredSize(new Dimension(100, 30));
         applyButton.addActionListener(e -> {
-            // Reset thành tiền về giá gốc
-            for (ChiTietHoaDonDTO chiTiet : danhSachChiTietHoaDon) {
-                ThucAnDTO thucAn = thucAnBUS.getThucAnById(chiTiet.getMaThucAn());
-                if (thucAn == null) {
-                    continue;
-                }
-                int soLuong = getSoLuongThucAn(chiTiet.getMaThucAn());
-                chiTiet.setThanhTien(thucAn.getGia() * soLuong);
-            }
-
+            
             double totalDiscount = 0;
             try {
-                for (int i = 0; i < selectedPromotionsModel.getRowCount(); i++) {
-                    String maKhuyenMai = (String) selectedPromotionsModel.getValueAt(i, 0);
-                    int quantity = (int) selectedPromotionsModel.getValueAt(i, 4);
-                    KhuyenMaiDTO khuyenMai = khuyenMaiBUS.getDataById(maKhuyenMai);
-                    if (khuyenMai == null) {
-                        JOptionPane.showMessageDialog(null, "Khuyến mãi " + maKhuyenMai + " không tồn tại!", "Lỗi", JOptionPane.WARNING_MESSAGE);
-                        continue;
-                    }
-                    if (!khuyenMai.getTrangThai()) {
-                        JOptionPane.showMessageDialog(null, "Khuyến mãi " + khuyenMai.getTenKhuyenMai() + " đã hết hạn hoặc không khả dụng.", "Lỗi", JOptionPane.WARNING_MESSAGE);
-                        continue;
-                    }
-
-                    ArrayList<ChiTietKhuyenMaiDTO> danhSachChiTietKM = chiTietKhuyenMaiBUS.getDataById(maKhuyenMai);
-                    double promotionDiscount = 0;
-                    for (ChiTietHoaDonDTO chiTiet : danhSachChiTietHoaDon) {
-                        int soLuongThucAn = getSoLuongThucAn(chiTiet.getMaThucAn());
-                        for (ChiTietKhuyenMaiDTO chiTietKM : danhSachChiTietKM) {
-                            if (chiTiet.getMaThucAn().equals(chiTietKM.getMaThucAn())) {
-                                double discountValue = 0;
-                                if (khuyenMai.getDonViKhuyenMai().equalsIgnoreCase("Phần trăm")) {
-                                    discountValue = (chiTiet.getThanhTien() / (soLuongThucAn > 0 ? soLuongThucAn : 1)) * chiTietKM.getGiaTriKhuyenMai() / 100;
-                                } else if (khuyenMai.getDonViKhuyenMai().equalsIgnoreCase("Số tiền")) {
-                                    discountValue = chiTietKM.getGiaTriKhuyenMai();
-                                }
-
-                                // Áp dụng giảm giá theo số lượng khuyến mãi
-                                double appliedDiscount = discountValue * Math.min(quantity, soLuongThucAn);
-                                if (appliedDiscount > chiTiet.getThanhTien()) {
-                                    appliedDiscount = chiTiet.getThanhTien();
-                                }
-                                chiTiet.setThanhTien(chiTiet.getThanhTien() - appliedDiscount);
-                                promotionDiscount += appliedDiscount;
-                            }
-                        }
-                    }
-                    discountValues.put(maKhuyenMai, promotionDiscount / (quantity > 0 ? quantity : 1)); // Lưu discountValue
-                    totalDiscount += promotionDiscount;
+                // Bước 1: Reset lại toàn bộ thành tiền về giá gốc
+                for (ChiTietHoaDonDTO chiTiet : danhSachChiTietHoaDon) {
+                    ThucAnDTO thucAn = thucAnBUS.getThucAnById(chiTiet.getMaThucAn());
+                    if (thucAn == null) continue;
+                    int soLuong = getSoLuongThucAn(chiTiet.getMaThucAn());
+                    chiTiet.setThanhTien(thucAn.getGia() * soLuong);
                 }
 
-                // Tính tổng tiền
+                // Bước 2: Tạo một bản sao số lượng các món trong giỏ hàng để theo dõi
+                HashMap<String, Integer> cartQuantities = new HashMap<>();
+                for (HashMap<String, Integer> item : chiTietHD) {
+                    for (Map.Entry<String, Integer> entry : item.entrySet()) {
+                        cartQuantities.put(entry.getKey(), entry.getValue());
+                    }
+                }
+
+                // Bước 3: Tìm số vòng áp dụng tối đa (lần nhấn nhiều nhất)
+                int maxRounds = 0;
+                for (int qty : tempQuantitySelectedPromotion) {
+                    if (qty > maxRounds) {
+                        maxRounds = qty;
+                    }
+                }
+
+                // Bước 4: Lặp qua từng "Vòng" (Round-Robin)
+                for (int round = 0; round < maxRounds; round++) {
+                    
+                    // Bước 5: Lặp qua danh sách các khuyến mãi *đã chọn*
+                    for (int i = 0; i < tempSelectedPromotions.size(); i++) {
+                        
+                        // Kiểm tra xem KM này có còn lượt áp dụng trong vòng này không
+                        if (tempQuantitySelectedPromotion.get(i) > round) {
+                            
+                            String maKhuyenMai = tempSelectedPromotions.get(i);
+                            KhuyenMaiDTO khuyenMai = khuyenMaiBUS.getDataById(maKhuyenMai);
+                            if (khuyenMai == null || !khuyenMai.getTrangThai()) {
+                                continue;
+                            }
+                            
+                            ArrayList<ChiTietKhuyenMaiDTO> danhSachChiTietKM = chiTietKhuyenMaiBUS.getDataById(maKhuyenMai);
+
+                            // Bước 6: Áp dụng 1 "gói" (lặp qua các chi tiết của gói)
+                            for (ChiTietKhuyenMaiDTO chiTietKM : danhSachChiTietKM) {
+                                String maThucAnTrongKM = chiTietKM.getMaThucAn(); 
+
+                                // Kiểm tra xem thức ăn này còn trong giỏ hàng (bản sao) không
+                                if (cartQuantities.getOrDefault(maThucAnTrongKM, 0) > 0) {
+                                    
+                                    // Tìm ChiTietHoaDon tương ứng để trừ tiền
+                                    for (ChiTietHoaDonDTO chiTietHD : danhSachChiTietHoaDon) {
+                                        if (chiTietHD.getMaThucAn().equals(maThucAnTrongKM)) {
+                                            
+                                            // 1. Lấy giá trị đơn vị hiện tại (Giá sau KM trước)
+                                            double currentPriceTotal = chiTietHD.getThanhTien();
+                                            int soLuongTrongChiTiet = chiTietHD.getSoLuongBan();
+                                            double pricePerUnit = soLuongTrongChiTiet > 0 ? currentPriceTotal / soLuongTrongChiTiet : 0; 
+                                            
+                                            double discountValue = 0;
+                                            
+                                            if (khuyenMai.getDonViKhuyenMai().equalsIgnoreCase("Phần trăm")) {
+                                                // Tính phần trăm trên giá đơn vị hiện tại
+                                                discountValue = pricePerUnit * chiTietKM.getGiaTriKhuyenMai() / 100;
+                                            } else if (khuyenMai.getDonViKhuyenMai().equalsIgnoreCase("Số tiền")) {
+                                                // Giảm số tiền cố định trên 1 đơn vị sản phẩm
+                                                discountValue = chiTietKM.getGiaTriKhuyenMai();
+                                            }
+
+                                            // Đảm bảo không giảm giá nhiều hơn giá đơn vị hiện tại
+                                            if (discountValue > pricePerUnit) {
+                                                discountValue = pricePerUnit;
+                                            }
+
+                                            // Trừ tiền khỏi tổng thành tiền của món đó (chỉ trừ mức giảm của 1 đơn vị)
+                                            chiTietHD.setThanhTien(chiTietHD.getThanhTien() - discountValue);
+                                            totalDiscount += discountValue;
+
+                                            // "Tiêu thụ" 1 sản phẩm khỏi bản sao giỏ hàng
+                                            cartQuantities.put(maThucAnTrongKM, cartQuantities.get(maThucAnTrongKM) - 1);
+
+                                            // Đã áp dụng chi tiết này, chuyển sang chi tiết tiếp theo trong "gói"
+                                            break; 
+                                        }
+                                    }
+                                }
+                            } // Kết thúc lặp qua chi tiết (Step 6)
+                        } // Kết thúc kiểm tra if (round)
+                    } // Kết thúc lặp qua KM (Step 5)
+                } // Kết thúc lặp qua Vòng (Step 4)
+
+                // Bước 7: Tính tổng tiền cuối cùng
                 double newTotal = 0;
                 for (ChiTietHoaDonDTO chiTiet : danhSachChiTietHoaDon) {
                     newTotal += chiTiet.getThanhTien();
                 }
 
-                if (totalDiscount > newTotal) {
-                    JOptionPane.showMessageDialog(null, "Tổng tiền giảm (" + totalDiscount + ") vượt quá tổng tiền hiện tại (" + newTotal + ")!", "Lỗi", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                // Cập nhật selectedPromotions và quantitySelectedPromotion
+                // Cập nhật selectedPromotions và quantitySelectedPromotion (list chính)
                 selectedPromotions.clear();
                 selectedPromotions.addAll(tempSelectedPromotions);
                 quantitySelectedPromotion.clear();
                 quantitySelectedPromotion.addAll(tempQuantitySelectedPromotion);
 
                 tongTienField.setText(String.valueOf(Math.round(newTotal)));
-                JOptionPane.showMessageDialog(null, "Đã áp dụng khuyến mãi thành công!\nTổng tiền đã giảm: " + totalDiscount + " VNĐ.");
+                JOptionPane.showMessageDialog(null, "Đã áp dụng khuyến mãi thành công!\nTổng tiền đã giảm: " + Math.round(totalDiscount) + " VNĐ.");
                 formApplyPromotion.dispose();
+
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Đã xảy ra lỗi khi áp dụng khuyến mãi.", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -749,6 +745,81 @@ public class ThanhToanGUI extends RoundedPanel {
         mainPanel.add(applyButton, BorderLayout.SOUTH);
         formApplyPromotion.setVisible(true);
 
-        thanhToanBUS.loadKhuyenMaiTable(promotionsModel, selectedFoodList);
+        // Tải dữ liệu ban đầu cho bảng (đã rút gọn cột)
+        promotionsModel.setRowCount(0);
+        List<KhuyenMaiDTO> danhSachKhuyenMai = khuyenMaiBUS.getData(); // Lấy tất cả KM
+        if (danhSachKhuyenMai != null && !selectedFoodList.isEmpty()) {
+            // Lọc các KM áp dụng cho món ăn trong giỏ
+            for (KhuyenMaiDTO km : danhSachKhuyenMai) {
+                for (ChiTietKhuyenMaiDTO item : chiTietKhuyenMaiBUS.getDataById(km.getMaKhuyenMai())) {
+                    if (selectedFoodList.contains(item.getMaThucAn())) {
+                        promotionsModel.addRow(new Object[]{
+                            km.getMaKhuyenMai(),
+                            km.getTenKhuyenMai(),
+                            km.getDonViKhuyenMai(),
+                            km.getDieuKienApDung()
+                        });
+                        break; // Đã thêm KM này, không cần lặp chi tiết nữa
+                    }
+                }
+            }
+        }
     }
+
+    // [GIỮ NGUYÊN] Phương thức hiển thị chi tiết khuyến mãi
+    private void showPromotionDetails(String maKhuyenMai, String donViKhuyenMai) {
+        JDialog detailDialog = new JDialog();
+        detailDialog.setTitle("Chi tiết Khuyến mãi: " + maKhuyenMai);
+        detailDialog.setSize(500, 300);
+        detailDialog.setLocationRelativeTo(null);
+        detailDialog.setLayout(new BorderLayout());
+        detailDialog.setModal(true);
+
+        // Lấy dữ liệu chi tiết
+        ArrayList<ChiTietKhuyenMaiDTO> details = chiTietKhuyenMaiBUS.getDataById(maKhuyenMai);
+        
+        // Tạo bảng hiển thị
+        DefaultTableModel detailModel = new DefaultTableModel();
+        detailModel.setColumnIdentifiers(new Object[]{"Mã Thức Ăn", "Tên Thức Ăn", "Giá trị Giảm"});
+        JTable detailTable = new JTable(detailModel);
+        
+        if (details.isEmpty()) {
+            detailModel.addRow(new Object[]{"N/A", "Không có chi tiết cho KM này", "N/A"});
+        } else {
+            for (ChiTietKhuyenMaiDTO detail : details) {
+                String maThucAn = detail.getMaThucAn();
+                ThucAnDTO thucAn = thucAnBUS.getThucAnById(maThucAn);
+                String tenThucAn = (thucAn != null) ? thucAn.getTenThucAn() : "Không rõ";
+                
+                String giaTri = String.valueOf(detail.getGiaTriKhuyenMai());
+                if (donViKhuyenMai.equalsIgnoreCase("Phần trăm")) {
+                    giaTri += "%";
+                } else {
+                    giaTri += " VNĐ";
+                }
+                
+                detailModel.addRow(new Object[]{maThucAn, tenThucAn, giaTri});
+            }
+        }
+
+        // Tùy chỉnh Header
+        JTableHeader header = detailTable.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        header.setBackground(Color.WHITE);
+        
+        detailTable.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        detailTable.setRowHeight(30);
+
+        detailDialog.add(new JScrollPane(detailTable), BorderLayout.CENTER);
+        
+        // Nút Đóng
+        JButton closeButton = new JButton("Đóng");
+        closeButton.addActionListener(e -> detailDialog.dispose());
+        JPanel footerPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        footerPanel.add(closeButton);
+        detailDialog.add(footerPanel, BorderLayout.SOUTH);
+
+        detailDialog.setVisible(true);
+    }
+// [KẾT THÚC SỬA]
 }

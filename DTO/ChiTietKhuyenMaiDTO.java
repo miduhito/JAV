@@ -9,9 +9,9 @@ public class ChiTietKhuyenMaiDTO {
 
     public ChiTietKhuyenMaiDTO() {}
 
-    public ChiTietKhuyenMaiDTO(String maKhuyenMai, String maHoaDon, Double giaTriKhuyenMai, Boolean trangThai) {
+    public ChiTietKhuyenMaiDTO(String maKhuyenMai, String maThucAn, Double giaTriKhuyenMai, Boolean trangThai) {
         this.maKhuyenMai = maKhuyenMai;
-        this.maThucAn = maHoaDon;
+        this.maThucAn = maThucAn;
         this.giaTriKhuyenMai = giaTriKhuyenMai;
         this.trangThai = trangThai;
     }

@@ -1,8 +1,18 @@
 {
     "java.debug.settings.onBuildFailureProceed": true,
     "java.project.referencedLibraries": [
-        "lib/**/*.jar",
-        "c:\\Users\\phulo\\Downloads\\mysql-connector-j-9.2.0\\mysql-connector-j-9.2.0\\mysql-connector-j-9.2.0.jar",
-        "c:\\Users\\phulo\\Downloads\\jcalendar-1.4.jar"
+        "lib\\junit-jupiter-api-5.14.1.jar",
+        "lib\\junit-jupiter-engine-5.14.1.jar",
+        "lib\\mockito-core-5.14.1.jar",
+        "c:\\Users\\Lenovo\\OneDrive\\Documents\\LopChieuT3-Nhom7-QuanLyBanThucAnNhanh\\java - Copy\\lib\\jcommon-1.0.23.jar",
+        "c:\\Users\\Lenovo\\OneDrive\\Documents\\LopChieuT3-Nhom7-QuanLyBanThucAnNhanh\\java - Copy\\lib\\mockito-core-5.14.1.jar",
+        "c:\\Users\\Lenovo\\OneDrive\\Documents\\LopChieuT3-Nhom7-QuanLyBanThucAnNhanh\\java - Copy\\lib\\junit-jupiter-engine-5.14.1.jar",
+        "c:\\Users\\Lenovo\\OneDrive\\Documents\\LopChieuT3-Nhom7-QuanLyBanThucAnNhanh\\java - Copy\\lib\\jfreechart-1.0.19.jar",
+        "c:\\Users\\Lenovo\\OneDrive\\Documents\\LopChieuT3-Nhom7-QuanLyBanThucAnNhanh\\java - Copy\\lib\\mysql-connector-j-9.2.0.jar",
+        "c:\\Users\\Lenovo\\OneDrive\\Documents\\LopChieuT3-Nhom7-QuanLyBanThucAnNhanh\\java - Copy\\lib\\jcalendar-1.4.jar",
+        "c:\\Users\\Lenovo\\OneDrive\\Documents\\LopChieuT3-Nhom7-QuanLyBanThucAnNhanh\\java - Copy\\lib\\junit-jupiter-api-5.14.1.jar"
+    ],
+    "java.project.sourcePaths": [
+        "."
     ]
 }

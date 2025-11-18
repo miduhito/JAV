@@ -105,7 +105,8 @@ public class NguyenLieuDAO {
             stmtCheckSoLuong.setString(1, maNguyenLieu);
             try (ResultSet rs = stmtCheckSoLuong.executeQuery()) {
                 if (rs.next()) {
-                    int soLuong = rs.getInt("soLuong");
+                    // [FIX-5] Sửa getInt thành getDouble
+                    Double soLuong = rs.getDouble("soLuong"); 
                     if (soLuong > 0) {
                         return "Không thể xóa nguyên liệu vì số lượng lớn hơn 0!";
                     }

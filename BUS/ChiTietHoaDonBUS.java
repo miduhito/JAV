@@ -20,11 +20,13 @@ public class ChiTietHoaDonBUS {
     }
 
     public void insertChiTietHoaDon(String maHoaDon, String maThucAn, int soLuongBan, Double thanhTien) {
-        chiTietHoaDonDAO.insertChiTietHoaDon(maHoaDon, maThucAn, soLuongBan, soLuongBan);
+        // [FIX-3] Sửa soLuongBan thành thanhTien
+        chiTietHoaDonDAO.insertChiTietHoaDon(maHoaDon, maThucAn, soLuongBan, thanhTien);
     }
 
     public void updateChiTietHoaDon(String maHoaDon, String maThucAn, int soLuongBan, Double thanhTien) {
-        chiTietHoaDonDAO.updateChiTietHoaDon(maHoaDon, maThucAn, soLuongBan, soLuongBan);
+        // [FIX-3] Sửa soLuongBan thành thanhTien
+        chiTietHoaDonDAO.updateChiTietHoaDon(maHoaDon, maThucAn, soLuongBan, thanhTien);
     }
 
     public void deleteChiTietHoaDon(String maHoaDon, String maThucAn) {
